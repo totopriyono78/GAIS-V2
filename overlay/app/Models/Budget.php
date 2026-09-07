@@ -70,11 +70,12 @@ class Budget extends Model
     }
 
     /**
-     * Nilai yang sudah pasti keluar tetapi fakturnya belum disetujui.
+     * Nilai yang sudah pasti keluar tetapi belum disetujui, dari faktur rekanan maupun
+     * dari struk karyawan.
      *
      * Bukan realisasi, dan tidak pernah ikut dijumlahkan ke dalamnya. Angka ini ada karena
-     * tumpukan faktur yang belum ditandatangani adalah cara termudah membuat pagu terlihat
-     * sehat padahal uangnya sudah habis.
+     * tumpukan faktur dan struk yang belum ditandatangani adalah cara termudah membuat pagu
+     * terlihat sehat padahal uangnya sudah habis.
      */
     public function tertunda(): float
     {

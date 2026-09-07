@@ -238,8 +238,32 @@ ditetapkan **tahunan**, dan reimbursement disetujui **atasan lalu GA tanpa batas
   realisasi tiap pagu dan di subjudul, karena tumpukan faktur yang belum ditandatangani adalah
   cara termudah membuat pagu terlihat sehat pada hari uangnya sudah habis
 
+**Kiriman L, penggantian biaya karyawan, sudah ditulis dan lulus gate:**
+- Alur empat langkah dengan empat orang: karyawan mengumpulkan struk, atasan menyetujui, tim
+  GA memeriksa, lalu ditandai sudah ditransfer. Tanpa batas nominal
+- Dua persetujuan karena ada dua pertanyaan. Atasan menjawab "benar ini keperluan kerja",
+  tim GA menjawab "struknya ada dan angkanya cocok". Izinnya dipisah bertiga: approve,
+  verify, dan pay
+- Satu baris adalah satu struk, dengan tanggal, kategori biaya, nilai, dan fotonya sendiri.
+  Nilai pengajuan dijumlahkan dari barisnya dan tidak pernah bisa diketik
+- Foto struk boleh kosong dan tidak memblokir pengajuan, karena struk memang kadang hilang.
+  Yang belum ada fotonya dihitung dan disebutkan di kotak persetujuan tim GA
+- Tanggal struk yang menentukan tahun anggaran, bukan tanggal pengajuan. Pengajuan yang
+  struknya menyeberang tahun menyebutkannya sendiri
+- Departemen ada di kepala pengajuan, bukan di tiap struk, karena struk milik satu orang
+  hampir selalu jatuh ke satu departemen. Boleh dikosongkan untuk belanja kantor bersama
+- Persetujuan atasan dilewati kalau departemennya belum punya kepala, kalau pemohon adalah
+  kepala departemen itu sendiri, atau kalau pengajuan tidak dibebankan ke departemen mana
+  pun. Alasannya ditulis ke kolomnya sendiri supaya lompatan itu terbaca di layar
+- Yang ditolak bisa dikembalikan ke draf, dan persetujuan atasan diulang dari awal setelah
+  diajukan ulang
+
+**Catatan penting:** kolom kepala departemen masih kosong di seluruh departemen. Selama itu,
+setiap pengajuan melewati langkah atasan dan langsung ke tim GA, dengan alasannya tertulis
+di layar. Mengisi kepala departemen adalah satu satunya hal yang perlu dilakukan supaya
+langkah atasan benar benar berjalan.
+
 **Belum dikerjakan di Tahap 5:**
-- Pengajuan reimbursement karyawan dengan lampiran bukti dan persetujuan atasan lalu GA
 - Laporan anggaran versus realisasi yang bisa diunduh
 
 Selesai kalau: satu pengajuan reimbursement bisa berjalan dari karyawan sampai disetujui dan tercatat

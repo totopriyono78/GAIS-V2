@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\ExpenseCategory;
 use App\Models\MaintenanceVisit;
+use App\Models\Reimbursement;
+use App\Models\ReimbursementLine;
 use App\Models\SupplyTransaction;
 use App\Models\VehicleDocument;
 use App\Models\VehicleRefueling;
@@ -20,8 +22,8 @@ use Illuminate\Support\Facades\DB;
  * spreadsheet kedua. Kalau realisasi diketik ulang orang, angkanya akan selalu tertinggal
  * dari kenyataan dan pelan pelan berhenti dipercaya. Karena itu tidak ada satu pun angka
  * di sini yang berasal dari pengetikan: semuanya dijumlahkan dari perintah kerja yang
- * ditutup, pengisian BBM yang dicatat, pajak yang diperpanjang, barang yang keluar, dan
- * tagihan rekanan yang sudah disetujui.
+ * ditutup, pengisian BBM yang dicatat, pajak yang diperpanjang, barang yang keluar,
+ * tagihan rekanan, dan struk karyawan yang sudah disetujui.
  *
  * Pembebanan ke departemen mengikuti jejak yang sudah ada, dan jejak itu tidak selalu
  * lengkap. Biaya pemeliharaan menempel pada aset, dan aset yang belum diisi departemennya
@@ -42,7 +44,7 @@ class RealisasiBiaya
         'bbm' => 'Pengisian BBM kendaraan',
         'dokumen_kendaraan' => 'Pajak, perpanjangan STNK, KIR, dan asuransi kendaraan',
         'persediaan' => 'Barang habis pakai yang keluar dari gudang',
-        'tagihan' => 'Tagihan rekanan yang sudah disetujui atau dibayar',
+        'tagihan' => 'Tagihan rekanan dan penggantian biaya karyawan yang sudah disetujui',
     ];
 
     /**
@@ -304,19 +306,25 @@ class RealisasiBiaya
     }
 
     /**
-     * Tagihan rekanan.
+     * Tagihan rekanan dan penggantian biaya karyawan.
      *
      * Berbeda dari empat sumber lainnya, sumber ini bergantung pada kategorinya, karena
-     * tiap baris faktur menyebut sendiri kategori mana yang dibebani. Karena itu
-     * kategorinya ikut masuk sebagai penyaring, bukan hanya sebagai penentu sumber.
+     * tiap baris faktur dan tiap struk menyebut sendiri kategori mana yang dibebani.
+     * Karena itu kategorinya ikut masuk sebagai penyaring, bukan hanya sebagai penentu
+     * sumber.
      *
-     * Yang dijumlahkan hanya tagihan yang sudah disetujui dan yang sudah dibayar. Draf
-     * dan tagihan yang masih menunggu tanda tangan dijumlahkan terpisah lewat
-     * tertundaPerDepartemen(), supaya angkanya terlihat tanpa ikut menaikkan realisasi.
+     * Yang dijumlahkan hanya yang sudah disetujui dan yang sudah dibayar. Draf dan yang
+     * masih menunggu tanda tangan dijumlahkan terpisah lewat tertundaPerDepartemen(),
+     * supaya angkanya terlihat tanpa ikut menaikkan realisasi.
      *
-     * Tanggal yang dipakai adalah tanggal faktur, bukan tanggal bayar. Faktur Desember
-     * yang dibayar Januari tetap membebani tahun lalu, dan itu yang dipakai tim finance
-     * saat menutup buku.
+     * Tanggalnya tanggal faktur dan tanggal struk, bukan tanggal bayar. Yang keluar
+     * uangnya Desember tetap membebani tahun lalu meski dibayar Januari, dan itu yang
+     * dipakai tim finance saat menutup buku.
+     *
+     * Departemen dibaca dari tempat yang berbeda pada keduanya, dan itu disengaja. Satu
+     * faktur listrik dibagi ke banyak departemen sekaligus sehingga departemennya ada di
+     * tiap baris, sedangkan struk milik satu karyawan hampir selalu jatuh ke satu
+     * departemen sehingga cukup disebut sekali di kepala pengajuannya.
      *
      * @return array<int, float>|float
      */
@@ -327,7 +335,7 @@ class RealisasiBiaya
         bool $tanpaDepartemen = false,
         bool $belumDisetujui = false,
     ): array|float {
-        $query = VendorBillLine::query()
+        $faktur = VendorBillLine::query()
             ->join('vendor_bills', 'vendor_bills.id', '=', 'vendor_bill_lines.vendor_bill_id')
             ->where('vendor_bill_lines.expense_category_id', $kategori->getKey())
             ->whereBetween('vendor_bills.invoice_date', [$dari, $sampai])
@@ -340,7 +348,20 @@ class RealisasiBiaya
             ->select('vendor_bill_lines.department_id', DB::raw('sum(vendor_bill_lines.amount) as total'))
             ->groupBy('vendor_bill_lines.department_id');
 
-        return $this->gabung([$query], $tanpaDepartemen);
+        $struk = ReimbursementLine::query()
+            ->join('reimbursements', 'reimbursements.id', '=', 'reimbursement_lines.reimbursement_id')
+            ->where('reimbursement_lines.expense_category_id', $kategori->getKey())
+            ->whereBetween('reimbursement_lines.expense_date', [$dari, $sampai])
+            ->when($belumDisetujui,
+                fn ($q) => $q->whereIn('reimbursements.status', Reimbursement::PENDING_STATUSES),
+                fn ($q) => $q->whereIn('reimbursements.status', Reimbursement::COUNTED_STATUSES),
+            )
+            ->when($tanpaDepartemen, fn ($q) => $q->whereNull('reimbursements.department_id'))
+            ->when(! $tanpaDepartemen, fn ($q) => $q->whereNotNull('reimbursements.department_id'))
+            ->select('reimbursements.department_id', DB::raw('sum(reimbursement_lines.amount) as total'))
+            ->groupBy('reimbursements.department_id');
+
+        return $this->gabung([$faktur, $struk], $tanpaDepartemen);
     }
 
     /**

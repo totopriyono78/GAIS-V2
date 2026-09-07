@@ -7,6 +7,7 @@ use App\Models\AssetTransfer;
 use App\Models\NumberSequence;
 use App\Models\ServiceRequest;
 use App\Models\VehicleBooking;
+use App\Models\Reimbursement;
 use App\Models\VendorBill;
 use App\Models\StockOpname;
 use App\Models\SupplyItem;
@@ -128,6 +129,18 @@ class NumberSequenceSeeder extends Seeder
                 // "yang masuk bulan lalu", jadi bulannya ikut terbaca di nomornya.
                 // Nomor ini nomor internal GA, bukan nomor faktur rekanan, dan keduanya
                 // disimpan terpisah supaya faktur ganda dari rekanan tetap ketahuan.
+                'period_format' => 'Y/m',
+                'padding' => 4,
+            ],
+        );
+
+        NumberSequence::query()->updateOrCreate(
+            ['code' => Reimbursement::SEQUENCE_CODE],
+            [
+                'name' => 'Nomor penggantian biaya',
+                'prefix' => 'PG',
+                'separator' => '/',
+                // Kembali ke satu tiap bulan, sama seperti nomor surat lainnya.
                 'period_format' => 'Y/m',
                 'padding' => 4,
             ],

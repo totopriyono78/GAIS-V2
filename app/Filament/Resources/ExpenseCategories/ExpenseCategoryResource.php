@@ -77,7 +77,7 @@ class ExpenseCategoryResource extends Resource
                 ->live()
                 ->columnSpanFull()
                 ->helperText(fn ($get): string => match ($get('source')) {
-                    'tagihan' => 'Realisasinya dijumlahkan dari baris tagihan rekanan yang sudah disetujui, dibebankan ke departemen yang disebut di baris itu. Tagihan yang masih menunggu persetujuan tampil terpisah di layar anggaran.',
+                    'tagihan' => 'Realisasinya dijumlahkan dari tagihan rekanan dan struk penggantian biaya karyawan yang sudah disetujui. Yang masih menunggu persetujuan tampil terpisah di layar anggaran, bukan ikut dijumlahkan.',
                     default => 'Realisasinya dijumlahkan sendiri dari catatan yang sudah ada, dan dibebankan ke departemen mengikuti jejak asetnya. Tidak ada yang perlu mengetik ulang angkanya.',
                 }),
             TextInput::make('account_code')

@@ -256,6 +256,23 @@ class ModuleSeeder extends Seeder
                 'available_actions' => ['read', 'create', 'update', 'delete', 'approve', 'pay'],
             ],
             [
+                'code' => 'reimbursements',
+                'name' => 'Penggantian biaya',
+                'description' => 'Pengajuan penggantian biaya karyawan beserta struknya, persetujuan atasan, pemeriksaan tim GA, dan penandaan transfer.',
+                'group' => 'Anggaran',
+                'icon' => 'heroicon-o-receipt-percent',
+                'sort' => 30,
+                /*
+                 * Empat aksi yang dipisah karena empat orang yang berbeda mengerjakannya.
+                 * Karyawan cukup read dan create, dan tanpa read_all ia hanya melihat
+                 * pengajuannya sendiri. Kepala departemen menyetujui lewat approve, dan
+                 * tanpa izin itu pun ia tetap bisa menyetujui pengajuan departemennya
+                 * sendiri karena namanya tercatat sebagai penyetuju. Tim GA memeriksa
+                 * struknya lewat verify. Yang mentransfer menandai lewat pay.
+                 */
+                'available_actions' => ['read', 'read_all', 'create', 'update', 'delete', 'approve', 'verify', 'pay'],
+            ],
+            [
                 'code' => 'settings',
                 'name' => 'Pengaturan',
                 'description' => 'Identitas perusahaan dan pengaturan sistem lainnya.',

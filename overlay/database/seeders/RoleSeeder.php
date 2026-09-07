@@ -53,6 +53,11 @@ class RoleSeeder extends Seeder
             // karena di banyak perusahaan menengah ia yang memegang bukti transfernya.
             'vendor_bills.read', 'vendor_bills.create', 'vendor_bills.update',
             'vendor_bills.delete', 'vendor_bills.approve', 'vendor_bills.pay',
+            // Manajer GA memeriksa struk dan menandai transfer. approve juga diberikan
+            // supaya antrean tidak tersangkut saat kepala departemen cuti panjang.
+            'reimbursements.read', 'reimbursements.read_all', 'reimbursements.create',
+            'reimbursements.update', 'reimbursements.delete', 'reimbursements.approve',
+            'reimbursements.verify', 'reimbursements.pay',
             'vehicles.read', 'vehicles.create', 'vehicles.update', 'vehicles.delete',
             'vehicle_bookings.read', 'vehicle_bookings.read_all', 'vehicle_bookings.create',
             'vehicle_bookings.update', 'vehicle_bookings.delete', 'vehicle_bookings.approve',
@@ -95,6 +100,10 @@ class RoleSeeder extends Seeder
             // Mencatat dan mengajukan tagihan, tanpa approve dan tanpa pay. Yang
             // memasukkan faktur tidak boleh sekaligus menyetujuinya.
             'vendor_bills.read', 'vendor_bills.create', 'vendor_bills.update',
+            // verify tanpa approve dan tanpa pay. Staf GA memeriksa struknya, tetapi
+            // tanda tangan atasan tetap milik kepala departemen pemohon.
+            'reimbursements.read', 'reimbursements.read_all', 'reimbursements.create',
+            'reimbursements.update', 'reimbursements.verify',
         ]);
 
         $this->syncRole('karyawan', [
@@ -115,6 +124,13 @@ class RoleSeeder extends Seeder
              */
             'service_requests.read', 'service_requests.create',
             'vehicle_bookings.read', 'vehicle_bookings.create',
+            /*
+             * read tanpa read_all, sama seperti permintaan perbaikan. Karyawan hanya
+             * melihat pengajuannya sendiri dan pengajuan departemen yang ia kepalai.
+             * Kepala departemen tidak diberi izin approve: ia menyetujui karena namanya
+             * tercatat sebagai penyetuju pengajuannya, bukan karena punya izin global.
+             */
+            'reimbursements.read', 'reimbursements.create', 'reimbursements.update',
         ]);
     }
 

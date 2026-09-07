@@ -79,7 +79,7 @@ class ListBudgets extends ListRecords
         }
 
         if ($tertunda > 0) {
-            $bagian[] = Rupiah::penuh($tertunda).' tagihan sudah masuk tetapi belum disetujui, jadi belum terhitung sebagai realisasi';
+            $bagian[] = Rupiah::penuh($tertunda).' dari tagihan rekanan dan struk karyawan sudah masuk tetapi belum disetujui, jadi belum terhitung sebagai realisasi';
         }
 
         if ($belumTerbebankanAset > 0) {
@@ -87,7 +87,7 @@ class ListBudgets extends ListRecords
         }
 
         if ($belumTerbebankanTagihan > 0) {
-            $bagian[] = Rupiah::penuh($belumTerbebankanTagihan).' berupa biaya bersama pada tagihan yang memang tidak menyebut departemen';
+            $bagian[] = Rupiah::penuh($belumTerbebankanTagihan).' berupa biaya bersama pada tagihan dan pengajuan yang memang tidak menyebut departemen';
         }
 
         if ($bagian === []) {

@@ -38,7 +38,7 @@ class ExpenseCategorySeeder extends Seeder
             ['code' => 'RMTG', 'name' => 'Rumah tangga kantor', 'source' => 'tagihan',
                 'description' => 'Konsumsi rapat, galon, dan keperluan harian kantor, dijumlahkan dari faktur rekanan yang sudah disetujui.'],
             ['code' => 'TRNS', 'name' => 'Transportasi dan perjalanan', 'source' => 'tagihan',
-                'description' => 'Transportasi daring, taksi, dan tol. Dijumlahkan dari faktur rekanan, dan nanti juga dari penggantian biaya karyawan.'],
+                'description' => 'Transportasi daring, taksi, dan tol. Dijumlahkan dari faktur rekanan dan dari struk penggantian biaya karyawan yang sudah disetujui.'],
             ['code' => 'LAIN', 'name' => 'Biaya GA lainnya', 'source' => 'tagihan',
                 'description' => 'Biaya yang belum masuk kategori mana pun.'],
         ];

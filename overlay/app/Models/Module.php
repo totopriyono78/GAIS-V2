@@ -28,6 +28,9 @@ class Module extends Model
         'approve' => 'Setujui',
         'accept' => 'Terima dan tugaskan',
         'assign' => 'Tentukan pelaksana',
+        // Dipisah dari approve, karena menyetujui keperluannya dan memeriksa buktinya
+        // adalah dua pertanyaan berbeda yang di banyak perusahaan ditanyakan dua orang.
+        'verify' => 'Periksa bukti',
         // Dipisah dari approve, karena yang menyetujui tagihan dan yang mengeluarkan
         // uangnya memang dua orang yang berbeda di hampir semua perusahaan.
         'pay' => 'Tandai sudah dibayar',
