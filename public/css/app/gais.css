@@ -1,0 +1,64 @@
+/*
+ * GAIS: lapisan identitas di atas panel Filament.
+ * Alasan tiap aturan ada di DESIGN.md. Warna inti dan aksen diatur lewat
+ * AdminPanelProvider, berkas ini hanya memasang motif identitas dan
+ * penyesuaian keterbacaan yang tidak bisa dinyatakan lewat konfigurasi warna.
+ */
+
+:root {
+    /* Terracotta, satu satunya warna aksen. Dipakai hanya untuk garis motif. */
+    --gais-accent: #a2542f;
+    --gais-paper: #faf7f2;
+    --gais-ink: #1c1a17;
+}
+
+/* Latar kertas hangat, mengurangi silau dibanding putih murni pada pemakaian harian. */
+.fi-body {
+    background-color: var(--gais-paper);
+    color: var(--gais-ink);
+}
+
+/*
+ * Motif identitas 1: garis aksen 3px di sisi kiri setiap judul seksi.
+ * Ini yang membuat halaman GAIS tetap dikenali walau logonya dilepas.
+ */
+.fi-section-header-heading,
+.fi-header-heading {
+    border-inline-start: 3px solid var(--gais-accent);
+    padding-inline-start: 0.625rem;
+    font-family: "Source Serif 4", Georgia, "Times New Roman", serif;
+    letter-spacing: -0.01em;
+}
+
+/*
+ * Motif identitas 2: semua angka berbaris lurus. Kolom nilai aset dan biaya
+ * di tahap berikutnya hanya terbaca cepat kalau digitnya selebar sama.
+ */
+.fi-ta-text,
+.fi-ta-record,
+.fi-in-text,
+input[type="number"] {
+    font-variant-numeric: tabular-nums;
+}
+
+/*
+ * Indikator fokus yang tegas, syarat R-32. Tidak ada outline yang dihapus tanpa pengganti.
+ * Berkas ini dimuat sebelum app.css milik Filament, jadi pemilih dengan kekhususan
+ * yang sama akan kalah. Awalan html.fi menaikkan kekhususannya satu tingkat supaya
+ * garis fokus benar benar terracotta, bukan warna teks bawaan.
+ */
+html.fi .fi-btn:focus-visible,
+html.fi .fi-input:focus-visible,
+html.fi .fi-link:focus-visible,
+html.fi .fi-sidebar-item-btn:focus-visible,
+html.fi a:focus-visible,
+html.fi button:focus-visible,
+html.fi [role='switch']:focus-visible {
+    outline: 2px solid var(--gais-accent);
+    outline-offset: 2px;
+}
+
+/* Header tabel dibedakan dengan berat huruf, bukan dengan warna latar tambahan. */
+.fi-ta-header-cell {
+    font-weight: 600;
+}
