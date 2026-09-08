@@ -36,7 +36,7 @@ class PhotosRelationManager extends RelationManager
 {
     protected static string $relationship = 'photos';
 
-    protected static ?string $title = 'Foto kendaraan';
+    protected static ?string $title = 'Vehicle Photos';
 
     protected static bool $isLazy = false;
 
@@ -141,13 +141,13 @@ class PhotosRelationManager extends RelationManager
             ])
             ->headerActions([
                 CreateAction::make()
-                    ->label('Unggah foto')
-                    ->modalHeading('Unggah foto kendaraan')
+                    ->label('Upload Photo')
+                    ->modalHeading('Upload Vehicle Photo')
                     ->visible(fn (): bool => VehicleResource::canEdit($this->getOwnerRecord())),
             ])
             ->recordActions([
                 Action::make('buka')
-                    ->label('Buka ukuran penuh')
+                    ->label('Open Full Size')
                     ->icon('heroicon-o-arrow-top-right-on-square')
                     ->iconButton()
                     ->url(fn (VehiclePhoto $record): ?string => $record->url())

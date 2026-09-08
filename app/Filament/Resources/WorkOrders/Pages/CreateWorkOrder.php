@@ -11,12 +11,12 @@ class CreateWorkOrder extends CreateRecord
 
     public function getTitle(): string
     {
-        return 'Catat kerusakan';
+        return 'Log Issue';
     }
 
     public function getHeading(): string
     {
-        return 'Catat kerusakan';
+        return 'Log Issue';
     }
 
     public function getSubheading(): ?string

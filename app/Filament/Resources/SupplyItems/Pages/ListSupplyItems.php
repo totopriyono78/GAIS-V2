@@ -13,7 +13,7 @@ class ListSupplyItems extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()->label('Tambah barang'),
+            CreateAction::make()->label('Add Item'),
         ];
     }
 }

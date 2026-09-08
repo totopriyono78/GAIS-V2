@@ -56,13 +56,13 @@ class ReimbursementResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-receipt-percent';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Anggaran';
+    protected static string|UnitEnum|null $navigationGroup = 'Budget & Expenses';
 
-    protected static ?string $navigationLabel = 'Penggantian biaya';
+    protected static ?string $navigationLabel = 'Reimbursements';
 
-    protected static ?string $modelLabel = 'penggantian biaya';
+    protected static ?string $modelLabel = 'reimbursement';
 
-    protected static ?string $pluralModelLabel = 'penggantian biaya';
+    protected static ?string $pluralModelLabel = 'reimbursements';
 
     protected static ?int $navigationSort = 30;
 
@@ -147,7 +147,8 @@ class ReimbursementResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Pengajuan')
+            Section::make('Request')
+                ->columnSpanFull()
                 ->columns(2)
                 ->schema([
                     TextInput::make('title')
@@ -210,7 +211,7 @@ class ReimbursementResource extends Resource
     public static function infolist(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Pengajuan')
+            Section::make('Request')
                 ->columns(3)
                 ->schema([
                     TextEntry::make('code')->label('Nomor')->fontFamily('mono'),
@@ -239,7 +240,7 @@ class ReimbursementResource extends Resource
                     TextEntry::make('notes')->label('Catatan')->placeholder('Tidak ada')->columnSpanFull(),
                 ]),
 
-            Section::make('Persetujuan dan pembayaran')
+            Section::make('Approval & Payment')
                 ->columns(2)
                 ->schema([
                     TextEntry::make('persetujuan_atasan')
@@ -427,11 +428,11 @@ class ReimbursementResource extends Resource
     public static function ajukanAction(bool $iconOnly = true): Action
     {
         $aksi = Action::make('ajukan')
-            ->label('Ajukan')
+            ->label('Submit')
             ->icon('heroicon-o-paper-airplane')
             ->color('primary')
             ->visible(fn (Reimbursement $record): bool => $record->status === 'draft' && static::bolehMengubah($record))
-            ->modalHeading(fn (Reimbursement $record): string => 'Ajukan '.$record->code)
+            ->modalHeading(fn (Reimbursement $record): string => 'Submit '.$record->code)
             ->modalDescription(function (Reimbursement $record): string {
                 $alasan = $record->alasanBelumBisaDiajukan();
 
@@ -449,7 +450,7 @@ class ReimbursementResource extends Resource
                     .($tanpaBukti > 0 ? ' '.$tanpaBukti.' struk belum ada fotonya, dan tim GA akan menanyakannya.' : '')
                     .' Setelah diajukan, struknya tidak bisa diubah lagi.';
             })
-            ->modalSubmitActionLabel('Ajukan')
+            ->modalSubmitActionLabel('Submit')
             ->action(function (Reimbursement $record, Action $action, $livewire): void {
                 $alasan = $record->alasanBelumBisaDiajukan();
 
@@ -477,15 +478,15 @@ class ReimbursementResource extends Resource
     public static function setujuiAction(bool $iconOnly = true): Action
     {
         $aksi = Action::make('setujui')
-            ->label('Setujui sebagai atasan')
+            ->label('Approve as Supervisor')
             ->icon('heroicon-o-check-badge')
             ->color('success')
             ->visible(fn (Reimbursement $record): bool => $record->status === 'diajukan' && static::bolehMenyetujui($record))
-            ->modalHeading(fn (Reimbursement $record): string => 'Setujui '.$record->code)
+            ->modalHeading(fn (Reimbursement $record): string => 'Approve '.$record->code)
             ->modalDescription(fn (Reimbursement $record): string => $record->totalLabel().' dari '
                 .($record->employee?->full_name ?? 'karyawan yang sudah dihapus')
                 .'. Yang Anda setujui adalah bahwa ini memang keperluan kerja. Tim GA yang memeriksa struk dan angkanya setelah ini.')
-            ->modalSubmitActionLabel('Setujui pengajuan')
+            ->modalSubmitActionLabel('Approve Request')
             ->schema([
                 Textarea::make('approval_note')
                     ->label('Catatan')
@@ -512,12 +513,12 @@ class ReimbursementResource extends Resource
     public static function periksaAction(bool $iconOnly = true): Action
     {
         $aksi = Action::make('periksa')
-            ->label('Selesai diperiksa')
+            ->label('Mark as Verified')
             ->icon('heroicon-o-document-magnifying-glass')
             ->color('success')
             ->visible(fn (Reimbursement $record): bool => $record->status === 'diperiksa' && static::allows('verify'))
             ->requiresConfirmation()
-            ->modalHeading(fn (Reimbursement $record): string => 'Selesai memeriksa '.$record->code)
+            ->modalHeading(fn (Reimbursement $record): string => 'Verify '.$record->code)
             ->modalDescription(function (Reimbursement $record): string {
                 $tanpaBukti = $record->strukTanpaBukti();
 
@@ -527,7 +528,7 @@ class ReimbursementResource extends Resource
                     .($record->department?->name ?? 'yang belum terbebankan ke departemen mana pun')
                     .', dan pengajuannya menunggu ditransfer.';
             })
-            ->modalSubmitActionLabel('Setujui dan teruskan ke pembayaran')
+            ->modalSubmitActionLabel('Approve and Send to Payment')
             ->action(function (Reimbursement $record, $livewire): void {
                 if (! $record->verifikasi()) {
                     static::peringatanStatusBerubah();
@@ -547,15 +548,15 @@ class ReimbursementResource extends Resource
     public static function bayarAction(bool $iconOnly = true): Action
     {
         $aksi = Action::make('bayar')
-            ->label('Tandai sudah diganti')
+            ->label('Mark as Reimbursed')
             ->icon('heroicon-o-banknotes')
             ->color('success')
             ->visible(fn (Reimbursement $record): bool => $record->status === 'disetujui' && static::allows('pay'))
-            ->modalHeading(fn (Reimbursement $record): string => 'Tandai '.$record->code.' sudah diganti')
+            ->modalHeading(fn (Reimbursement $record): string => 'Mark '.$record->code.' as Reimbursed')
             ->modalDescription(fn (Reimbursement $record): string => $record->totalLabel().' ke '
                 .($record->employee?->full_name ?? 'karyawan yang sudah dihapus')
                 .'. Realisasi anggarannya tidak berubah, karena nilainya sudah terhitung sejak selesai diperiksa.')
-            ->modalSubmitActionLabel('Simpan pembayaran')
+            ->modalSubmitActionLabel('Save Payment')
             ->schema([
                 DatePicker::make('paid_date')
                     ->label('Tanggal transfer')
@@ -587,14 +588,14 @@ class ReimbursementResource extends Resource
     public static function tolakAction(bool $iconOnly = true): Action
     {
         $aksi = Action::make('tolak')
-            ->label('Tolak')
+            ->label('Reject')
             ->icon('heroicon-o-hand-raised')
             ->color('danger')
             ->visible(fn (Reimbursement $record): bool => ($record->status === 'diajukan' && static::bolehMenyetujui($record))
                 || ($record->status === 'diperiksa' && static::allows('verify')))
-            ->modalHeading(fn (Reimbursement $record): string => 'Tolak '.$record->code)
+            ->modalHeading(fn (Reimbursement $record): string => 'Reject '.$record->code)
             ->modalDescription('Pengajuan yang ditolak tetap tersimpan beserta alasannya, dan pemohon bisa mengembalikannya ke draf untuk memperbaiki struknya.')
-            ->modalSubmitActionLabel('Tolak pengajuan')
+            ->modalSubmitActionLabel('Reject Request')
             ->schema([
                 Textarea::make('rejection_reason')
                     ->label('Alasan ditolak')
@@ -626,14 +627,14 @@ class ReimbursementResource extends Resource
     public static function perbaikiAction(bool $iconOnly = true): Action
     {
         $aksi = Action::make('perbaiki')
-            ->label('Kembalikan ke draf')
+            ->label('Return to Draft')
             ->icon('heroicon-o-arrow-uturn-left')
             ->color('gray')
             ->visible(fn (Reimbursement $record): bool => $record->status === 'ditolak' && static::bolehMengubah($record))
             ->requiresConfirmation()
-            ->modalHeading(fn (Reimbursement $record): string => 'Kembalikan '.$record->code.' ke draf')
+            ->modalHeading(fn (Reimbursement $record): string => 'Return '.$record->code.' to Draft')
             ->modalDescription('Struknya bisa diubah lagi, lalu diajukan ulang dari awal. Alasan penolakannya sengaja tetap tersimpan supaya bisa dibaca sambil memperbaiki.')
-            ->modalSubmitActionLabel('Kembalikan ke draf')
+            ->modalSubmitActionLabel('Return to Draft')
             ->action(function (Reimbursement $record, $livewire): void {
                 if (! $record->kembalikanKeDraft()) {
                     static::peringatanStatusBerubah();
@@ -652,16 +653,16 @@ class ReimbursementResource extends Resource
     public static function batalkanAction(bool $iconOnly = true): Action
     {
         $aksi = Action::make('batalkan')
-            ->label('Batalkan')
+            ->label('Cancel')
             ->icon('heroicon-o-x-circle')
             ->color('gray')
             ->visible(fn (Reimbursement $record): bool => $record->isOpen() && static::bolehMembatalkan($record))
             ->requiresConfirmation()
-            ->modalHeading(fn (Reimbursement $record): string => 'Batalkan '.$record->code)
+            ->modalHeading(fn (Reimbursement $record): string => 'Cancel '.$record->code)
             ->modalDescription(fn (Reimbursement $record): string => $record->status === 'disetujui'
                 ? 'Pengajuan ini sudah selesai diperiksa, jadi nilainya sedang terhitung sebagai realisasi anggaran. Membatalkannya mengeluarkan nilai itu dari realisasi.'
                 : 'Pengajuan ini tetap tersimpan sebagai catatan, dan tidak masuk hitungan anggaran mana pun.')
-            ->modalSubmitActionLabel('Batalkan pengajuan')
+            ->modalSubmitActionLabel('Cancel Request')
             ->action(function (Reimbursement $record, $livewire): void {
                 if (! $record->batalkan()) {
                     static::peringatanStatusBerubah();

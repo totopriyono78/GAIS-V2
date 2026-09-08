@@ -170,3 +170,82 @@ persetujuan terbukti berjalan, dan angka realisasinya cocok sampai rupiah terakh
 pemisahan dua kategori di dalam satu pengajuan.
 
 Tahap 5 tersisa satu langkah: laporan anggaran versus realisasi yang bisa diunduh.
+
+---
+
+## 9. Tambahan atas permintaan pemilik proyek, 7 September 2026
+
+Dua catatan yang datang setelah kiriman L lulus, dikerjakan dan diverifikasi pada hari yang
+sama.
+
+### 9.1 Tab Anggaran di dasbor, berisi data penggantian biaya
+
+Dasbor sebelumnya berhenti di tab Persediaan, sehingga seluruh angka uang hanya bisa dibaca
+dengan membuka menunya satu per satu. Tab Anggaran ditambahkan dengan tiga bagian.
+
+**Ringkasan anggaran** menjawab keadaan pagu tahun berjalan: total pagu, realisasi beserta
+persentasenya, jumlah pagu yang terlewati, dan nilai faktur serta struk yang sudah masuk
+tetapi belum disetujui. Kartu terakhir itu yang paling mudah dilupakan dan paling mahal
+kalau tidak ada, karena tanpa disebut, seluruh pagu akan terlihat sehat tepat pada hari ia
+sedang tidak.
+
+**Ringkasan penggantian biaya** mengikuti tiga meja yang dilewati satu pengajuan, berurutan
+sama dengan alurnya: menunggu atasan, menunggu tim GA, menunggu ditransfer, ditambah nilai
+yang sudah diganti tahun ini. Kartu ketiga membawa nilainya, bukan hanya jumlah
+pengajuannya, karena itulah uang karyawan yang sudah keluar dan belum kembali.
+
+**Daftar penggantian biaya yang menunggu tindakan**, urut dari yang paling lama menunggu,
+barisnya bisa diklik langsung ke pengajuannya. Draf sengaja tidak masuk daftar, karena draf
+belum menunggu siapa pun kecuali pemiliknya sendiri.
+
+Ketiganya memakai penyempitan daftar yang sama dengan menunya, jadi karyawan biasa hanya
+melihat angka pengajuannya sendiri.
+
+Angka yang muncul di layar dicocokkan dengan hitungan tangan:
+
+| Yang diuji | Hitungan tangan | Yang muncul di layar |
+|---|---|---|
+| Total pagu 2026 | 10 + 20 + 50 + 3 + 2 + 10 + 2 juta dari 7 baris | **Rp 97.000.000** |
+| Total realisasi | 2.100.000 + 3.995.000 + 1.245.000 + 4.500.000 + 225.000 | **Rp 12,07 juta**, 12,4 persen |
+| Pagu terlewati | Hanya pajak kendaraan Finance | 1 |
+| Belum disetujui | 2.750.000 faktur + 420.000 + 375.000 struk | **Rp 3.545.000** |
+| Menunggu tim GA | Satu pengajuan | 1 |
+| Sudah diganti tahun ini | `PG/2026/09/0001` | **Rp 500.000** |
+| Draf tidak masuk daftar menunggu | `PG/2026/09/0002` berstatus draf | Tidak muncul |
+| Batas enam kolom | Tabel widget baru | 6 kolom, seluruh 48 tabel lolos audit |
+
+### 9.2 Kartu formulir yang berdiri sendiri kini selebar layar
+
+Skema formulir resource memakai dua kolom di layar lebar. Formulir yang kartunya hanya satu
+karena itu tampil selebar setengah layar dengan separuh kanan kosong, dan hal yang sama
+terjadi pada kartu terakhir di formulir berjumlah ganjil.
+
+Diperbaiki dengan memberi `->columnSpanFull()` pada kartu yang akan berdiri sendiri di
+barisnya. Tersentuh dua belas formulir: enam berkartu tunggal (Departemen, Lokasi, Modul,
+Pengaturan, Tagihan rekanan, Penggantian biaya) dan enam berkartu tiga (Kategori aset,
+Jadwal pemeliharaan, Permintaan perbaikan, Pengguna, Rekanan, Perintah kerja). Formulir yang
+kartunya genap tidak diubah, karena kartunya memang sudah berpasangan rapi.
+
+Formulir aset ditangani terpisah karena dua kartunya tampil bersyarat, sehingga jumlah kartu
+per baris berubah ubah dan tidak bisa dijaga tetap genap. Kedua kartu bersyarat itu,
+Penyusutan dan Sertifikat, diberi lebar penuh sehingga keenam kartu tetapnya selalu tersisa
+berpasangan pada keempat kemungkinan tampilannya.
+
+Diverifikasi di browser: kartu formulir tagihan rekanan yang tadinya 472 piksel pada layar
+1366 piksel sekarang 967 piksel, selebar isi halamannya. Formulir perintah kerja pada
+halaman Buat tetap menampilkan dua kartu berdampingan, karena kartu ketiganya memang baru
+muncul saat pekerjaannya ditutup.
+
+Aturannya ditulis ke `CLAUDE.md` beserta pengecualian kartu bersyarat, dan ikut diaudit
+skrip yang sama dengan batas enam kolom.
+
+### 9.3 Cacat yang ditemukan dan diperbaiki
+
+**D-21. Seluruh aplikasi berhenti dengan galat fatal.**
+`Cannot redeclare non static Filament\Widgets\StatsOverviewWidget::$heading as static`.
+Widget ringkasan penggantian biaya menulis `protected static ?string $heading`, mengikuti
+pola widget tabel yang memang memakai properti static. `StatsOverviewWidget` mendeklarasikan
+properti itu sebagai properti biasa, dan PHP menolak penimpaan yang mengubah sifat static
+saat kelasnya dimuat, sehingga setiap halaman panel ikut mati, bukan hanya dasbornya.
+Diperbaiki menjadi properti biasa, dan alasannya ditulis sebagai komentar di tempatnya
+supaya pola yang benar untuk kedua jenis widget tidak tertukar lagi.

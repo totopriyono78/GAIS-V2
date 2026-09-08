@@ -13,12 +13,12 @@ class CreateVehicleBooking extends CreateRecord
 
     public function getTitle(): string
     {
-        return 'Pesan kendaraan';
+        return 'Book Vehicle';
     }
 
     public function getHeading(): string
     {
-        return 'Pesan kendaraan';
+        return 'Book Vehicle';
     }
 
     public function getSubheading(): ?string

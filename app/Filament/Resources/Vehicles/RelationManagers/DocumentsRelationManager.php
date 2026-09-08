@@ -39,7 +39,7 @@ class DocumentsRelationManager extends RelationManager
 {
     protected static string $relationship = 'documents';
 
-    protected static ?string $title = 'Pajak, STNK, KIR, dan asuransi';
+    protected static ?string $title = 'Tax, STNK, KIR & Insurance';
 
     protected static bool $isLazy = false;
 
@@ -166,13 +166,13 @@ class DocumentsRelationManager extends RelationManager
             ])
             ->headerActions([
                 CreateAction::make()
-                    ->label('Catat dokumen')
+                    ->label('Add Document')
                     ->visible(fn (): bool => VehicleResource::canEdit($this->getOwnerRecord())),
             ])
             ->recordActions([
                 $this->perpanjangAction(),
                 Action::make('buka')
-                    ->label('Buka pindaian')
+                    ->label('Open Scan')
                     ->icon('heroicon-o-arrow-top-right-on-square')
                     ->iconButton()
                     ->visible(fn (VehicleDocument $record): bool => filled($record->file_path))
@@ -201,7 +201,7 @@ class DocumentsRelationManager extends RelationManager
     protected function perpanjangAction(): Action
     {
         return Action::make('perpanjang')
-            ->label('Perpanjang')
+            ->label('Renew')
             ->icon('heroicon-o-arrow-path')
             ->color('success')
             ->iconButton()
@@ -209,9 +209,9 @@ class DocumentsRelationManager extends RelationManager
                 && VehicleResource::canEdit($this->getOwnerRecord()))
             // Nama jenis tidak dikecilkan hurufnya, karena STNK dan KIR adalah singkatan
             // dan "perpanjang pajak tahunan dan pengesahan stnk" terbaca seperti salah ketik.
-            ->modalHeading(fn (VehicleDocument $record): string => 'Perpanjang '.$record->jenisLabel())
+            ->modalHeading(fn (VehicleDocument $record): string => 'Renew '.$record->jenisLabel())
             ->modalDescription('Baris lama tetap disimpan sebagai riwayat. Yang dibuat di sini adalah masa berlaku berikutnya.')
-            ->modalSubmitActionLabel('Simpan perpanjangan')
+            ->modalSubmitActionLabel('Save Renewal')
             ->fillForm(fn (VehicleDocument $record): array => [
                 'document_number' => $record->document_number,
                 'issuer' => $record->issuer,

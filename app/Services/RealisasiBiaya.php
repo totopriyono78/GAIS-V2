@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use App\Models\BusinessTripExpense;
 use App\Models\ExpenseCategory;
 use App\Models\MaintenanceVisit;
+use App\Models\ParcelShipment;
 use App\Models\Reimbursement;
 use App\Models\ReimbursementLine;
 use App\Models\SupplyTransaction;
@@ -45,6 +47,8 @@ class RealisasiBiaya
         'dokumen_kendaraan' => 'Pajak, perpanjangan STNK, KIR, dan asuransi kendaraan',
         'persediaan' => 'Barang habis pakai yang keluar dari gudang',
         'tagihan' => 'Tagihan rekanan dan penggantian biaya karyawan yang sudah disetujui',
+        'kiriman' => 'Biaya pengiriman paket yang sudah berangkat',
+        'perjalanan_dinas' => 'Biaya perjalanan dinas yang pertanggungjawabannya sudah ditutup',
     ];
 
     /**
@@ -116,6 +120,8 @@ class RealisasiBiaya
             'dokumen_kendaraan' => $this->dokumenKendaraan($dari, $sampai),
             'persediaan' => $this->persediaan($dari, $sampai),
             'tagihan' => $this->tagihan($kategori, $dari, $sampai),
+            'kiriman' => $this->kiriman($dari, $sampai),
+            'perjalanan_dinas' => $this->perjalananDinas($dari, $sampai),
             default => [],
         };
     }
@@ -192,6 +198,8 @@ class RealisasiBiaya
         return $this->ingatanTanpaDepartemen[$kunci] = match ($kategori->source) {
             'pemeliharaan' => $this->pemeliharaan($dari, $sampai, tanpaDepartemen: true),
             'bbm' => $this->bbm($dari, $sampai, tanpaDepartemen: true),
+            'kiriman' => $this->kiriman($dari, $sampai, tanpaDepartemen: true),
+            'perjalanan_dinas' => $this->perjalananDinas($dari, $sampai, tanpaDepartemen: true),
             'dokumen_kendaraan' => $this->dokumenKendaraan($dari, $sampai, tanpaDepartemen: true),
             'persediaan' => $this->persediaan($dari, $sampai, tanpaDepartemen: true),
             'tagihan' => $this->tagihan($kategori, $dari, $sampai, tanpaDepartemen: true),
@@ -260,6 +268,76 @@ class RealisasiBiaya
             ->groupBy('assets.department_id');
 
         return $this->gabung([$query], $tanpaDepartemen);
+    }
+
+    /**
+     * Biaya pengiriman paket yang sudah berangkat.
+     *
+     * Menurut tanggal kirim, bukan tanggal permintaan, karena yang dibebankan ke anggaran
+     * adalah kapan uangnya keluar. Permintaan yang dibatalkan tidak pernah menghasilkan uang
+     * keluar, jadi ia tidak ikut dijumlahkan.
+     *
+     * Rumus totalnya sengaja ditulis ulang di sini dalam bahasa SQL, dan itu satu satunya
+     * penggandaan yang saya biarkan di kelas ini. Alasannya: menjumlahkan lewat PHP berarti
+     * mengambil seluruh baris pengiriman satu tahun ke memori hanya untuk menjumlahkannya,
+     * padahal halaman anggaran memanggil ini untuk setiap kategori. Kalau rumus di
+     * ParcelShipment::totalBiaya() kelak berubah, baris ini harus ikut berubah, dan komentar
+     * ini ada supaya orang yang mengubahnya tahu ada tempat kedua.
+     *
+     * @return array<int, float>|float
+     */
+    protected function kiriman(string $dari, string $sampai, bool $tanpaDepartemen = false): array|float
+    {
+        /*
+         * Departemen wajib isi pada pengiriman, jadi tidak akan pernah ada biaya kiriman yang
+         * tidak terbebankan. Cabang tanpaDepartemen tetap ditulis supaya kelas ini punya
+         * bentuk yang sama untuk seluruh sumbernya, dan hasilnya memang selalu nol.
+         */
+        if ($tanpaDepartemen) {
+            return 0.0;
+        }
+
+        $query = ParcelShipment::query()
+            ->where('status', 'dikirim')
+            ->whereBetween('shipped_date', [$dari, $sampai])
+            ->select('department_id', DB::raw(
+                'sum(coalesce(shipping_cost, 0) + coalesce(insurance_cost, 0)'
+                .' + coalesce(packing_cost, 0) - coalesce(discount_amount, 0)'
+                .' + coalesce(tax_amount, 0)) as total'
+            ))
+            ->groupBy('department_id');
+
+        return $this->gabung([$query], false);
+    }
+
+    /**
+     * Biaya perjalanan dinas yang pertanggungjawabannya sudah ditutup.
+     *
+     * Dua syarat, dan keduanya perlu. Perjalanannya harus sudah ditutup, karena rincian yang
+     * masih bisa diubah akan membuat angka anggaran bergerak sendiri tanpa ada yang
+     * menyentuhnya. Dan yang dijumlahkan adalah barisnya, menurut tanggal tiap pengeluaran,
+     * bukan menurut tanggal perjalanan atau tanggal penutupannya. Perjalanan yang berangkat
+     * akhir Desember dan pulang awal Januari karenanya terbelah ke dua tahun anggaran sesuai
+     * kapan uangnya benar benar keluar.
+     *
+     * @return array<int, float>|float
+     */
+    protected function perjalananDinas(string $dari, string $sampai, bool $tanpaDepartemen = false): array|float
+    {
+        // Departemen wajib isi pada perjalanan dinas, jadi tidak akan pernah ada biaya yang
+        // tidak terbebankan. Cabangnya tetap ditulis supaya bentuknya sama dengan sumber lain.
+        if ($tanpaDepartemen) {
+            return 0.0;
+        }
+
+        $query = BusinessTripExpense::query()
+            ->join('business_trips', 'business_trips.id', '=', 'business_trip_expenses.business_trip_id')
+            ->where('business_trips.status', 'selesai')
+            ->whereBetween('business_trip_expenses.expense_date', [$dari, $sampai])
+            ->select('business_trips.department_id', DB::raw('sum(business_trip_expenses.amount) as total'))
+            ->groupBy('business_trips.department_id');
+
+        return $this->gabung([$query], false);
     }
 
     /** @return array<int, float>|float */

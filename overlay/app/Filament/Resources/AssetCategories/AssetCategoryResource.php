@@ -94,6 +94,7 @@ class AssetCategoryResource extends Resource
                 ]),
 
             Section::make('Penyusutan')
+                ->columnSpanFull()
                 ->description('Perhitungan penyusutannya sendiri belum dibangun, jadi angka di seksi ini baru tersimpan sebagai kebijakan, belum menghasilkan nilai buku atau jurnal. Kelompok pajak menentukan masa manfaat bawaan, angkanya mengikuti PMK 72 Tahun 2023. Kalau kebijakan akuntansi perusahaan berbeda dari kelompok pajaknya, isi masa manfaat secara manual dan angka itu yang dipakai.')
                 ->columns(3)
                 ->schema([

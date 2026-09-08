@@ -33,14 +33,14 @@ class EditStockOpname extends EditRecord
     {
         return [
             Action::make('susun')
-                ->label('Susun daftar target')
+                ->label('Build Target List')
                 ->icon('heroicon-o-list-bullet')
                 ->color('gray')
                 ->visible(fn (): bool => $this->record->isDraft() && StockOpnameResource::canEdit($this->record))
                 ->requiresConfirmation()
-                ->modalHeading('Susun ulang daftar target')
+                ->modalHeading('Rebuild Target List')
                 ->modalDescription('Daftar disusun dari cakupan yang tersimpan, dan baris yang sudah ada akan diganti. Jalankan ini sebelum pemeriksaan dimulai.')
-                ->modalSubmitActionLabel('Susun sekarang')
+                ->modalSubmitActionLabel('Build Now')
                 ->action(function (): void {
                     $jumlah = $this->record->generateLines();
 
@@ -69,13 +69,13 @@ class EditStockOpname extends EditRecord
                 }),
 
             Action::make('mulai')
-                ->label('Mulai pemeriksaan')
+                ->label('Start Count')
                 ->icon('heroicon-o-play')
                 ->visible(fn (): bool => $this->record->isDraft() && StockOpnameResource::canEdit($this->record))
                 ->requiresConfirmation()
-                ->modalHeading('Mulai pemeriksaan')
+                ->modalHeading('Start Count')
                 ->modalDescription('Setelah dimulai, daftar target tidak bisa disusun ulang. Pastikan cakupannya sudah benar.')
-                ->modalSubmitActionLabel('Mulai')
+                ->modalSubmitActionLabel('Start')
                 ->action(function (): void {
                     if ($this->record->lines()->count() === 0) {
                         Notification::make()
@@ -101,15 +101,15 @@ class EditStockOpname extends EditRecord
                 }),
 
             Action::make('selesaikan')
-                ->label('Selesaikan opname')
+                ->label('Close Session')
                 ->icon('heroicon-o-check-circle')
                 ->visible(fn (): bool => $this->record->isRunning() && StockOpnameResource::canEdit($this->record))
                 ->requiresConfirmation()
-                ->modalHeading('Selesaikan opname')
+                ->modalHeading('Close Stock Opname Session')
                 ->modalDescription(fn (): string => $this->belumDiperiksa() > 0
                     ? 'Masih ada '.$this->belumDiperiksa().' baris yang belum diperiksa. Baris itu akan tercatat apa adanya sebagai belum diperiksa.'
                     : 'Semua baris sudah diperiksa. Setelah ditutup, temuan tidak bisa diubah lagi.')
-                ->modalSubmitActionLabel('Tutup sesi')
+                ->modalSubmitActionLabel('Close Session')
                 ->action(function (): void {
                     $this->record->forceFill([
                         'status' => 'selesai',
@@ -127,16 +127,16 @@ class EditStockOpname extends EditRecord
                 }),
 
             Action::make('terapkan')
-                ->label('Terapkan penyesuaian')
+                ->label('Apply Adjustments')
                 ->icon('heroicon-o-arrow-path-rounded-square')
                 ->color('warning')
                 ->visible(fn (): bool => $this->record->isFinished()
                     && ! $this->record->isAdjusted()
                     && StockOpnameResource::canApprove())
                 ->requiresConfirmation()
-                ->modalHeading('Terapkan temuan ke data aset')
+                ->modalHeading('Apply Findings to Asset Data')
                 ->modalDescription('Lokasi dan kondisi aset akan diperbarui mengikuti temuan di lapangan. Aset yang tidak ditemukan sengaja tidak diubah statusnya, karena itu perlu ditindaklanjuti orang, bukan diputuskan sistem. Tindakan ini hanya bisa dijalankan sekali.')
-                ->modalSubmitActionLabel('Terapkan')
+                ->modalSubmitActionLabel('Apply')
                 ->action(function (): void {
                     $hasil = $this->record->applyAdjustments();
 
@@ -150,15 +150,15 @@ class EditStockOpname extends EditRecord
                 }),
 
             Action::make('batalkan')
-                ->label('Batalkan sesi')
+                ->label('Cancel Session')
                 ->icon('heroicon-o-x-circle')
                 ->color('danger')
                 ->visible(fn (): bool => in_array($this->record->status, ['draft', 'berjalan'], true)
                     && StockOpnameResource::canEdit($this->record))
                 ->requiresConfirmation()
-                ->modalHeading('Batalkan sesi opname')
+                ->modalHeading('Cancel Stock Opname Session')
                 ->modalDescription('Sesi ditandai batal dan tidak bisa dilanjutkan. Daftar target beserta temuan yang sudah dicatat tetap tersimpan sebagai riwayat.')
-                ->modalSubmitActionLabel('Batalkan sesi')
+                ->modalSubmitActionLabel('Cancel Session')
                 ->action(function (): void {
                     $this->record->forceFill(['status' => 'dibatalkan'])->save();
 
@@ -168,7 +168,7 @@ class EditStockOpname extends EditRecord
                 }),
 
             Action::make('unduh')
-                ->label('Unduh hasil CSV')
+                ->label('Download CSV')
                 ->icon('heroicon-o-document-arrow-down')
                 ->color('gray')
                 ->visible(fn (): bool => $this->record->lines()->exists())

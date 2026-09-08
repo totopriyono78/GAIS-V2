@@ -21,7 +21,7 @@ class VisitsRelationManager extends RelationManager
 {
     protected static string $relationship = 'visits';
 
-    protected static ?string $title = 'Riwayat penjadwalan';
+    protected static ?string $title = 'Schedule History';
 
     protected static bool $isLazy = false;
 

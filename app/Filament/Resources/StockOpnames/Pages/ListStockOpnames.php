@@ -13,7 +13,7 @@ class ListStockOpnames extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()->label('Buat sesi opname'),
+            CreateAction::make()->label('New Stock Opname'),
         ];
     }
 }

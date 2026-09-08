@@ -27,13 +27,13 @@ class AuditLogResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-list';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Sistem';
+    protected static string|UnitEnum|null $navigationGroup = 'System';
 
-    protected static ?string $navigationLabel = 'Jejak audit';
+    protected static ?string $navigationLabel = 'Audit Log';
 
-    protected static ?string $modelLabel = 'jejak audit';
+    protected static ?string $modelLabel = 'audit entry';
 
-    protected static ?string $pluralModelLabel = 'jejak audit';
+    protected static ?string $pluralModelLabel = 'audit entries';
 
     protected static ?int $navigationSort = 2;
 

@@ -20,7 +20,7 @@ class DepreciationRelationManager extends RelationManager
 {
     protected static string $relationship = 'depreciationEntries';
 
-    protected static ?string $title = 'Riwayat penyusutan';
+    protected static ?string $title = 'Depreciation History';
 
     protected static bool $isLazy = false;
 

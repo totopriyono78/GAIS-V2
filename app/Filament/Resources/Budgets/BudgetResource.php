@@ -47,13 +47,13 @@ class BudgetResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-calculator';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Anggaran';
+    protected static string|UnitEnum|null $navigationGroup = 'Budget & Expenses';
 
-    protected static ?string $navigationLabel = 'Anggaran dan realisasi';
+    protected static ?string $navigationLabel = 'Budgets';
 
-    protected static ?string $modelLabel = 'pagu anggaran';
+    protected static ?string $modelLabel = 'budget';
 
-    protected static ?string $pluralModelLabel = 'pagu anggaran';
+    protected static ?string $pluralModelLabel = 'budgets';
 
     protected static ?int $navigationSort = 10;
 

@@ -14,7 +14,7 @@ class ViewAssetTransfer extends ViewRecord
 
     public function getTitle(): string
     {
-        return 'Serah terima '.$this->record->code;
+        return 'Asset Transfer '.$this->record->code;
     }
 
     public function getSubheading(): ?string
@@ -28,7 +28,7 @@ class ViewAssetTransfer extends ViewRecord
     {
         return [
             Action::make('bam')
-                ->label('Unduh BAM')
+                ->label('Download BAM')
                 ->icon('heroicon-o-arrow-down-tray')
                 ->color('gray')
                 ->url(fn (): string => route('gais.aset.berita-acara', [
@@ -38,7 +38,7 @@ class ViewAssetTransfer extends ViewRecord
                 ->openUrlInNewTab(),
 
             Action::make('bast')
-                ->label('Unduh BAST')
+                ->label('Download BAST')
                 ->icon('heroicon-o-arrow-down-tray')
                 ->url(fn (): string => route('gais.aset.berita-acara', [
                     'transfer' => $this->record->getKey(),
@@ -47,7 +47,7 @@ class ViewAssetTransfer extends ViewRecord
                 ->openUrlInNewTab(),
 
             Action::make('kartu_riwayat')
-                ->label('Kartu riwayat aset')
+                ->label('Asset History Card')
                 ->icon('heroicon-o-clock')
                 ->color('gray')
                 ->visible(fn (): bool => $this->record->asset_id !== null)
@@ -55,11 +55,11 @@ class ViewAssetTransfer extends ViewRecord
                 ->openUrlInNewTab(),
 
             DeleteAction::make()
-                ->label('Batalkan serah terima')
+                ->label('Cancel Transfer')
                 ->visible(fn (): bool => AssetTransferResource::canDelete($this->record))
-                ->modalHeading('Batalkan serah terima')
+                ->modalHeading('Cancel Asset Transfer')
                 ->modalDescription('Dokumen ini dihapus, dan aset dikembalikan ke lokasi, penanggung jawab, serta departemen sebelum serah terima ini. Hanya bisa dilakukan selama belum ada perpindahan lain sesudahnya.')
-                ->modalSubmitActionLabel('Batalkan dan kembalikan'),
+                ->modalSubmitActionLabel('Cancel and Return'),
         ];
     }
 }

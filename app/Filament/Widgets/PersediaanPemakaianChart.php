@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Auth;
  */
 class PersediaanPemakaianChart extends ChartWidget
 {
-    protected ?string $heading = 'Pemakaian per departemen, enam bulan terakhir';
+    protected ?string $heading = 'Usage by Department, Last Six Months';
 
     protected ?string $description = 'Dihitung dari jumlah satuan barang keluar, belum dikali harga.';
 

@@ -36,13 +36,13 @@ class StockOpnameResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-check';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Aset';
+    protected static string|UnitEnum|null $navigationGroup = 'Assets';
 
-    protected static ?string $navigationLabel = 'Stock opname';
+    protected static ?string $navigationLabel = 'Stock Opname';
 
-    protected static ?string $modelLabel = 'sesi opname';
+    protected static ?string $modelLabel = 'stock opname session';
 
-    protected static ?string $pluralModelLabel = 'sesi opname';
+    protected static ?string $pluralModelLabel = 'stock opname sessions';
 
     protected static ?int $navigationSort = 3;
 
@@ -54,7 +54,7 @@ class StockOpnameResource extends Resource
         // seksi Cakupan pemeriksaan hanya kebagian separuh lebar layar, dan tiga
         // pilihan di dalamnya jadi sempit sampai teksnya terpotong jadi dua baris.
         return $schema->columns(1)->components([
-            Section::make('Sesi opname')
+            Section::make('Session')
                 ->columns(2)
                 ->schema([
                     TextInput::make('code')
@@ -73,7 +73,7 @@ class StockOpnameResource extends Resource
                         ->columnSpanFull(),
                 ]),
 
-            Section::make('Cakupan pemeriksaan')
+            Section::make('Scope')
                 ->description('Kosongkan yang tidak dipakai. Kalau ketiganya kosong, seluruh aset masuk daftar. Kalau lebih dari satu diisi, aset harus memenuhi semuanya. Aset berstatus sudah dilepas tidak pernah ikut.')
                 ->columns(3)
                 ->schema([
@@ -168,7 +168,7 @@ class StockOpnameResource extends Resource
                     ->multiple(),
             ])
             ->recordActions([
-                EditAction::make()->label('Buka')->icon('heroicon-o-arrow-right-circle')->iconButton(),
+                EditAction::make()->label('Open')->icon('heroicon-o-arrow-right-circle')->iconButton(),
                 // Filament menilai tombol hapus lewat Gate, dan Gate::before di
                 // AppServiceProvider meloloskan super admin untuk semua kemampuan.
                 // Jadi canDelete() di bawah harus disebut sendiri di sini, kalau tidak

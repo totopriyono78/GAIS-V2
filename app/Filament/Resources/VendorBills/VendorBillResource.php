@@ -2,9 +2,11 @@
 
 namespace App\Filament\Resources\VendorBills;
 
+use App\Filament\Resources\SupplyPurchases\SupplyPurchaseResource;
 use App\Filament\Resources\VendorBills\Pages\CreateVendorBill;
 use App\Filament\Resources\VendorBills\Pages\ListVendorBills;
 use App\Filament\Resources\VendorBills\Pages\ViewVendorBill;
+use App\Models\SupplyPurchase;
 use App\Models\Vendor;
 use App\Models\VendorBill;
 use App\Support\Concerns\AuthorizesModule;
@@ -57,13 +59,13 @@ class VendorBillResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-currency-dollar';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Anggaran';
+    protected static string|UnitEnum|null $navigationGroup = 'Budget & Expenses';
 
-    protected static ?string $navigationLabel = 'Tagihan rekanan';
+    protected static ?string $navigationLabel = 'Vendor Bills';
 
-    protected static ?string $modelLabel = 'tagihan rekanan';
+    protected static ?string $modelLabel = 'vendor bill';
 
-    protected static ?string $pluralModelLabel = 'tagihan rekanan';
+    protected static ?string $pluralModelLabel = 'vendor bills';
 
     protected static ?int $navigationSort = 20;
 
@@ -112,7 +114,8 @@ class VendorBillResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Faktur')
+            Section::make('Invoice')
+                ->columnSpanFull()
                 ->columns(2)
                 ->schema([
                     Select::make('vendor_id')
@@ -124,7 +127,41 @@ class VendorBillResource extends Resource
                             ->mapWithKeys(fn (Vendor $v) => [$v->id => $v->pickerLabel()])
                             ->all())
                         ->searchable()
-                        ->required(),
+                        ->required()
+                        ->live(),
+
+                    /*
+                     * Pesanan pembelian yang ditagih faktur ini. Boleh dikosongkan, dan
+                     * sebagian besar tagihan GA memang kosong: listrik, sewa gedung, dan jasa
+                     * kebersihan datang tanpa didahului pesanan barang.
+                     *
+                     * Daftarnya disempitkan ke pesanan milik rekanan yang dipilih, karena
+                     * menagihkan pesanan rekanan lain adalah kesalahan yang tidak mungkin
+                     * disengaja dan sangat mungkin terjadi kalau seluruh pesanan ditampilkan.
+                     */
+                    Select::make('supply_purchase_id')
+                        ->label('Pesanan pembelian')
+                        ->options(function ($get): array {
+                            if (blank($get('vendor_id'))) {
+                                return [];
+                            }
+
+                            return SupplyPurchase::query()
+                                ->where('vendor_id', $get('vendor_id'))
+                                ->whereIn('status', ['disetujui', 'diterima_sebagian', 'selesai'])
+                                ->orderByDesc('order_date')
+                                ->with('lines')
+                                ->get()
+                                ->mapWithKeys(fn (SupplyPurchase $p): array => [
+                                    $p->getKey() => $p->code.', '.$p->description.', '.$p->totalLabel(),
+                                ])
+                                ->all();
+                        })
+                        ->searchable()
+                        ->placeholder(fn ($get): string => blank($get('vendor_id'))
+                            ? 'Pilih rekanannya lebih dulu'
+                            : 'Tidak menagih pesanan pembelian')
+                        ->helperText('Boleh dikosongkan, dan biasanya memang kosong. Isi hanya kalau faktur ini menagih pembelian ATK yang sudah dicatat di menu Supply Purchases, dan layar ini lalu menyebutkan sendiri selisihnya terhadap barang yang benar benar sudah datang.'),
                     TextInput::make('invoice_number')
                         ->label('Nomor faktur rekanan')
                         ->maxLength(80)
@@ -175,7 +212,7 @@ class VendorBillResource extends Resource
     public static function infolist(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Faktur')
+            Section::make('Invoice')
                 ->columns(3)
                 ->schema([
                     TextEntry::make('code')->label('Nomor internal')->fontFamily('mono'),
@@ -201,6 +238,22 @@ class VendorBillResource extends Resource
                         ->helperText(fn (VendorBill $record): string => $record->jatuhTempoLabel())
                         ->color(fn (VendorBill $record): string => $record->jatuhTempoColor()),
                     TextEntry::make('description')->label('Untuk apa')->columnSpan(2),
+                    /*
+                     * Muncul hanya kalau tagihan ini memang menunjuk pesanan. Yang
+                     * ditampilkan bukan angka telanjang melainkan kalimat, karena angka
+                     * telanjang di layar persetujuan hanya melahirkan pertanyaan berikutnya,
+                     * dan orang yang sedang menandatangani tidak sempat mencarinya sendiri.
+                     */
+                    TextEntry::make('selisih_pesanan')
+                        ->label('Dibandingkan barang yang sudah datang')
+                        ->columnSpanFull()
+                        ->visible(fn (VendorBill $record): bool => $record->purchase !== null)
+                        ->state(fn (VendorBill $record): string => ($record->purchase?->code ?? '')
+                            .'. '.($record->selisihLabel() ?? ''))
+                        ->color(fn (VendorBill $record): ?string => $record->selisihColor())
+                        ->url(fn (VendorBill $record): ?string => $record->purchase !== null
+                            ? SupplyPurchaseResource::getUrl('view', ['record' => $record->purchase])
+                            : null),
                     TextEntry::make('file_path')
                         ->label('Pindaian faktur')
                         ->state(fn (VendorBill $record): string => filled($record->file_path)
@@ -213,7 +266,7 @@ class VendorBillResource extends Resource
                     TextEntry::make('notes')->label('Catatan')->placeholder('Tidak ada')->columnSpanFull(),
                 ]),
 
-            Section::make('Persetujuan dan pembayaran')
+            Section::make('Approval & Payment')
                 ->columns(2)
                 ->schema([
                     TextEntry::make('persetujuan')
@@ -362,17 +415,17 @@ class VendorBillResource extends Resource
     public static function ajukanAction(bool $iconOnly = true): Action
     {
         $aksi = Action::make('ajukan')
-            ->label('Ajukan')
+            ->label('Submit')
             ->icon('heroicon-o-paper-airplane')
             ->color('primary')
             ->visible(fn (VendorBill $record): bool => $record->status === 'draft' && static::allows('update'))
-            ->modalHeading(fn (VendorBill $record): string => 'Ajukan '.$record->code)
+            ->modalHeading(fn (VendorBill $record): string => 'Submit '.$record->code)
             ->modalDescription(fn (VendorBill $record): string => $record->alasanBelumBisaDiajukan()
                 // Nama departemen tidak dikecilkan hurufnya. Departemen adalah nama diri,
                 // dan "dibebankan ke finance" terbaca seperti salah ketik.
                 ?? 'Nilai yang diajukan '.$record->totalLabel().', dibebankan ke '.$record->pembebananLabel()
                     .'. Setelah diajukan, rinciannya tidak bisa diubah lagi sampai tagihan ini ditolak dan dikembalikan ke draf.')
-            ->modalSubmitActionLabel('Ajukan untuk disetujui')
+            ->modalSubmitActionLabel('Submit for Approval')
             ->action(function (VendorBill $record, Action $action, $livewire): void {
                 $alasan = $record->alasanBelumBisaDiajukan();
 
@@ -404,17 +457,32 @@ class VendorBillResource extends Resource
     public static function setujuiAction(bool $iconOnly = true): Action
     {
         $aksi = Action::make('setujui')
-            ->label('Setujui')
+            ->label('Approve')
             ->icon('heroicon-o-check-badge')
             ->color('success')
             ->visible(fn (VendorBill $record): bool => $record->status === 'diajukan' && static::allows('approve'))
             ->requiresConfirmation()
-            ->modalHeading(fn (VendorBill $record): string => 'Setujui '.$record->code)
-            ->modalDescription(fn (VendorBill $record): string => $record->totalLabel().' dari '
-                .($record->vendor?->name ?? 'rekanan yang sudah dihapus').', dibebankan ke '
-                .$record->pembebananLabel().'. Setelah disetujui, nilainya masuk ke realisasi anggaran tahun '
-                .$record->tahunAnggaran().'.')
-            ->modalSubmitActionLabel('Setujui tagihan')
+            ->modalHeading(fn (VendorBill $record): string => 'Approve '.$record->code)
+            /*
+             * Selisih terhadap barang yang sudah datang disebut di sini, bukan hanya di
+             * halaman lihat, karena inilah satu satunya saat orang benar benar membacanya:
+             * detik sebelum ia menandatangani. Menaruhnya hanya di halaman lihat berarti
+             * mengandalkan orang membuka halaman itu lebih dulu, dan hampir tidak ada yang
+             * melakukannya kalau tombol setujui sudah kelihatan dari daftar.
+             */
+            ->modalDescription(function (VendorBill $record): string {
+                $pokok = $record->totalLabel().' dari '
+                    .($record->vendor?->name ?? 'rekanan yang sudah dihapus').', dibebankan ke '
+                    .$record->pembebananLabel().'. Setelah disetujui, nilainya masuk ke realisasi anggaran tahun '
+                    .$record->tahunAnggaran().'.';
+
+                $selisih = $record->selisihLabel();
+
+                return $selisih === null
+                    ? $pokok
+                    : $pokok.' Tagihan ini menagih pesanan '.$record->purchase->code.'. '.$selisih;
+            })
+            ->modalSubmitActionLabel('Approve Bill')
             ->action(function (VendorBill $record, $livewire): void {
                 if (! $record->setujui()) {
                     static::peringatanStatusBerubah();
@@ -437,13 +505,13 @@ class VendorBillResource extends Resource
     public static function tolakAction(bool $iconOnly = true): Action
     {
         $aksi = Action::make('tolak')
-            ->label('Tolak')
+            ->label('Reject')
             ->icon('heroicon-o-hand-raised')
             ->color('danger')
             ->visible(fn (VendorBill $record): bool => $record->status === 'diajukan' && static::allows('approve'))
-            ->modalHeading(fn (VendorBill $record): string => 'Tolak '.$record->code)
+            ->modalHeading(fn (VendorBill $record): string => 'Reject '.$record->code)
             ->modalDescription('Tagihan yang ditolak tetap tersimpan beserta alasannya, dan bisa dikembalikan ke draf untuk diperbaiki.')
-            ->modalSubmitActionLabel('Tolak tagihan')
+            ->modalSubmitActionLabel('Reject Bill')
             ->schema([
                 Textarea::make('rejection_reason')
                     ->label('Alasan ditolak')
@@ -477,14 +545,14 @@ class VendorBillResource extends Resource
     public static function perbaikiAction(bool $iconOnly = true): Action
     {
         $aksi = Action::make('perbaiki')
-            ->label('Kembalikan ke draf')
+            ->label('Return to Draft')
             ->icon('heroicon-o-arrow-uturn-left')
             ->color('gray')
             ->visible(fn (VendorBill $record): bool => $record->status === 'ditolak' && static::allows('update'))
             ->requiresConfirmation()
-            ->modalHeading(fn (VendorBill $record): string => 'Kembalikan '.$record->code.' ke draf')
+            ->modalHeading(fn (VendorBill $record): string => 'Return '.$record->code.' to Draft')
             ->modalDescription('Rinciannya bisa diubah lagi, lalu diajukan ulang. Alasan penolakannya sengaja tetap tersimpan supaya bisa dibaca sambil memperbaiki.')
-            ->modalSubmitActionLabel('Kembalikan ke draf')
+            ->modalSubmitActionLabel('Return to Draft')
             ->action(function (VendorBill $record, $livewire): void {
                 if (! $record->kembalikanKeDraft()) {
                     static::peringatanStatusBerubah();
@@ -508,16 +576,16 @@ class VendorBillResource extends Resource
     public static function batalkanAction(bool $iconOnly = true): Action
     {
         $aksi = Action::make('batalkan')
-            ->label('Batalkan')
+            ->label('Cancel')
             ->icon('heroicon-o-x-circle')
             ->color('gray')
             ->visible(fn (VendorBill $record): bool => $record->isOpen() && static::allows('update'))
             ->requiresConfirmation()
-            ->modalHeading(fn (VendorBill $record): string => 'Batalkan '.$record->code)
+            ->modalHeading(fn (VendorBill $record): string => 'Cancel '.$record->code)
             ->modalDescription(fn (VendorBill $record): string => $record->status === 'disetujui'
                 ? 'Tagihan ini sudah disetujui, jadi nilainya sedang terhitung sebagai realisasi anggaran. Membatalkannya mengeluarkan nilai itu dari realisasi tahun '.$record->tahunAnggaran().'.'
                 : 'Tagihan ini tetap tersimpan sebagai catatan bahwa fakturnya pernah masuk, dan tidak masuk hitungan anggaran mana pun.')
-            ->modalSubmitActionLabel('Batalkan tagihan')
+            ->modalSubmitActionLabel('Cancel Bill')
             ->action(function (VendorBill $record, $livewire): void {
                 if (! $record->batalkan()) {
                     static::peringatanStatusBerubah();
@@ -536,15 +604,15 @@ class VendorBillResource extends Resource
     public static function bayarAction(bool $iconOnly = true): Action
     {
         $aksi = Action::make('bayar')
-            ->label('Tandai sudah dibayar')
+            ->label('Mark as Paid')
             ->icon('heroicon-o-banknotes')
             ->color('success')
             ->visible(fn (VendorBill $record): bool => $record->status === 'disetujui' && static::allows('pay'))
-            ->modalHeading(fn (VendorBill $record): string => 'Tandai '.$record->code.' sudah dibayar')
+            ->modalHeading(fn (VendorBill $record): string => 'Mark '.$record->code.' as Paid')
             ->modalDescription(fn (VendorBill $record): string => $record->totalLabel().' ke '
                 .($record->vendor?->name ?? 'rekanan yang sudah dihapus')
                 .'. Realisasi anggarannya tidak berubah, karena nilainya sudah terhitung sejak disetujui.')
-            ->modalSubmitActionLabel('Simpan pembayaran')
+            ->modalSubmitActionLabel('Save Payment')
             ->schema([
                 DatePicker::make('paid_date')
                     ->label('Tanggal bayar')

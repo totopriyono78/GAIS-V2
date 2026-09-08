@@ -13,7 +13,7 @@ class ListAssetCategories extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()->label('Tambah kategori'),
+            CreateAction::make()->label('Add Category'),
         ];
     }
 }

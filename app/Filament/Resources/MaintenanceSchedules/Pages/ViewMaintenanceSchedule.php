@@ -56,7 +56,7 @@ class ViewMaintenanceSchedule extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            EditAction::make()->label('Ubah jadwal'),
+            EditAction::make()->label('Edit Schedule'),
         ];
     }
 }

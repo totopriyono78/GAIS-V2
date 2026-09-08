@@ -48,6 +48,7 @@ class DepartmentResource extends Resource
     {
         return $schema->components([
             Section::make()
+                ->columnSpanFull()
                 ->columns(2)
                 ->schema([
                     TextInput::make('code')

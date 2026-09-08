@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Auth;
  */
 class PemeliharaanBiayaChart extends ChartWidget
 {
-    protected ?string $heading = 'Biaya pemeliharaan, enam bulan terakhir';
+    protected ?string $heading = 'Maintenance Cost, Last Six Months';
 
     protected ?string $description = 'Dihitung dari pekerjaan yang sudah selesai, menurut bulan selesainya.';
 

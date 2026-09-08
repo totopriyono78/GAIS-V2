@@ -41,13 +41,13 @@ class SupplyTransactionResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-arrows-right-left';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Persediaan';
+    protected static string|UnitEnum|null $navigationGroup = 'Office Supplies';
 
-    protected static ?string $navigationLabel = 'Mutasi barang';
+    protected static ?string $navigationLabel = 'Supply Movements';
 
-    protected static ?string $modelLabel = 'mutasi barang';
+    protected static ?string $modelLabel = 'supply movement';
 
-    protected static ?string $pluralModelLabel = 'mutasi barang';
+    protected static ?string $pluralModelLabel = 'supply movements';
 
     protected static ?int $navigationSort = 2;
 
@@ -56,7 +56,7 @@ class SupplyTransactionResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->columns(1)->components([
-            Section::make('Mutasi')
+            Section::make('Movement')
                 ->columns(3)
                 ->schema([
                     TextInput::make('code')
@@ -103,7 +103,7 @@ class SupplyTransactionResource extends Resource
                         ->helperText('Tidak bisa diisi tanggal yang belum terjadi.'),
                 ]),
 
-            Section::make('Barang masuk')
+            Section::make('Stock In')
                 ->description('Diisi kalau barang datang dari pembelian atau kiriman.')
                 ->columns(3)
                 ->visible(fn ($get): bool => $get('type') === 'masuk')
@@ -124,7 +124,7 @@ class SupplyTransactionResource extends Resource
                         ->placeholder('Belum ada'),
                 ]),
 
-            Section::make('Barang keluar')
+            Section::make('Stock Out')
                 ->description('Departemen wajib diisi, karena angka inilah yang nanti dipakai membandingkan anggaran ATK tiap departemen dengan pemakaian sebenarnya.')
                 ->columns(2)
                 ->visible(fn ($get): bool => $get('type') === 'keluar')
@@ -149,14 +149,35 @@ class SupplyTransactionResource extends Resource
                         ->placeholder('Belum dicatat'),
                 ]),
 
-            Section::make('Catatan')
+            Section::make('Notes')
                 ->columns(1)
                 ->schema([
+                    /*
+                     * Wajib diisi untuk koreksi, bebas untuk mutasi lainnya. Keputusan pemilik
+                     * proyek pada 8 September 2026, saat memilih agar koreksi langsung tetap
+                     * ada setelah opname dibangun.
+                     *
+                     * Alasannya masuk akal dan sebaiknya tidak diubah tanpa dipikir ulang.
+                     * Barang pecah, tumpah, atau kedaluwarsa adalah kejadian nyata yang tidak
+                     * bisa menunggu opname akhir bulan, dan menutup jalannya hanya akan membuat
+                     * orang menyiasatinya lewat opname yang dikarang. Yang bisa dilakukan
+                     * aplikasi adalah memastikan tiap koreksi membawa alasannya sendiri,
+                     * sehingga stok yang berubah di luar penerimaan dan penyerahan selalu
+                     * bisa dijelaskan tanpa bertanya ke orangnya.
+                     */
                     Textarea::make('notes')
-                        ->label('Catatan')
+                        ->label(fn ($get): string => in_array($get('type'), ['koreksi_tambah', 'koreksi_kurang'], true)
+                            ? 'Alasan koreksi'
+                            : 'Catatan')
                         ->rows(2)
                         ->maxLength(500)
-                        ->placeholder('Contoh: alasan koreksi, atau nomor berita acara'),
+                        ->required(fn ($get): bool => in_array($get('type'), ['koreksi_tambah', 'koreksi_kurang'], true))
+                        ->placeholder(fn ($get): string => in_array($get('type'), ['koreksi_tambah', 'koreksi_kurang'], true)
+                            ? 'Contoh: dua box kertas rusak kena bocor atap gudang'
+                            : 'Contoh: nomor berita acara, atau keterangan tambahan')
+                        ->helperText(fn ($get): ?string => in_array($get('type'), ['koreksi_tambah', 'koreksi_kurang'], true)
+                            ? 'Wajib diisi. Koreksi mengubah stok tanpa ada barang yang benar benar masuk atau keluar, jadi alasannya perlu terbaca tanpa harus bertanya ke orangnya. Selisih hasil penghitungan fisik sebaiknya lewat menu Supply Opname, bukan diketik di sini.'
+                            : null),
                 ]),
         ]);
     }
@@ -203,9 +224,17 @@ class SupplyTransactionResource extends Resource
                     ->label('Pemasok')
                     ->placeholder('Tidak dicatat')
                     ->toggleable(isToggledHiddenByDefault: true),
+                /*
+                 * Bisa dicari, karena sejak kiriman M sampai O kolom ini berhenti berisi
+                 * nomor surat jalan belaka dan mulai membawa nomor dokumen asal mutasinya:
+                 * permintaan barang, penerimaan pembelian, dan sesi opname. Tanpa bisa
+                 * dicari, pertanyaan "mutasi apa saja yang lahir dari opname bulan lalu"
+                 * hanya bisa dijawab dengan menggulung seluruh buku stok.
+                 */
                 TextColumn::make('reference')
-                    ->label('Faktur atau surat jalan')
+                    ->label('Dokumen asal')
                     ->placeholder('Tidak dicatat')
+                    ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('unit_price')
                     ->label('Harga satuan')

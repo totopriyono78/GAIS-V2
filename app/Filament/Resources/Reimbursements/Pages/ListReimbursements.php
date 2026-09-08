@@ -59,7 +59,7 @@ class ListReimbursements extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()->label('Ajukan penggantian biaya'),
+            CreateAction::make()->label('New Reimbursement'),
         ];
     }
 }

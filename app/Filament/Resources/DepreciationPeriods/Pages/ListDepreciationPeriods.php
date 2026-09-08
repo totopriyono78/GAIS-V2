@@ -13,7 +13,7 @@ class ListDepreciationPeriods extends ListRecords
 
     public function getHeading(): string
     {
-        return 'Penyusutan aset';
+        return 'Depreciation';
     }
 
     /**

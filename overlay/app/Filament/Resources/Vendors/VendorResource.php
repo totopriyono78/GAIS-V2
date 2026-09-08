@@ -105,6 +105,7 @@ class VendorResource extends Resource
                 ]),
 
             Section::make('Catatan')
+                ->columnSpanFull()
                 ->schema([
                     Textarea::make('notes')
                         ->label('Catatan')

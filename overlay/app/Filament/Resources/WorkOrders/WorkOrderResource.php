@@ -51,15 +51,15 @@ class WorkOrderResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-wrench-screwdriver';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Pemeliharaan';
+    protected static string|UnitEnum|null $navigationGroup = 'Maintenance';
 
-    protected static ?string $navigationLabel = 'Perintah kerja';
+    protected static ?string $navigationLabel = 'Work Orders';
 
-    protected static ?string $modelLabel = 'perintah kerja';
+    protected static ?string $modelLabel = 'work order';
 
-    protected static ?string $pluralModelLabel = 'perintah kerja';
+    protected static ?string $pluralModelLabel = 'work orders';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 3;
 
     protected static ?string $recordTitleAttribute = 'code';
 
@@ -81,7 +81,7 @@ class WorkOrderResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Masalah')
+            Section::make('Problem')
                 ->columns(2)
                 ->schema([
                     TextInput::make('code')
@@ -170,7 +170,7 @@ class WorkOrderResource extends Resource
                         ->placeholder('Contoh: AC ruang rapat besar tidak dingin, air menetes dari indoor unit.'),
                 ]),
 
-            Section::make('Penugasan')
+            Section::make('Assignment')
                 ->columns(3)
                 ->description('Boleh dikosongkan saat perintah kerja baru dibuka, dan diisi setelah ada yang menerima pekerjaannya.')
                 ->schema([
@@ -204,7 +204,8 @@ class WorkOrderResource extends Resource
              * tampak selesai tetapi masih terhitung menggantung, dan status tanpa hasil
              * berarti riwayat aset yang tidak menjelaskan apa apa.
              */
-            Section::make('Hasil pekerjaan')
+            Section::make('Work Result')
+                ->columnSpanFull()
                 ->columns(3)
                 ->visible(fn (?WorkOrder $record): bool => $record?->exists ?? false)
                 ->description('Diisi lewat tombol Selesaikan di daftar perintah kerja, bukan diketik di sini.')
@@ -370,11 +371,11 @@ class WorkOrderResource extends Resource
             ->icon('heroicon-o-check-circle')
             ->color('success')
             ->visible(fn (WorkOrder $record): bool => $record->isOpen() && static::canEdit($record))
-            ->modalHeading(fn (WorkOrder $record): string => 'Selesaikan '.$record->code)
+            ->modalHeading(fn (WorkOrder $record): string => 'Complete '.$record->code)
             ->modalDescription(fn (WorkOrder $record): string => $record->type === 'preventif' && $record->maintenance_schedule_id
                 ? 'Setelah disimpan, jatuh tempo jadwal pemeliharaannya bergeser sesuai tanggal selesai di bawah.'
                 : 'Uraian hasil di bawah masuk ke riwayat pemeliharaan aset ini.')
-            ->modalSubmitActionLabel('Simpan hasil')
+            ->modalSubmitActionLabel('Save Result')
             ->fillForm(fn (WorkOrder $record): array => [
                 'completed_date' => now()->toDateString(),
                 'cost' => $record->cost,
@@ -434,14 +435,14 @@ class WorkOrderResource extends Resource
     public static function batalkanAction(): Action
     {
         return Action::make('batalkan')
-            ->label('Batalkan')
+            ->label('Cancel')
             ->icon('heroicon-o-x-circle')
             ->color('danger')
             ->iconButton()
             ->visible(fn (WorkOrder $record): bool => $record->isOpen() && static::canEdit($record))
-            ->modalHeading(fn (WorkOrder $record): string => 'Batalkan '.$record->code)
+            ->modalHeading(fn (WorkOrder $record): string => 'Cancel '.$record->code)
             ->modalDescription('Perintah kerja yang dibatalkan tetap tersimpan dan tetap terbaca di riwayat aset, tetapi tidak lagi terhitung sebagai pekerjaan yang menggantung. Jadwal pemeliharaannya tidak ikut bergerak, karena pekerjaannya memang tidak jadi dikerjakan.')
-            ->modalSubmitActionLabel('Batalkan perintah kerja')
+            ->modalSubmitActionLabel('Cancel Work Order')
             ->schema([
                 Textarea::make('cancel_reason')
                     ->label('Alasan dibatalkan')

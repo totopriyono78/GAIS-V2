@@ -38,7 +38,7 @@ class LinesRelationManager extends RelationManager
 {
     protected static string $relationship = 'lines';
 
-    protected static ?string $title = 'Struk';
+    protected static ?string $title = 'Receipts';
 
     protected static bool $isLazy = false;
 
@@ -125,12 +125,12 @@ class LinesRelationManager extends RelationManager
             ->defaultSort('expense_date')
             ->headerActions([
                 CreateAction::make()
-                    ->label('Tambah struk')
+                    ->label('Add Receipt')
                     ->visible(fn (): bool => $this->bisaDiubah()),
             ])
             ->recordActions([
                 Action::make('buka')
-                    ->label('Buka foto struk')
+                    ->label('Open Receipt Photo')
                     ->icon('heroicon-o-arrow-top-right-on-square')
                     ->iconButton()
                     ->visible(fn (ReimbursementLine $record): bool => filled($record->file_path))

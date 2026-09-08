@@ -38,13 +38,13 @@ class RoleResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-shield-check';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Pengaturan Akses';
+    protected static string|UnitEnum|null $navigationGroup = 'Access Control';
 
-    protected static ?string $navigationLabel = 'Role';
+    protected static ?string $navigationLabel = 'Roles';
 
     protected static ?string $modelLabel = 'role';
 
-    protected static ?string $pluralModelLabel = 'role';
+    protected static ?string $pluralModelLabel = 'roles';
 
     protected static ?int $navigationSort = 1;
 
@@ -53,7 +53,7 @@ class RoleResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Identitas role')
+            Section::make('Role Identity')
                 ->description('Kode dipakai sistem sebagai penanda tetap. Setelah role dibuat, kodenya tidak bisa diubah.')
                 ->columns(2)
                 ->schema([
@@ -87,7 +87,7 @@ class RoleResource extends Resource
                         ->helperText('Role yang dinonaktifkan tidak memberi izin apa pun kepada penggunanya.'),
                 ]),
 
-            Section::make('Izin per modul')
+            Section::make('Permissions by Module')
                 ->description('Centang aksi yang boleh dilakukan role ini. Modul yang aksi Lihat-nya tidak dicentang tidak akan muncul di menu pengguna.')
                 ->schema(static::permissionFields()),
         ]);

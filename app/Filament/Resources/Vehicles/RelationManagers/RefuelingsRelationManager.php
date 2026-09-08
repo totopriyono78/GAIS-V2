@@ -37,7 +37,7 @@ class RefuelingsRelationManager extends RelationManager
 {
     protected static string $relationship = 'refuelings';
 
-    protected static ?string $title = 'Pengisian BBM';
+    protected static ?string $title = 'Refueling';
 
     protected static bool $isLazy = false;
 
@@ -154,9 +154,9 @@ class RefuelingsRelationManager extends RelationManager
             ])
             ->headerActions([
                 CreateAction::make()
-                    ->label('Catat pengisian')
-                    ->modalHeading('Catat pengisian BBM')
-                    ->modalSubmitActionLabel('Simpan pengisian')
+                    ->label('Record Refueling')
+                    ->modalHeading('Record Refueling')
+                    ->modalSubmitActionLabel('Save Refueling')
                     ->visible(fn (): bool => VehicleResource::canEdit($this->getOwnerRecord()))
                     ->before(function (array $data, CreateAction $action): void {
                         $alasan = app(OdometerKendaraan::class)->alasanDitolakPadaTanggal(

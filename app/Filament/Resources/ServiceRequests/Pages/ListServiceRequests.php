@@ -47,7 +47,7 @@ class ListServiceRequests extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()->label('Ajukan permintaan'),
+            CreateAction::make()->label('New Corrective Maintenance'),
         ];
     }
 }

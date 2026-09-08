@@ -29,7 +29,7 @@ class AsetJatuhTempoTabel extends TableWidget
 
     protected int|string|array $columnSpan = 'full';
 
-    protected static ?string $heading = 'Aset yang garansinya segera habis';
+    protected static ?string $heading = 'Assets With Expiring Warranty';
 
     public static function canView(): bool
     {

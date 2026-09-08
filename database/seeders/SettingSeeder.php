@@ -8,12 +8,23 @@ use Illuminate\Database\Seeder;
 /**
  * Nilai identitas perusahaan sengaja dikosongkan. Mengarang nama, alamat, atau
  * nomor telepon perusahaan akan terbawa ke dokumen cetak nanti.
+ *
+ * Satu pengecualian: pemegang hak cipta aplikasi diisi, karena namanya disebutkan
+ * sendiri oleh pemilik proyek pada 7 September 2026, jadi bukan karangan.
  */
 class SettingSeeder extends Seeder
 {
     public function run(): void
     {
         $settings = [
+            [
+                'group' => 'aplikasi',
+                'key' => 'aplikasi.hak_cipta',
+                'label' => 'Pemegang hak cipta aplikasi',
+                'description' => 'Muncul di kaki setiap halaman, didahului tahun berjalan. Dikosongkan berarti baris hak cipta tidak ditampilkan sama sekali.',
+                'type' => 'text',
+                'value' => 'PT. Gamatechno Indonesia',
+            ],
             [
                 'group' => 'perusahaan',
                 'key' => 'perusahaan.nama',

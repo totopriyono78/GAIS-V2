@@ -21,7 +21,7 @@ class MaintenanceRelationManager extends RelationManager
 {
     protected static string $relationship = 'workOrders';
 
-    protected static ?string $title = 'Riwayat pemeliharaan';
+    protected static ?string $title = 'Maintenance History';
 
     protected static bool $isLazy = false;
 

@@ -28,7 +28,7 @@ class ListServiceRequestCategories extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()->label('Tambah jenis'),
+            CreateAction::make()->label('Add Type'),
         ];
     }
 }

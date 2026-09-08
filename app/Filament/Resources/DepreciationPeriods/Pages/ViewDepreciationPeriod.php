@@ -12,12 +12,12 @@ class ViewDepreciationPeriod extends ViewRecord
 
     public function getTitle(): string
     {
-        return 'Penyusutan '.$this->getRecord()->label();
+        return 'Depreciation '.$this->getRecord()->label();
     }
 
     public function getHeading(): string
     {
-        return 'Penyusutan '.$this->getRecord()->label();
+        return 'Depreciation '.$this->getRecord()->label();
     }
 
     public function getSubheading(): ?string

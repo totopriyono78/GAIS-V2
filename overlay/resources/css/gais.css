@@ -62,3 +62,391 @@ html.fi [role='switch']:focus-visible {
 .fi-ta-header-cell {
     font-weight: 600;
 }
+
+/*
+ * Sidebar dipersempit dari 20rem bawaan Filament menjadi 16rem lewat
+ * AdminPanelProvider, dan bantalan kiri kanan daftar menu ikut dikecilkan dari 24px
+ * menjadi 16px di sini.
+ *
+ * Keduanya dilakukan bersamaan bukan tanpa sebab. Mempersempit lebarnya saja
+ * menyisakan hanya 4 piksel untuk nama menu terpanjang, dan 4 piksel adalah selisih
+ * yang bisa hilang begitu saja karena pembulatan lebar huruf antar komputer, lalu
+ * namanya terpotong menjadi elipsis. Dengan bantalan yang dikecilkan, nama terpanjang
+ * yang sekarang ada, Maintenance Schedules, masih menyisakan 20 piksel.
+ *
+ * Kalau kelak ada nama menu yang lebih panjang dari itu, lebarnya perlu ditinjau ulang,
+ * bukan namanya yang dipendekkan sampai kehilangan arti.
+ */
+.fi-sidebar-nav {
+    padding-inline: 1rem;
+}
+
+/* ------------------------------------------------------------------ peluncur menu */
+
+/*
+ * Peluncur menu: satu tombol di ujung kiri topbar yang membuka seluruh menu sebagai ubin.
+ *
+ * Berkas ini bukan CSS yang diproses Tailwind, melainkan berkas mandiri yang didaftarkan
+ * lewat FilamentAsset, jadi seluruh aturannya ditulis tangan dan warnanya dituliskan
+ * apa adanya.
+ */
+:root {
+    --gais-petrol: #17505e;
+    --gais-petrol-muda: #e0eef2;
+    --gais-petrol-tipis: #f0f7fa;
+    --gais-garis: #d2dade;
+    --gais-redup: #596a70;
+}
+
+.gais-peluncur-sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Tombol pemicu. 44 piksel, ukuran sentuh terkecil yang masih nyaman di layar sentuh (R-03). */
+.gais-peluncur-tombol {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 0.5rem;
+    color: var(--gais-petrol);
+    background-color: transparent;
+    border: 0;
+    cursor: pointer;
+    transition: background-color 120ms ease;
+}
+
+.gais-peluncur-tombol:hover {
+    background-color: var(--gais-petrol-muda);
+}
+
+.gais-peluncur-tombol-ikon {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.gais-peluncur-latar {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.gais-peluncur-tirai {
+    position: absolute;
+    inset: 0;
+    background-color: rgb(28 26 23 / 0.55);
+}
+
+/*
+ * Lebarnya 82rem, bukan lebar sedang.
+ *
+ * Menunya banyak, dan pada lebar sedang daftarnya menjadi panjang ke bawah sehingga
+ * separuh menu hanya terlihat setelah digulung. Melebarkan jendelanya menukar gulungan
+ * ke bawah dengan kolom tambahan, dan itu pertukaran yang benar untuk daftar yang
+ * dipindai mata, bukan dibaca berurutan. Angka 82rem dipilih supaya di layar kantor
+ * 1366 piksel jendelanya masih menyisakan bingkai di kiri kanan.
+ *
+ * Latarnya kertas hangat yang sama dengan badan halaman, bukan putih murni, supaya
+ * jendela ini terbaca sebagai lapisan aplikasi yang sama dan bukan tempelan.
+ */
+.gais-peluncur-jendela {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: min(82rem, 100%);
+    max-height: 100%;
+    overflow: hidden;
+    background-color: var(--gais-paper);
+    border: 1px solid var(--gais-garis);
+    border-radius: 0.875rem;
+    box-shadow: 0 24px 48px -12px rgb(28 26 23 / 0.35);
+}
+
+.gais-peluncur-kepala {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--gais-garis);
+}
+
+/* Motif identitas 1 dipakai ulang di sini, sama seperti judul seksi di halaman biasa. */
+.gais-peluncur-judul {
+    border-inline-start: 3px solid var(--gais-accent);
+    padding-inline-start: 0.625rem;
+    font-family: "Source Serif 4", Georgia, "Times New Roman", serif;
+    font-size: 1.125rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--gais-ink);
+}
+
+.gais-peluncur-mundur {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    min-height: 2.75rem;
+    padding-inline: 0.625rem;
+    border: 0;
+    border-radius: 0.5rem;
+    background-color: transparent;
+    color: var(--gais-petrol);
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.gais-peluncur-mundur:hover {
+    background-color: var(--gais-petrol-muda);
+}
+
+.gais-peluncur-mundur-ikon {
+    width: 1.125rem;
+    height: 1.125rem;
+}
+
+/* Kotak pencarian mengambil sisa ruang di kepala, dan turun sendiri ke baris bawah
+   saat lebarnya tidak cukup, karena kepala jendelanya membungkus. */
+.gais-peluncur-cari {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex: 1 1 14rem;
+    margin-inline-start: auto;
+    max-width: 22rem;
+}
+
+.gais-peluncur-cari-ikon {
+    position: absolute;
+    inset-inline-start: 0.75rem;
+    width: 1.125rem;
+    height: 1.125rem;
+    color: var(--gais-redup);
+    pointer-events: none;
+}
+
+.gais-peluncur-cari-kotak {
+    width: 100%;
+    min-height: 2.75rem;
+    padding-block: 0.5rem;
+    padding-inline: 2.5rem 2.5rem;
+    border: 1px solid var(--gais-garis);
+    border-radius: 0.5rem;
+    background-color: #ffffff;
+    color: var(--gais-ink);
+    font: inherit;
+    font-size: 0.875rem;
+}
+
+.gais-peluncur-cari-kotak::placeholder {
+    color: var(--gais-redup);
+}
+
+/* Tombol silang bawaan peramban dimatikan, karena tombol hapus di sini sudah ada
+   sendiri dan dua silang berdampingan hanya membingungkan. */
+.gais-peluncur-cari-kotak::-webkit-search-cancel-button {
+    appearance: none;
+}
+
+.gais-peluncur-cari-hapus {
+    position: absolute;
+    inset-inline-end: 0.25rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border: 0;
+    border-radius: 0.375rem;
+    background-color: transparent;
+    color: var(--gais-redup);
+    cursor: pointer;
+}
+
+.gais-peluncur-cari-hapus:hover {
+    background-color: var(--gais-petrol-muda);
+    color: var(--gais-petrol);
+}
+
+.gais-peluncur-cari-hapus-ikon {
+    width: 1rem;
+    height: 1rem;
+}
+
+.gais-peluncur-tutup {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 0;
+    border-radius: 0.5rem;
+    background-color: transparent;
+    color: var(--gais-redup);
+    cursor: pointer;
+}
+
+.gais-peluncur-tutup:hover {
+    background-color: var(--gais-petrol-muda);
+    color: var(--gais-petrol);
+}
+
+.gais-peluncur-tutup-ikon {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.gais-peluncur-isi {
+    padding: 1rem;
+    overflow-y: auto;
+}
+
+.gais-peluncur-kisi {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr));
+    gap: 0.375rem;
+}
+
+.gais-peluncur-kosong {
+    max-width: 34rem;
+    margin: 2rem auto;
+    color: var(--gais-redup);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.gais-peluncur-kosong strong {
+    color: var(--gais-ink);
+}
+
+.gais-ubin {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4375rem;
+    min-height: 6.75rem;
+    padding: 0.75rem 0.375rem;
+    border: 1px solid transparent;
+    border-radius: 0.75rem;
+    background-color: transparent;
+    color: var(--gais-ink);
+    font: inherit;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 120ms ease, border-color 120ms ease;
+}
+
+.gais-ubin:hover {
+    background-color: #ffffff;
+    border-color: var(--gais-garis);
+}
+
+.gais-ubin-ikon {
+    display: grid;
+    place-items: center;
+    width: 2.875rem;
+    height: 2.875rem;
+    flex-shrink: 0;
+    border-radius: 0.75rem;
+    background-color: var(--gais-ubin-latar, var(--gais-petrol-muda));
+    color: var(--gais-ubin-tinta, var(--gais-petrol));
+}
+
+.gais-ubin-ikon-svg {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.gais-ubin-label {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+}
+
+.gais-ubin-catatan {
+    font-size: 0.6875rem;
+    line-height: 1.2;
+    color: var(--gais-redup);
+}
+
+/* Halaman yang sedang dibuka ditandai, supaya peluncur juga menjawab "saya di mana". */
+.gais-ubin-aktif {
+    border-color: var(--gais-ubin-tinta, var(--gais-petrol));
+    background-color: #ffffff;
+}
+
+.gais-ubin-aktif .gais-ubin-ikon {
+    background-color: var(--gais-ubin-tinta, var(--gais-petrol));
+    color: #ffffff;
+}
+
+/*
+ * Warna ubin per kelompok.
+ *
+ * Sebelas rona yang berbeda, tetapi kepekatannya sengaja rendah dan tingkat terangnya
+ * hampir sama untuk semuanya. Yang dicari bukan meriah, melainkan bisa dibedakan sekilas:
+ * mata mengenali kelompok dari ronanya, sementara halaman tetap terbaca sebagai satu
+ * permukaan kertas hangat. Petrol, terracotta, hijau, dan merah bata mengikuti warna yang
+ * sudah dipakai aplikasi; sisanya rona tetangganya pada kepekatan yang sama.
+ */
+.gais-ubin-petrol { --gais-ubin-latar: #e0eef2; --gais-ubin-tinta: #17505e; }
+.gais-ubin-slate { --gais-ubin-latar: #e3e8f0; --gais-ubin-tinta: #3c4f6b; }
+.gais-ubin-terracotta { --gais-ubin-latar: #f6e5db; --gais-ubin-tinta: #8a4526; }
+.gais-ubin-teal { --gais-ubin-latar: #dcebe7; --gais-ubin-tinta: #2c5d51; }
+.gais-ubin-olive { --gais-ubin-latar: #e9ebda; --gais-ubin-tinta: #555a2c; }
+.gais-ubin-plum { --gais-ubin-latar: #eae3ef; --gais-ubin-tinta: #55416b; }
+.gais-ubin-ochre { --gais-ubin-latar: #f3ead7; --gais-ubin-tinta: #74561d; }
+.gais-ubin-forest { --gais-ubin-latar: #dfebe2; --gais-ubin-tinta: #1f5a38; }
+.gais-ubin-stone { --gais-ubin-latar: #ece5dd; --gais-ubin-tinta: #5e4b3c; }
+.gais-ubin-brick { --gais-ubin-latar: #f4e1de; --gais-ubin-tinta: #8a3a34; }
+.gais-ubin-graphite { --gais-ubin-latar: #e5e9ea; --gais-ubin-tinta: #3a4a50; }
+
+/*
+ * Layar sempit. Ubinnya dikecilkan supaya tetap tiga kolom di lebar 360 piksel, dan
+ * jendelanya memakai hampir seluruh layar karena menyisakan bingkai di ponsel hanya
+ * membuang ruang yang justru paling dibutuhkan daftar ini.
+ */
+@media (max-width: 40rem) {
+    .gais-peluncur-latar {
+        padding: 0.5rem;
+    }
+
+    .gais-peluncur-cari {
+        max-width: none;
+        flex-basis: 100%;
+        margin-inline-start: 0;
+        order: 3;
+    }
+
+    .gais-peluncur-kisi {
+        grid-template-columns: repeat(auto-fill, minmax(5.5rem, 1fr));
+    }
+
+    .gais-ubin {
+        min-height: 6.25rem;
+        padding: 0.625rem 0.25rem;
+    }
+
+    .gais-ubin-ikon {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+}

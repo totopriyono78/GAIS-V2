@@ -54,7 +54,7 @@ class ViewVehicle extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            EditAction::make()->label('Ubah kendaraan'),
+            EditAction::make()->label('Edit Vehicle'),
         ];
     }
 }

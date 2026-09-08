@@ -31,10 +31,10 @@ class EditAssetDisposal extends EditRecord
     {
         return [
             DeleteAction::make()
-                ->label('Batalkan pelepasan')
-                ->modalHeading('Batalkan pelepasan aset')
+                ->label('Cancel Disposal')
+                ->modalHeading('Cancel Asset Disposal')
                 ->modalDescription('Dokumen ini dihapus, dan status aset dikembalikan ke keadaan sebelum dilepas. Berkas pendukung yang sudah diunggah ikut hilang.')
-                ->modalSubmitActionLabel('Batalkan dan kembalikan'),
+                ->modalSubmitActionLabel('Cancel and Return'),
         ];
     }
 

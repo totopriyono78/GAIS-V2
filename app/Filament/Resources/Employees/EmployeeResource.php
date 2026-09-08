@@ -36,13 +36,13 @@ class EmployeeResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-identification';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Data Induk';
+    protected static string|UnitEnum|null $navigationGroup = 'Master Data';
 
-    protected static ?string $navigationLabel = 'Karyawan';
+    protected static ?string $navigationLabel = 'Employees';
 
-    protected static ?string $modelLabel = 'karyawan';
+    protected static ?string $modelLabel = 'employee';
 
-    protected static ?string $pluralModelLabel = 'karyawan';
+    protected static ?string $pluralModelLabel = 'employees';
 
     protected static ?int $navigationSort = 3;
 
@@ -51,7 +51,7 @@ class EmployeeResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Data karyawan')
+            Section::make('Employee Data')
                 ->columns(2)
                 ->schema([
                     TextInput::make('nip')
@@ -90,7 +90,7 @@ class EmployeeResource extends Resource
                         ->displayFormat('d M Y'),
                 ]),
 
-            Section::make('Akun aplikasi')
+            Section::make('Application Account')
                 ->description('Hubungkan karyawan ini dengan akun sistem kalau dia perlu masuk ke aplikasi. Karyawan tanpa akun tetap bisa dicatat sebagai penanggung jawab aset.')
                 ->columns(2)
                 ->schema([

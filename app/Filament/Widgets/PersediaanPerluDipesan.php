@@ -31,7 +31,7 @@ class PersediaanPerluDipesan extends TableWidget
 
     protected int|string|array $columnSpan = 'full';
 
-    protected static ?string $heading = 'Barang yang perlu dipesan';
+    protected static ?string $heading = 'Items to Reorder';
 
     public static function canView(): bool
     {

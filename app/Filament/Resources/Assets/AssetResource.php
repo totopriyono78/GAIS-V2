@@ -16,6 +16,7 @@ use App\Models\MaintenanceSchedule;
 use App\Models\Vendor;
 use App\Services\PenyusutanAset;
 use App\Support\Concerns\AuthorizesModule;
+use App\Support\Concerns\DetectsTableFilters;
 use App\Support\Periode;
 use App\Support\Rupiah;
 use BackedEnum;
@@ -49,6 +50,7 @@ use UnitEnum;
 class AssetResource extends Resource
 {
     use AuthorizesModule;
+    use DetectsTableFilters;
 
     protected static ?string $model = Asset::class;
 
@@ -56,13 +58,13 @@ class AssetResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-cube';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Aset';
+    protected static string|UnitEnum|null $navigationGroup = 'Assets';
 
-    protected static ?string $navigationLabel = 'Daftar aset';
+    protected static ?string $navigationLabel = 'Assets';
 
-    protected static ?string $modelLabel = 'aset';
+    protected static ?string $modelLabel = 'asset';
 
-    protected static ?string $pluralModelLabel = 'aset';
+    protected static ?string $pluralModelLabel = 'assets';
 
     protected static ?int $navigationSort = 2;
 
@@ -71,7 +73,7 @@ class AssetResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Identitas aset')
+            Section::make('Asset Identity')
                 ->columns(2)
                 ->schema([
                     TextInput::make('code')
@@ -121,7 +123,7 @@ class AssetResource extends Resource
                         ->helperText('Nomor dari pabrik, berbeda dari kode aset GAIS.'),
                 ]),
 
-            Section::make('Penempatan')
+            Section::make('Placement')
                 ->columns(2)
                 ->schema([
                     Select::make('location_id')
@@ -181,7 +183,7 @@ class AssetResource extends Resource
                         ->required(),
                 ]),
 
-            Section::make('Kepemilikan')
+            Section::make('Ownership')
                 ->description('Barang sewaan tetap perlu dicatat karena ikut dipakai dan ikut diperiksa saat stock opname, tetapi bukan milik perusahaan.')
                 ->columns(3)
                 ->schema([
@@ -218,7 +220,7 @@ class AssetResource extends Resource
                         ->placeholder('Nama perusahaan atau perorangan'),
                 ]),
 
-            Section::make('Perolehan dan nilai')
+            Section::make('Acquisition & Value')
                 ->columns(3)
                 ->schema([
                     DatePicker::make('acquisition_date')
@@ -279,7 +281,12 @@ class AssetResource extends Resource
              * ada yang bisa dihitung, dan kotak kosong berisi tanda hubung hanya akan
              * membuat orang mengira ada yang perlu diisi.
              */
-            Section::make('Penyusutan')
+            Section::make('Depreciation')
+                // Selebar layar penuh karena tampilnya bersyarat. Kartu yang kadang ada
+                // dan kadang tidak akan mengubah jumlah kartu per baris, dan begitu
+                // jumlahnya ganjil ada satu kartu yang berdiri sendiri dengan separuh
+                // layar kosong di sebelahnya.
+                ->columnSpanFull()
                 ->columns(3)
                 ->visible(fn (?Asset $record): bool => $record?->exists ?? false)
                 ->description('Angka di bawah dihitung ulang setiap kali halaman ini dibuka, kecuali akumulasi yang sudah dibekukan oleh periode yang ditutup.')
@@ -350,7 +357,7 @@ class AssetResource extends Resource
                         ->placeholder('Contoh: mengikuti kertas kerja audit 2025.'),
                 ]),
 
-            Section::make('Garansi')
+            Section::make('Warranty')
                 ->columns(3)
                 ->schema([
                     Radio::make('has_warranty')
@@ -374,7 +381,9 @@ class AssetResource extends Resource
                         ->helperText('Dipakai untuk mengingatkan garansi yang akan habis di dasbor.'),
                 ]),
 
-            Section::make('Sertifikat')
+            Section::make('Certificate')
+                // Sama seperti Penyusutan: tampilnya bersyarat, jadi selebar layar penuh.
+                ->columnSpanFull()
                 ->description('Hanya berlaku untuk kategori tanah dan bangunan. Penandanya diatur per kategori di menu Kategori aset, jadi kategori baru bisa ikut memunculkan seksi ini tanpa mengubah kode.')
                 ->columns(2)
                 ->visible(fn ($get): bool => AssetCategory::query()->whereKey($get('asset_category_id'))->value('requires_certificate') == true)
@@ -389,7 +398,7 @@ class AssetResource extends Resource
                         ->placeholder('Contoh: IMB atau PBG 5678'),
                 ]),
 
-            Section::make('Catatan dan foto')
+            Section::make('Notes & Photos')
                 ->collapsed()
                 ->columns(2)
                 ->schema([
@@ -594,13 +603,13 @@ class AssetResource extends Resource
             ])
             ->recordActions([
                 Action::make('riwayat')
-                    ->label('Kartu riwayat')
+                    ->label('History Card')
                     ->icon('heroicon-o-clock')
                     ->iconButton()
                     ->url(fn (Asset $record): string => route('gais.aset.riwayat', ['asset' => $record->getKey()]))
                     ->openUrlInNewTab(),
                 Action::make('label')
-                    ->label('Cetak label')
+                    ->label('Print Labels')
                     ->icon('heroicon-o-printer')
                     ->iconButton()
                     ->url(fn (Asset $record): string => route('gais.cetak.label-aset', ['ids' => $record->getKey()]))
@@ -612,7 +621,7 @@ class AssetResource extends Resource
             ->toolbarActions([
                 BulkActionGroup::make([
                     BulkAction::make('cetak_label')
-                        ->label('Cetak label terpilih')
+                        ->label('Print Selected Labels')
                         ->icon('heroicon-o-printer')
                         ->deselectRecordsAfterCompletion()
                         ->visible(fn (): bool => static::allows('print'))
@@ -629,14 +638,14 @@ class AssetResource extends Resource
                      * pengetikannya.
                      */
                     BulkAction::make('buat_jadwal_pemeliharaan')
-                        ->label('Buat jadwal pemeliharaan')
+                        ->label('Create Preventive Maintenance')
                         ->icon('heroicon-o-calendar-days')
                         ->color('primary')
                         ->deselectRecordsAfterCompletion()
                         ->visible(fn (): bool => Auth::user()?->hasPermission('maintenance_schedules.create') ?? false)
-                        ->modalHeading('Buat jadwal pemeliharaan untuk aset terpilih')
+                        ->modalHeading('Create Preventive Maintenance for Selected Assets')
                         ->modalDescription('Satu jadwal dibuat untuk tiap aset yang dipilih, dengan isi yang sama. Aset yang sudah punya jadwal bernama sama dilewati, jadi tindakan ini aman diulang.')
-                        ->modalSubmitActionLabel('Buat jadwal')
+                        ->modalSubmitActionLabel('Create Schedule')
                         ->schema([
                             TextInput::make('name')
                                 ->label('Nama pekerjaan')
@@ -718,32 +727,6 @@ class AssetResource extends Resource
             ->emptyStateDescription(fn ($livewire): string => static::adaPenyaringAktif($livewire)
                 ? 'Tidak ada aset yang memenuhi penyaring atau kata kunci yang sedang dipakai. Longgarkan penyaringnya, atau bersihkan semuanya untuk melihat seluruh aset lagi.'
                 : 'Tambahkan aset satu per satu, atau impor dari berkas CSV lewat tombol di kanan atas. Buat kategorinya dulu kalau belum ada.');
-    }
-
-    /**
-     * Apakah tabel sedang dipersempit oleh pencarian atau penyaring.
-     *
-     * Nilai penyaring yang tidak aktif bisa berupa null, teks kosong, larik kosong, atau
-     * false untuk penyaring bertanda centang. Keempatnya diperlakukan sebagai tidak aktif.
-     * Angka nol sengaja dianggap aktif, karena nol adalah pilihan yang sah.
-     */
-    protected static function adaPenyaringAktif(mixed $livewire): bool
-    {
-        if (filled($livewire->tableSearch ?? null)) {
-            return true;
-        }
-
-        foreach ((array) ($livewire->tableFilters ?? []) as $penyaring) {
-            foreach ((array) $penyaring as $nilai) {
-                if ($nilai === null || $nilai === '' || $nilai === false || $nilai === []) {
-                    continue;
-                }
-
-                return true;
-            }
-        }
-
-        return false;
     }
 
     public static function canPrint(): bool

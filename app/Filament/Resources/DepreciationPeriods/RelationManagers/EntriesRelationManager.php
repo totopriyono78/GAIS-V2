@@ -24,7 +24,7 @@ class EntriesRelationManager extends RelationManager
 {
     protected static string $relationship = 'entries';
 
-    protected static ?string $title = 'Beban per aset';
+    protected static ?string $title = 'Charge per Asset';
 
     protected static bool $isLazy = false;
 

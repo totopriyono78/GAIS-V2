@@ -21,7 +21,7 @@ class TransactionsRelationManager extends RelationManager
 
     protected static string $relationship = 'transactions';
 
-    protected static ?string $title = 'Riwayat mutasi';
+    protected static ?string $title = 'Movement History';
 
     #[On(self::REFRESH_EVENT)]
     public function muatUlangRiwayat(): void

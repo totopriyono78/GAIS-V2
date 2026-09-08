@@ -101,9 +101,9 @@ class ListBudgets extends ListRecords
     {
         return [
             CreateAction::make()
-                ->label('Tetapkan pagu')
-                ->modalHeading('Tetapkan pagu anggaran')
-                ->modalSubmitActionLabel('Simpan pagu'),
+                ->label('Set Budget')
+                ->modalHeading('Set Budget')
+                ->modalSubmitActionLabel('Save Budget'),
         ];
     }
 }

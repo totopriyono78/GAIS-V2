@@ -39,6 +39,10 @@ class ExpenseCategorySeeder extends Seeder
                 'description' => 'Konsumsi rapat, galon, dan keperluan harian kantor, dijumlahkan dari faktur rekanan yang sudah disetujui.'],
             ['code' => 'TRNS', 'name' => 'Transportasi dan perjalanan', 'source' => 'tagihan',
                 'description' => 'Transportasi daring, taksi, dan tol. Dijumlahkan dari faktur rekanan dan dari struk penggantian biaya karyawan yang sudah disetujui.'],
+            ['code' => 'KRIM', 'name' => 'Pengiriman surat dan paket', 'source' => 'kiriman',
+                'description' => 'Ongkos kirim, asuransi, dan pengemasan paket keluar. Dijumlahkan dari pengiriman yang paketnya sudah berangkat, menurut tanggal kirimnya.'],
+            ['code' => 'SPPD', 'name' => 'Perjalanan dinas', 'source' => 'perjalanan_dinas',
+                'description' => 'Transportasi, penginapan, uang harian, dan konsumsi selama perjalanan dinas. Dijumlahkan dari rincian pertanggungjawaban yang sudah ditutup, menurut tanggal tiap pengeluarannya.'],
             ['code' => 'LAIN', 'name' => 'Biaya GA lainnya', 'source' => 'tagihan',
                 'description' => 'Biaya yang belum masuk kategori mana pun.'],
         ];

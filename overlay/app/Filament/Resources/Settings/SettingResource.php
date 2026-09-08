@@ -45,6 +45,7 @@ class SettingResource extends Resource
     {
         return $schema->components([
             Section::make()
+                ->columnSpanFull()
                 ->schema([
                     TextInput::make('label')
                         ->label('Nama pengaturan')

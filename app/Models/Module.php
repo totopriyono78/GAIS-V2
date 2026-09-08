@@ -28,6 +28,22 @@ class Module extends Model
         'approve' => 'Setujui',
         'accept' => 'Terima dan tugaskan',
         'assign' => 'Tentukan pelaksana',
+        // Menyerahkan barang dari gudang. Dipisah dari approve karena yang menyetujui
+        // keperluannya adalah atasan pemohon, sedangkan yang membuka lemari dan
+        // mengurangi stok adalah tim GA.
+        'issue' => 'Serahkan barang',
+        // Mencatat barang datang dari pemasok. Dipisah dari approve karena yang menyetujui
+        // pesanannya adalah manajer, sedangkan yang menerima dan menghitung barangnya di
+        // gudang adalah staf, dan keduanya menjawab pertanyaan yang berbeda.
+        'receive' => 'Terima barang datang',
+        // Menerapkan hasil penghitungan fisik ke buku stok. Dipisah dari update karena
+        // menutup lembar hitungan dan menggeser angka gudang adalah dua keputusan yang
+        // berbeda, dan yang kedua tidak boleh terjadi sebagai efek samping yang pertama.
+        'adjust' => 'Terapkan penyesuaian stok',
+        // Tanpa izin ini, seseorang hanya bisa mengajukan atas namanya sendiri. Dengan
+        // izin ini, ia bisa mengajukan atas nama orang lain, dan itulah yang dipakai
+        // perwakilan departemen yang mengumpulkan kebutuhan seluruh timnya.
+        'request_for_others' => 'Ajukan atas nama orang lain',
         // Dipisah dari approve, karena menyetujui keperluannya dan memeriksa buktinya
         // adalah dua pertanyaan berbeda yang di banyak perusahaan ditanyakan dua orang.
         'verify' => 'Periksa bukti',

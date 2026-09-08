@@ -25,7 +25,7 @@ class KendaraanJatuhTempoTabel extends TableWidget
 
     protected int|string|array $columnSpan = 'full';
 
-    protected static ?string $heading = 'Dokumen kendaraan yang perlu diurus';
+    protected static ?string $heading = 'Vehicle Documents Needing Action';
 
     public static function canView(): bool
     {

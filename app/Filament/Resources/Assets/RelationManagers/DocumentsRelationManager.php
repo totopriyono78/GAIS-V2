@@ -31,7 +31,7 @@ class DocumentsRelationManager extends RelationManager
 {
     protected static string $relationship = 'documents';
 
-    protected static ?string $title = 'Dokumen pendukung';
+    protected static ?string $title = 'Supporting Documents';
 
     /*
      * Daftar dokumen ikut dimuat bersama halaman aset, bukan lewat permintaan susulan.
@@ -131,12 +131,12 @@ class DocumentsRelationManager extends RelationManager
             ])
             ->headerActions([
                 CreateAction::make()
-                    ->label('Unggah dokumen')
+                    ->label('Upload Document')
                     ->visible(fn (): bool => AssetResource::canEdit($this->getOwnerRecord())),
             ])
             ->recordActions([
                 Action::make('unduh')
-                    ->label('Unduh')
+                    ->label('Download')
                     ->icon('heroicon-o-arrow-down-tray')
                     ->iconButton()
                     ->url(fn (AssetDocument $record): ?string => filled($record->file_path)

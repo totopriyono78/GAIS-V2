@@ -24,7 +24,7 @@ class PemeliharaanJatuhTempoTabel extends TableWidget
 
     protected int|string|array $columnSpan = 'full';
 
-    protected static ?string $heading = 'Pemeliharaan yang perlu dikerjakan';
+    protected static ?string $heading = 'Maintenance Due';
 
     public static function canView(): bool
     {

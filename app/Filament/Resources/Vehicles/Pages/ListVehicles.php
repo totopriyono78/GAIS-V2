@@ -43,9 +43,9 @@ class ListVehicles extends ListRecords
     {
         return [
             CreateAction::make()
-                ->label('Daftarkan kendaraan')
-                ->modalHeading('Daftarkan kendaraan')
-                ->modalSubmitActionLabel('Simpan kendaraan'),
+                ->label('Register Vehicle')
+                ->modalHeading('Register Vehicle')
+                ->modalSubmitActionLabel('Save Vehicle'),
         ];
     }
 }

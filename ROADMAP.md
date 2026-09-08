@@ -140,7 +140,7 @@ Selesai kalau: penutupan penyusutan satu bulan menghasilkan angka yang cocok den
 tim finance untuk sampel aset yang mereka pilih. **Sudah dibuktikan pada 7 September 2026** untuk
 dua aset yang dihitung tangan sampai rupiah terakhir, tercatat di `DELIVERY-GATE-7.md`.
 
-## Tahap 4: Fasilitas dan Kantor (sedang dikerjakan)
+## Tahap 4: Fasilitas dan Kantor (selesai 8 September 2026)
 
 Urutannya Anda tentukan pada 7 September 2026: tiket perbaikan dulu, kendaraan menyusul.
 
@@ -194,12 +194,58 @@ Urutannya Anda tentukan pada 7 September 2026: tiket perbaikan dulu, kendaraan m
   supaya struk lama tetap bisa dimasukkan
 - Foto kendaraan beserta tanggal pengambilan dan odometernya, atas permintaan pemilik proyek
 
-**Belum dikerjakan di Tahap 4:**
-- Kebersihan: area layanan, jadwal dan checklist harian petugas
-- Keamanan: jadwal shift dan laporan insiden
+**Kiriman P, kebersihan, sudah ditulis dan lulus gate:**
 
-Selesai kalau: karyawan bisa membuka tiket perbaikan dari akunnya, tim GA menugaskan dan menutupnya,
-dan pemakaian kendaraan satu bulan bisa dilaporkan per kendaraan.
+Empat keputusan pemilik proyek pada 8 September 2026: petugasnya campuran antara karyawan dan
+tenaga rekanan, checklist diisi pengawas GA dan bukan petugasnya sendiri, jadwal shift mencatat
+rencana sekaligus kehadiran, dan insiden bisa diteruskan menjadi tiket perbaikan.
+
+- Data induk petugas dengan tabelnya sendiri, bukan menumpang di daftar karyawan. Daftar karyawan
+  dipakai untuk hal hal yang tidak berlaku bagi tenaga rekanan: departemen yang dibebani biaya,
+  atasan yang menyetujui, akun yang bisa masuk, dan NIP. Satu baris hanya boleh berbentuk salah
+  satu, dan penjaganya bekerja dengan melihat kolom mana yang baru berubah, bukan kolom mana yang
+  kebetulan terisi
+- Area layanan dengan seberapa sering dibersihkan dan siapa penanggung jawabnya sebagai kolom,
+  tanpa tabel jadwal tersendiri. Tabel jadwal baru berguna kalau satu area punya petugas berbeda
+  per hari, dan itu belum jadi kebutuhan yang disebutkan
+- Putaran pemeriksaan yang daftar areanya lahir sendiri saat putaran dibuat, berbeda dari opname
+  yang menyusun daftarnya lewat tombol karena penyusunan di sana sekaligus membekukan stok
+- Hasil pemeriksaan tiga tingkat, bukan dua. Tanpa tingkat tengah, area yang sudah disapu tetapi
+  tempat sampahnya masih penuh akan dicatat sebagai bersih supaya tidak terasa berlebihan
+- Nama area dan nama petugas disalin ke tiap baris, jadi lembar bulan lalu tidak ikut berpindah
+  menuduh orang yang saat itu belum bertugas di sana
+
+**Kiriman Q, keamanan, sudah ditulis dan lulus gate:**
+
+- Jadwal jaga yang menyimpan rencana dan kenyataan berdampingan. Menimpa nama yang dijadwalkan
+  dengan nama penggantinya menghapus dua pertanyaan sekaligus: berapa kali seseorang tidak masuk,
+  dan berapa kali ia menggantikan orang lain
+- Laporan insiden tanpa kolom status sendiri. Insiden yang butuh perbaikan fisik diteruskan
+  menjadi tiket perbaikan yang alurnya sudah berjalan sejak kiriman G, dan menutup insiden
+  sengaja tidak menutup tiketnya, karena urusan keamanan selesai bukan berarti perbaikannya
+  selesai
+- Tiket dibuat atas nama orang yang menekan tombol, bukan petugas yang melapor, karena satpam
+  yang tenaga rekanan tidak punya departemen dan tiketnya tidak akan pernah bisa disetujui
+  siapa pun
+- Jam mulai tiap shift sengaja tidak ditulis di kode. Jam jaga adalah kesepakatan perusahaan,
+  bukan angka yang boleh dikarang, dan yang tercatat hanya jam masuk dan jam pulang sebenarnya
+
+Satu putaran pemeriksaan penuh dan satu insiden yang berakhir menjadi tiket dijalankan sampai
+selesai pada 8 September 2026. Tercatat di `DELIVERY-GATE-17.md`, beserta enam cacat yang
+ditemukan dan diperbaiki, dua di antaranya berupa tombol Simpan yang tidak menyimpan apa pun
+tanpa satu pun pesan, dan satu pesan kosong yang menyuruh pembacanya menghapus pekerjaannya
+sendiri.
+
+Gate itu juga memuat satu kesalahan saya sendiri yang perlu dibaca: laporan keliru bahwa
+lampiran berkas rusak di seluruh aplikasi, yang ternyata artefak cara saya memeriksa.
+
+**Yang masih perlu Anda coba sendiri:** unggah satu foto pada satu area pemeriksaan, karena
+jalur itu belum terbukti sampai berkasnya benar benar tersimpan. Alasannya ada di bagian 6
+`DELIVERY-GATE-17.md`.
+
+**Nama menu diganti pada 8 September 2026:** Maintenance Schedules menjadi Preventive
+Maintenance, dan Service Requests menjadi Corrective Maintenance. Kode modul dan nama tabelnya
+tidak berubah, jadi seluruh izin yang sudah diatur tetap utuh.
 
 ## Tahap 5: Biaya, Anggaran, dan Reimbursement (sedang dikerjakan)
 
@@ -281,6 +327,172 @@ Isi:
 
 Selesai kalau: tim finance menerima berkas jurnal satu periode dan bisa memasukkannya tanpa koreksi manual.
 
+## Tahap 7: Menutup siklus ATK (selesai 8 September 2026)
+
+Dipilih pemilik proyek pada 8 September 2026, mendahului Tahap 8, setelah membaca analisis
+sistem referensi di `ROADMAP-REFERENSI.md`. Ditaruh lebih dulu karena seluruh bahannya sudah
+ada di GAIS: barang habis pakai, buku stok, rekanan, kategori biaya, anggaran, dan tagihan
+rekanan semuanya sudah jalan, jadi tahap ini hanya menyambungkan yang sudah ada.
+
+Tiga keputusan pemilik proyek pada 8 September 2026:
+
+| Pertanyaan | Jawaban |
+|---|---|
+| Cara membeli ATK | Dua duanya: barang rutin dipesan resmi ke pemasok, barang mendadak dibeli langsung |
+| Siapa yang boleh mengajukan | Keduanya, dibedakan lewat izin, bukan lewat jenis permintaan baru |
+| Persetujuan permintaan | Atasan lalu tim GA |
+
+**Kiriman M, permintaan pemakaian ATK, sudah ditulis dan lulus gate:**
+
+- Alur tiga langkah: karyawan meminta, atasan menyetujui, tim GA menyerahkan. Kembar dengan
+  tiket perbaikan, pemesanan kendaraan, dan penggantian biaya, sengaja, supaya orang yang
+  meminta pulpen tidak perlu mempelajari layar yang berbeda dari yang ia pakai melapor AC bocor
+- Langkah terakhir bukan penandaan melainkan perubahan angka. Menyerahkan barang melahirkan
+  satu mutasi barang keluar per baris, stok berkurang, dan sejak kiriman J stok yang berkurang
+  itu langsung menjadi realisasi anggaran ATK departemen pemohon
+- Seluruh penyerahan dibungkus satu transaksi basis data. Kalau baris kelima gagal, empat
+  mutasi sebelumnya ikut batal, karena penyerahan yang berhenti di tengah meninggalkan gudang
+  yang catatannya tidak sama dengan isinya
+- Dua kolom jumlah yang berbeda pemiliknya: yang diminta ditulis pemohon dan terkunci setelah
+  diajukan, yang diserahkan ditulis tim GA. Kejadian paling sering di gudang ATK adalah diminta
+  sepuluh, ada tujuh, diserahkan tujuh, dan menimpa angkanya menghapus tiga yang tidak terpenuhi
+- Baris yang jumlah serahnya nol tidak melahirkan mutasi apa pun, dan tetap tersimpan sebagai
+  catatan permintaan yang tidak terpenuhi
+- Departemen wajib diisi, berbeda dari penggantian biaya. Karena itu hanya dua keadaan yang
+  melewati persetujuan atasan, bukan tiga
+- Izin baru `request_for_others` yang memisahkan karyawan biasa dari perwakilan departemen.
+  Tanpa izin itu pilihan pemohon terkunci pada diri sendiri, dan penguncian itu dijaga di
+  daftar pilihannya, di atribut formulirnya, dan sekali lagi sebelum disimpan
+- Izin baru `issue` untuk menyerahkan barang, dipisah dari `approve`, karena yang menyetujui
+  keperluannya adalah atasan pemohon sedangkan yang membuka lemari adalah tim GA
+- Pilihan barang membawa stok terkini di dalam kurung. Barang yang stoknya kosong tetap boleh
+  diminta, karena permintaan yang tidak terpenuhi adalah data, bukan kesalahan
+- Widget antrean permintaan di tab Office Supplies pada dasbor, dengan kolom kesiapan stok yang
+  menjawab pertanyaan "mana yang bisa saya kerjakan hari ini", bukan hanya "mana yang menunggu"
+
+Rantai permintaan sampai anggaran dibuktikan sampai rupiah terakhir pada 8 September 2026:
+penyerahan 3 rim kertas menaikkan realisasi ATK Finance tepat Rp 186.000, sama dengan 3 dikali
+harga satuan terakhir Rp 62.000. Tercatat di `DELIVERY-GATE-14.md`.
+
+**Kiriman N, pembelian dan penerimaan ATK, sudah ditulis dan lulus gate:**
+
+Tiga keputusan pemilik proyek pada 8 September 2026: pesanan disetujui manajer GA, penjual
+pada pembelian langsung boleh ditulis bebas, dan tagihan dihubungkan ke pesanan sekalian.
+
+- Dua bentuk pembelian di satu tabel dan satu layar, dibedakan kolom jenisnya. Pesanan resmi
+  disetujui manajer sebelum dikirim ke pemasok, pembelian langsung dicatat setelah barangnya
+  sudah di tangan dan tidak melewati persetujuan, karena persetujuan atas uang yang sudah
+  keluar tidak bisa mencegah apa pun. Alasan lompatannya ditulis di kolomnya sendiri
+- Penerimaan sebagai dokumen tersendiri, boleh berkali kali atas satu pesanan. Jumlah yang
+  sudah diterima tidak pernah disimpan sebagai kolom melainkan dijumlahkan dari baris
+  penerimaannya, pola yang sama dengan stok sejak kiriman C
+- Penerimaan melahirkan mutasi barang masuk lengkap dengan harga pesanannya, dan harga itu
+  memperbarui sendiri harga pembelian terakhir di kartu barang. Sejak kiriman ini, stok ATK
+  tidak lagi bisa bertambah tanpa asal usul
+- Kelebihan terima ditolak dengan menyebut nama barang dan kedua angkanya. Kekurangan tidak
+  ditolak, karena barang yang datang kurang justru alasan penerimaan sebagian ada
+- Menutup pesanan yang sisanya tidak akan datang, dengan alasan tertulis. Sisa yang batal tetap
+  terbaca di barisnya, jadi menutup pesanan tidak menghapus catatan apa pun
+- Tagihan rekanan boleh menunjuk pesanan, dan daftarnya disempitkan ke pesanan milik rekanan
+  yang dipilih. Layar lalu menyebut selisih antara nilai tagihan dan nilai barang yang benar
+  benar sudah diterima, bukan nilai pesanan, karena faktur yang menagih sepuluh box sementara
+  yang datang baru tujuh adalah persis keadaan yang akan tersembunyi kalau dibandingkan dengan
+  nilai pesanan. Kalimat itu muncul juga di kotak persetujuan, karena di situlah orang benar
+  benar membacanya
+
+Aritmetikanya dibuktikan dengan hitungan tangan pada 8 September 2026, termasuk penerimaan
+bertahap 268.000 lalu 400.000 dan keempat cabang kalimat selisih tagihan. Tercatat di
+`DELIVERY-GATE-15.md`, beserta satu cacat fatal dan satu cacat angka terbalik yang ditemukan
+dan diperbaiki di ronde itu.
+
+**Kiriman O, opname ATK dan penyesuaian stok, sudah ditulis dan lulus gate:**
+
+Tiga keputusan pemilik proyek pada 8 September 2026: koreksi langsung boleh tetapi wajib
+beralasan, sesi opname bebas seperti opname aset dan bukan per bulan, dan penyesuaian stok
+perlu tindakan terpisah yang berizin sendiri.
+
+- Sesi opname sebagai dokumen berumur, dengan cakupan kategori atau lokasi. Daftar barangnya
+  lahir dari cakupan itu, bukan diketik satu per satu, dan penyusunannya sekaligus membekukan
+  stok menurut catatan sebagai pembanding
+- **Stok tidak tersentuh sampai langkah terakhir.** Menghitung tidak mengubah apa pun. Yang
+  mengubah adalah Apply Adjustment, dan tindakan itu memakai izin `adjust` yang dipisah dari
+  `update`, jadi staf boleh menghitung sementara yang menggeser angka gudang adalah manajer
+- Penyesuaian melahirkan mutasi koreksi, satu per baris yang selisih, membawa nomor sesinya
+  dan kedua angkanya di dalam keterangan. Barang yang cocok dan barang yang tidak jadi dihitung
+  tidak melahirkan apa apa. Buku stok karenanya tetap bisa menjelaskan setiap perubahannya
+- **Selisih dihitung terhadap stok terbaru, bukan terhadap angka beku.** Kalau ia dihitung
+  terhadap angka beku, setiap penyerahan yang terjadi di sela sela penghitungan akan terkoreksi
+  balik dan terhapus dari buku stok tanpa jejak. Angka beku dipakai untuk hal lain: mendeteksi
+  bahwa barangnya sempat bergerak, lalu keadaan itu disebutkan di layar di tiga tempat sekaligus,
+  tidak diperbaiki diam diam
+- Koreksi langsung di luar opname tetap boleh, tetapi kolom catatannya berubah sendiri menjadi
+  Alasan koreksi yang wajib diisi begitu jenis koreksi dipilih
+- Awalan nomor permintaan barang diperbaiki dari `PB` menjadi `PM`, karena `PB` sudah dipakai
+  permintaan perbaikan sejak kiriman G dan nomor yang sama bisa lahir dua kali. Nomor yang
+  terlanjur terbit tidak diubah
+
+Satu sesi penuh atas 9 barang dijalankan sampai selesai pada 8 September 2026, menghasilkan
+tepat tiga mutasi koreksi dan tidak satu pun untuk barang yang cocok maupun yang tidak
+dihitung. Tercatat di `DELIVERY-GATE-16.md`, beserta empat cacat yang ditemukan dan diperbaiki,
+termasuk satu tombol yang membuka daftar tanpa saring dan satu pengukuran jujur bahwa aturan
+tap target 44 piksel belum terpenuhi di seluruh aplikasi.
+
+**Siklus ATK sekarang tertutup dari ujung ke ujung:** karyawan meminta, atasan menyetujui, GA
+menyerahkan dan stok turun menjadi realisasi anggaran, GA memesan, manajer menyetujui, barang
+datang dan stok naik beserta harga terakhirnya, rekanan menagih dan selisihnya dibandingkan
+dengan barang yang benar benar datang, lalu gudang dihitung fisik dan angkanya disesuaikan.
+
+**Pertanyaan kebijakan yang masih menunggu jawaban Anda:** anggaran ATK sekarang menghitung
+pemakaian, bukan pembelian, sehingga faktur pembelian ATK tidak bisa dibebankan ke kategori
+ATK. Kedua cara sama sama dipakai perusahaan sungguhan, dan uraiannya ada di bagian 6
+`DELIVERY-GATE-15.md`.
+
+**Satu ketidakseragaman yang dicatat, tidak diperbaiki:** opname aset memakai izin `approve`
+untuk konsep yang di opname ATK bernama `adjust`. Merapikannya menyentuh izin yang mungkin
+sudah Anda atur sendiri di layar Role, jadi menunggu permintaan Anda.
+
+## Kelengkapan demo: surat, paket, dan perjalanan dinas (selesai 8 September 2026)
+
+Diminta pemilik proyek pada 8 September 2026, mendahului sisa Tahap 5 dan Tahap 6, dengan
+alasan yang disebut sendiri: kelengkapan fitur lebih mendesak supaya sistemnya bisa
+diperlihatkan dan dicoba dalam demo. Ketiganya diambil dari peta lanjutan di
+`ROADMAP-REFERENSI.md`, dan yang dibangun adalah alur intinya saja, bukan seluruh cabangnya.
+
+Empat keputusan pemilik proyek pada 8 September 2026:
+
+| Pertanyaan | Jawaban |
+|---|---|
+| Kedalaman | Alur inti ketiganya dulu |
+| Nomor surat | Diketik mengikuti format perusahaan, terpisah dari nomor agenda |
+| Biaya kiriman dan perjalanan | Masuk ke realisasi anggaran |
+| Uang jalan | Ada uang muka, dan dipertanggungjawabkan sepulangnya |
+
+**Kiriman R, surat masuk dan surat keluar:** satu buku agenda dengan dua urutan nomor yang
+terpisah (AM dan AK), nomor surat perusahaan diketik sendiri, pindaian dilampirkan, dan surat
+masuk punya satu langkah lanjutan yaitu serah terima yang mencatat penerima sebenarnya.
+
+**Kiriman S, pengiriman paket:** permintaan kirim, keberangkatan lewat kurir yang memakai
+data rekanan yang sudah ada, dan biaya yang dipecah per komponen supaya cocok dengan cara
+kurir menagih. Biayanya masuk realisasi anggaran begitu paketnya berangkat.
+
+**Kiriman T, perjalanan dinas:** lima langkah berizin terpisah, yaitu mengajukan, menyetujui,
+membayarkan uang muka, mempertanggungjawabkan, dan menutup. Biayanya baru masuk realisasi
+anggaran setelah pertanggungjawabannya ditutup, karena hanya rincian yang sudah diperiksa yang
+pantas memotong pagu.
+
+**Rombongan, diminta 8 September 2026 setelah kiriman T selesai:** satu perjalanan bisa
+memberangkatkan beberapa orang dengan satu penanggung jawab yang memegang uang dan
+pertanggungjawabannya. Penanggung jawab tetap menjadi orang yang menentukan departemen yang
+dibebani, atasan yang menyetujui, dan penerima uang muka, sehingga tidak ada satu pun angka
+kiriman T yang berubah.
+
+Ketiganya diverifikasi pada 8 September 2026 dan tercatat di `DELIVERY-GATE-18.md`, beserta
+satu cacat yang ditemukan dan diperbaiki (D-37).
+
+**Yang belum ada pada ketiganya:** disposisi surat berjenjang, pelacakan resi otomatis, dan
+tarif uang harian per golongan. Ketiganya ada di uraian lengkap Tahap 8 sampai Tahap 10 di
+`ROADMAP-REFERENSI.md` dan menunggu giliran tahapnya.
+
 ---
 
 ## Yang perlu Anda putuskan sebelum tahap terkait dimulai
@@ -291,10 +503,17 @@ Selesai kalau: tim finance menerima berkas jurnal satu periode dan bisa memasukk
 | Tahap 3 | Metode penyusutan, tanggal mulai penyusutan, dan apakah ada aset lama yang sudah berjalan penyusutannya |
 | Tahap 4 | Sudah dijawab pada 7 September 2026: tiket menjadi pintu masuk yang berubah jadi perintah kerja, atasan pemohon menyetujui lebih dulu, dan tiket dikerjakan sebelum kendaraan. Untuk kendaraan: ada pool car yang dipesan, ada sopir, ada kendaraan operasional, dan BBM dicatat per pengisian dengan odometer supaya kilometer per liter bisa dihitung. Target SLA per jenis masih menunggu kesepakatan tim GA, dan kolomnya sengaja dibiarkan kosong sampai itu terjadi |
 | Tahap 5 | Sudah dijawab pada 7 September 2026: anggaran per departemen per kategori, ditetapkan tahunan, dan reimbursement disetujui atasan lalu GA tanpa batas nominal |
+| Tahap 7 | Sudah dijawab pada 8 September 2026: ATK dibeli dua cara (pesanan resmi dan pembelian langsung), pemohon dibedakan lewat izin, dan permintaan disetujui atasan lalu tim GA |
 | Tahap 6 | Sistem akuntansi yang dipakai, daftar nomor akun, dan apakah pertukaran data lewat berkas atau API |
 
 ## Yang belum masuk peta ini
 
 Ditulis supaya jelas bahwa ini memang belum direncanakan, bukan terlupa:
-pengadaan dan tender vendor, kontrak sewa gedung, absensi dan perjalanan dinas, aplikasi mobile,
-dan integrasi dengan sistem HR. Kalau salah satunya dibutuhkan, sebutkan dan saya masukkan ke peta.
+kontrak sewa gedung, absensi, aplikasi mobile, dan integrasi dengan sistem HR. Kalau salah
+satunya dibutuhkan, sebutkan dan saya masukkan ke peta.
+
+Pengadaan vendor, surat dan paket, parkir, serta perjalanan dinas sudah tidak ada di daftar ini
+lagi. Ketiganya masuk peta lanjutan pada 8 September 2026 dan diuraikan di
+`ROADMAP-REFERENSI.md` sebagai Tahap 8 sampai Tahap 10. Alur inti surat, paket, dan perjalanan
+dinas malah sudah dibangun lebih dulu pada 8 September 2026 untuk keperluan demo, dan tercatat
+di bagian Kelengkapan demo di atas.

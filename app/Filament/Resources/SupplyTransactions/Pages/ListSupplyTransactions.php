@@ -13,7 +13,7 @@ class ListSupplyTransactions extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()->label('Catat mutasi'),
+            CreateAction::make()->label('Record Movement'),
         ];
     }
 }

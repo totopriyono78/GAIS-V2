@@ -29,13 +29,13 @@ class ModuleResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-squares-2x2';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Pengaturan Akses';
+    protected static string|UnitEnum|null $navigationGroup = 'Access Control';
 
-    protected static ?string $navigationLabel = 'Modul';
+    protected static ?string $navigationLabel = 'Modules';
 
-    protected static ?string $modelLabel = 'modul';
+    protected static ?string $modelLabel = 'module';
 
-    protected static ?string $pluralModelLabel = 'modul';
+    protected static ?string $pluralModelLabel = 'modules';
 
     protected static ?int $navigationSort = 3;
 
@@ -44,7 +44,8 @@ class ModuleResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Modul')
+            Section::make('Module')
+                ->columnSpanFull()
                 ->description('Registri ini adalah sumber daftar izin. Menyimpan perubahan di sini langsung menyamakan baris izin yang tersedia di layar role.')
                 ->columns(2)
                 ->schema([

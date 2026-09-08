@@ -29,7 +29,7 @@ class ListWorkOrders extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()->label('Catat kerusakan'),
+            CreateAction::make()->label('Log Issue'),
         ];
     }
 }

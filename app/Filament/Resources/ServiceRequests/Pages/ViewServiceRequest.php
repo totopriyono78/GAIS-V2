@@ -57,7 +57,7 @@ class ViewServiceRequest extends ViewRecord
             ServiceRequestResource::tolakAction(iconOnly: false),
             ServiceRequestResource::batalkanAction(iconOnly: false),
             EditAction::make()
-                ->label('Ubah permintaan')
+                ->label('Edit Request')
                 ->visible(fn (): bool => ServiceRequestResource::canEdit($this->getRecord())),
         ];
     }

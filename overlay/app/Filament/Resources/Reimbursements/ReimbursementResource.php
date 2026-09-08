@@ -148,6 +148,7 @@ class ReimbursementResource extends Resource
     {
         return $schema->components([
             Section::make('Pengajuan')
+                ->columnSpanFull()
                 ->columns(2)
                 ->schema([
                     TextInput::make('title')

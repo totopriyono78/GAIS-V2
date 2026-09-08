@@ -13,7 +13,7 @@ class ListEmployees extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()->label('Tambah karyawan'),
+            CreateAction::make()->label('Add Employee'),
         ];
     }
 }

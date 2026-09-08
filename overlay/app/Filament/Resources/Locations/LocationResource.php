@@ -48,6 +48,7 @@ class LocationResource extends Resource
     {
         return $schema->components([
             Section::make()
+                ->columnSpanFull()
                 ->description('Aset perusahaan berada di satu lokasi, yaitu Head Office. Karena itu yang dicatat di sini adalah kedalamannya: gedung, lantai, ruangan, sampai area.')
                 ->columns(2)
                 ->schema([

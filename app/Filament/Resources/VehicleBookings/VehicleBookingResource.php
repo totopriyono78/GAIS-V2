@@ -56,13 +56,13 @@ class VehicleBookingResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-calendar-days';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Kendaraan';
+    protected static string|UnitEnum|null $navigationGroup = 'Vehicles';
 
-    protected static ?string $navigationLabel = 'Pemesanan kendaraan';
+    protected static ?string $navigationLabel = 'Vehicle Bookings';
 
-    protected static ?string $modelLabel = 'pemesanan kendaraan';
+    protected static ?string $modelLabel = 'vehicle booking';
 
-    protected static ?string $pluralModelLabel = 'pemesanan kendaraan';
+    protected static ?string $pluralModelLabel = 'vehicle bookings';
 
     protected static ?int $navigationSort = 20;
 
@@ -137,7 +137,7 @@ class VehicleBookingResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Perjalanan yang direncanakan')
+            Section::make('Planned Trip')
                 ->columns(2)
                 ->schema([
                     TextInput::make('destination')
@@ -178,7 +178,7 @@ class VehicleBookingResource extends Resource
                         ->helperText('Matikan kalau pemohon menyetir sendiri.'),
                 ]),
 
-            Section::make('Pemohon')
+            Section::make('Requester')
                 ->columns(2)
                 ->schema([
                     Select::make('requester_employee_id')
@@ -221,7 +221,7 @@ class VehicleBookingResource extends Resource
     public static function infolist(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Pemesanan')
+            Section::make('Booking')
                 ->columns(3)
                 ->schema([
                     TextEntry::make('code')->label('Nomor')->fontFamily('mono'),
@@ -243,7 +243,7 @@ class VehicleBookingResource extends Resource
                             .($record->needs_driver ? ', perlu sopir' : ', menyetir sendiri')),
                 ]),
 
-            Section::make('Kendaraan dan persetujuan')
+            Section::make('Vehicle & Approval')
                 ->columns(3)
                 ->schema([
                     TextEntry::make('persetujuan')
@@ -399,13 +399,13 @@ class VehicleBookingResource extends Resource
     public static function setujuiAction(bool $iconOnly = true): Action
     {
         $aksi = Action::make('setujui')
-            ->label('Setujui')
+            ->label('Approve')
             ->icon('heroicon-o-check-badge')
             ->color('success')
             ->visible(fn (VehicleBooking $record): bool => $record->status === 'diajukan' && static::bolehMenyetujui($record))
-            ->modalHeading(fn (VehicleBooking $record): string => 'Setujui '.$record->code)
+            ->modalHeading(fn (VehicleBooking $record): string => 'Approve '.$record->code)
             ->modalDescription('Setelah disetujui, pemesanan ini masuk antrean tim GA untuk ditentukan kendaraannya. Kendaraan belum dipesan sampai langkah itu selesai.')
-            ->modalSubmitActionLabel('Setujui pemesanan')
+            ->modalSubmitActionLabel('Approve Booking')
             ->schema([
                 Textarea::make('approval_note')
                     ->label('Catatan')
@@ -436,15 +436,15 @@ class VehicleBookingResource extends Resource
     public static function tugaskanAction(bool $iconOnly = true): Action
     {
         $aksi = Action::make('tugaskan')
-            ->label('Tugaskan kendaraan')
+            ->label('Assign Vehicle')
             ->icon('heroicon-o-truck')
             ->color('primary')
             ->visible(fn (VehicleBooking $record): bool => in_array($record->status, ['disetujui', 'ditugaskan'], true)
                 && static::allows('assign'))
-            ->modalHeading(fn (VehicleBooking $record): string => 'Tugaskan kendaraan untuk '.$record->code)
+            ->modalHeading(fn (VehicleBooking $record): string => 'Assign Vehicle for '.$record->code)
             ->modalDescription(fn (VehicleBooking $record): string => 'Dibutuhkan '.$record->jadwalLabel()
                 .', '.strtolower($record->penumpangLabel()).'.')
-            ->modalSubmitActionLabel('Tugaskan')
+            ->modalSubmitActionLabel('Assign')
             ->fillForm(fn (VehicleBooking $record): array => [
                 'vehicle_id' => $record->vehicle_id,
                 'driver_employee_id' => $record->driver_employee_id,
@@ -524,14 +524,14 @@ class VehicleBookingResource extends Resource
     public static function tolakAction(bool $iconOnly = true): Action
     {
         $aksi = Action::make('tolak')
-            ->label('Tolak')
+            ->label('Reject')
             ->icon('heroicon-o-hand-raised')
             ->color('danger')
             ->visible(fn (VehicleBooking $record): bool => in_array($record->status, ['diajukan', 'disetujui'], true)
                 && (static::bolehMenyetujui($record) || static::allows('assign')))
-            ->modalHeading(fn (VehicleBooking $record): string => 'Tolak '.$record->code)
+            ->modalHeading(fn (VehicleBooking $record): string => 'Reject '.$record->code)
             ->modalDescription('Pemesanan yang ditolak tetap tersimpan beserta alasannya, dan pemohon bisa membacanya.')
-            ->modalSubmitActionLabel('Tolak pemesanan')
+            ->modalSubmitActionLabel('Reject Booking')
             ->schema([
                 Textarea::make('rejection_reason')
                     ->label('Alasan ditolak')
@@ -556,15 +556,15 @@ class VehicleBookingResource extends Resource
     public static function batalkanAction(bool $iconOnly = true): Action
     {
         $aksi = Action::make('batalkan')
-            ->label('Batalkan')
+            ->label('Cancel')
             ->icon('heroicon-o-x-circle')
             ->color('gray')
             ->visible(fn (VehicleBooking $record): bool => in_array($record->status, ['diajukan', 'disetujui', 'ditugaskan'], true)
                 && static::bolehMembatalkan($record))
             ->requiresConfirmation()
-            ->modalHeading(fn (VehicleBooking $record): string => 'Batalkan '.$record->code)
+            ->modalHeading(fn (VehicleBooking $record): string => 'Cancel '.$record->code)
             ->modalDescription('Kendaraannya kembali kosong pada jam itu dan bisa dipakai pemesanan lain. Pemesanan ini tetap tersimpan sebagai catatan.')
-            ->modalSubmitActionLabel('Batalkan pemesanan')
+            ->modalSubmitActionLabel('Cancel Booking')
             ->action(function (VehicleBooking $record): void {
                 if (! $record->batalkan()) {
                     static::peringatanStatusBerubah();

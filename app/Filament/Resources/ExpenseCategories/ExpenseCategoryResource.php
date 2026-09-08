@@ -43,13 +43,13 @@ class ExpenseCategoryResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-banknotes';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Data Induk';
+    protected static string|UnitEnum|null $navigationGroup = 'Master Data';
 
-    protected static ?string $navigationLabel = 'Kategori biaya';
+    protected static ?string $navigationLabel = 'Expense Categories';
 
-    protected static ?string $modelLabel = 'kategori biaya';
+    protected static ?string $modelLabel = 'expense category';
 
-    protected static ?string $pluralModelLabel = 'kategori biaya';
+    protected static ?string $pluralModelLabel = 'expense categories';
 
     protected static ?int $navigationSort = 60;
 

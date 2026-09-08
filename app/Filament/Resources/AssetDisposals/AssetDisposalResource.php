@@ -44,13 +44,13 @@ class AssetDisposalResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-archive-box-x-mark';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Aset';
+    protected static string|UnitEnum|null $navigationGroup = 'Assets';
 
-    protected static ?string $navigationLabel = 'Pelepasan aset';
+    protected static ?string $navigationLabel = 'Asset Disposals';
 
-    protected static ?string $modelLabel = 'pelepasan aset';
+    protected static ?string $modelLabel = 'asset disposal';
 
-    protected static ?string $pluralModelLabel = 'pelepasan aset';
+    protected static ?string $pluralModelLabel = 'asset disposals';
 
     protected static ?int $navigationSort = 5;
 
@@ -59,7 +59,7 @@ class AssetDisposalResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->columns(1)->components([
-            Section::make('Aset yang dilepas')
+            Section::make('Asset Being Disposed')
                 ->description('Menyimpan dokumen ini mengubah status aset menjadi Sudah dilepas. Aset yang sudah dilepas tidak ikut lagi dalam stock opname dan tidak bisa diserahterimakan.')
                 ->columns(3)
                 ->schema([
@@ -104,7 +104,7 @@ class AssetDisposalResource extends Resource
                         ->helperText(fn ($state): string => static::describeAsset($state)),
                 ]),
 
-            Section::make('Cara dan hasil pelepasan')
+            Section::make('Method & Proceeds')
                 ->columns(3)
                 ->schema([
                     Select::make('method')
@@ -144,7 +144,7 @@ class AssetDisposalResource extends Resource
                         ->columnSpan(2),
                 ]),
 
-            Section::make('Dasar dan persetujuan')
+            Section::make('Basis & Approval')
                 ->columns(2)
                 ->schema([
                     Select::make('approved_by_employee_id')
@@ -306,11 +306,11 @@ class AssetDisposalResource extends Resource
             ->recordActions([
                 EditAction::make()->iconButton(),
                 DeleteAction::make()
-                    ->label('Batalkan pelepasan')
+                    ->label('Cancel Disposal')
                     ->iconButton()
-                    ->modalHeading('Batalkan pelepasan aset')
+                    ->modalHeading('Cancel Asset Disposal')
                     ->modalDescription('Dokumen ini dihapus, dan status aset dikembalikan ke keadaan sebelum dilepas. Berkas pendukung yang sudah diunggah ikut hilang.')
-                    ->modalSubmitActionLabel('Batalkan dan kembalikan'),
+                    ->modalSubmitActionLabel('Cancel and Return'),
             ])
             ->emptyStateHeading('Belum ada aset yang dilepas')
             ->emptyStateDescription('Catat di sini setiap aset yang dijual, dihibahkan, dimusnahkan, atau hilang. Status asetnya berubah sendiri menjadi Sudah dilepas, dan alasannya tersimpan sebagai dokumen.');

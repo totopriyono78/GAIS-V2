@@ -45,13 +45,13 @@ class AssetTransferResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-arrow-right-start-on-rectangle';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Aset';
+    protected static string|UnitEnum|null $navigationGroup = 'Assets';
 
-    protected static ?string $navigationLabel = 'Serah terima aset';
+    protected static ?string $navigationLabel = 'Asset Transfers';
 
-    protected static ?string $modelLabel = 'serah terima aset';
+    protected static ?string $modelLabel = 'asset transfer';
 
-    protected static ?string $pluralModelLabel = 'serah terima aset';
+    protected static ?string $pluralModelLabel = 'asset transfers';
 
     protected static ?int $navigationSort = 4;
 
@@ -60,7 +60,7 @@ class AssetTransferResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->columns(1)->components([
-            Section::make('Aset yang diserahkan')
+            Section::make('Asset Being Transferred')
                 ->description('Keadaan aset sekarang disalin sendiri sebagai keadaan asal, jadi tidak perlu diketik. Yang perlu diisi hanya tujuannya.')
                 ->columns(3)
                 ->schema([
@@ -102,7 +102,7 @@ class AssetTransferResource extends Resource
                         ->helperText(fn ($state): string => static::describeAsset($state)),
                 ]),
 
-            Section::make('Perpindahan')
+            Section::make('Movement')
                 ->description('Kosongkan yang tidak berubah. Kolom yang dikosongkan berarti tetap seperti sekarang, bukan dikosongkan pada asetnya.')
                 ->columns(3)
                 ->schema([
@@ -153,7 +153,7 @@ class AssetTransferResource extends Resource
                         ->placeholder('Belum ada'),
                 ]),
 
-            Section::make('Serah terima')
+            Section::make('Handover')
                 ->description('Dua nama inilah yang membedakan dokumen ini dari sekadar mengubah kolom lokasi di data aset.')
                 ->columns(2)
                 ->schema([
@@ -192,7 +192,7 @@ class AssetTransferResource extends Resource
     public static function infolist(Schema $schema): Schema
     {
         return $schema->columns(1)->components([
-            Section::make('Dokumen')
+            Section::make('Documents')
                 ->columns(3)
                 ->schema([
                     TextEntry::make('code')->label('Nomor')->fontFamily('mono'),
@@ -207,7 +207,7 @@ class AssetTransferResource extends Resource
                     TextEntry::make('created_at')->label('Dicatat pada')->dateTime('d M Y H:i'),
                 ]),
 
-            Section::make('Aset')
+            Section::make('Asset')
                 ->columns(3)
                 ->schema([
                     TextEntry::make('asset.code')->label('Kode aset')->fontFamily('mono'),
@@ -219,7 +219,7 @@ class AssetTransferResource extends Resource
                         ->columnSpan(2),
                 ]),
 
-            Section::make('Perpindahan')
+            Section::make('Movement')
                 ->description('Kolom sebelum adalah keadaan aset pada detik dokumen ini dibuat, disalin sekali dan tidak ikut berubah kemudian.')
                 ->columns(3)
                 ->schema([
@@ -240,7 +240,7 @@ class AssetTransferResource extends Resource
                         ->state(fn (AssetTransfer $record): string => $record->to_department_id === null ? 'Tidak' : 'Ya'),
                 ]),
 
-            Section::make('Serah terima')
+            Section::make('Handover')
                 ->columns(2)
                 ->schema([
                     TextEntry::make('handedOverBy.full_name')->label('Diserahkan oleh')->placeholder('Belum dicatat'),
@@ -326,11 +326,11 @@ class AssetTransferResource extends Resource
             ])
             ->recordActions([
                 ViewAction::make()
-                    ->label('Buka')
+                    ->label('Open')
                     ->icon('heroicon-o-arrow-right-circle')
                     ->iconButton(),
                 Action::make('bam')
-                    ->label('Unduh BAM')
+                    ->label('Download BAM')
                     ->icon('heroicon-o-document-text')
                     ->iconButton()
                     ->url(fn (AssetTransfer $record): string => route('gais.aset.berita-acara', [
@@ -339,7 +339,7 @@ class AssetTransferResource extends Resource
                     ]))
                     ->openUrlInNewTab(),
                 Action::make('bast')
-                    ->label('Unduh BAST')
+                    ->label('Download BAST')
                     ->icon('heroicon-o-document-check')
                     ->iconButton()
                     ->url(fn (AssetTransfer $record): string => route('gais.aset.berita-acara', [
@@ -348,12 +348,12 @@ class AssetTransferResource extends Resource
                     ]))
                     ->openUrlInNewTab(),
                 DeleteAction::make()
-                    ->label('Batalkan serah terima')
+                    ->label('Cancel Transfer')
                     ->iconButton()
                     ->visible(fn (AssetTransfer $record): bool => static::canDelete($record))
-                    ->modalHeading('Batalkan serah terima')
+                    ->modalHeading('Cancel Asset Transfer')
                     ->modalDescription('Dokumen ini dihapus, dan aset dikembalikan ke lokasi, penanggung jawab, serta departemen sebelum serah terima ini. Hanya bisa dilakukan selama belum ada perpindahan lain sesudahnya.')
-                    ->modalSubmitActionLabel('Batalkan dan kembalikan'),
+                    ->modalSubmitActionLabel('Cancel and Return'),
             ])
             ->emptyStateHeading('Belum ada serah terima aset')
             ->emptyStateDescription('Catat di sini setiap kali aset berpindah ruangan, berganti penanggung jawab, atau pindah departemen. Data asetnya ikut berubah sendiri, dan riwayatnya tersimpan sebagai dokumen.');

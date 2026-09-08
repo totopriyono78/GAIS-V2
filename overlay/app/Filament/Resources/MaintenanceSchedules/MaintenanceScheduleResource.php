@@ -53,14 +53,21 @@ class MaintenanceScheduleResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-calendar-days';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Pemeliharaan';
+    protected static string|UnitEnum|null $navigationGroup = 'Maintenance';
 
-    protected static ?string $navigationLabel = 'Jadwal pemeliharaan';
+    protected static ?string $navigationLabel = 'Preventive Maintenance';
 
-    protected static ?string $modelLabel = 'jadwal pemeliharaan';
+    protected static ?string $modelLabel = 'preventive maintenance';
 
-    protected static ?string $pluralModelLabel = 'jadwal pemeliharaan';
+    protected static ?string $pluralModelLabel = 'preventive maintenance';
 
+    /*
+     * Urutan ditulis eksplisit sejak nama menunya diganti pada 8 September 2026. Sebelumnya
+     * jadwal preventif dan permintaan perbaikan sama sama bernomor 1, dan yang menentukan
+     * urutannya adalah abjad namanya. Nama barunya membalik abjad itu, jadi urutan menu akan
+     * berubah sendiri tanpa ada yang memintanya. Nomor yang berbeda membuatnya tetap seperti
+     * yang sudah dihafal orang: preventif dulu, baru korektif, baru perintah kerjanya.
+     */
     protected static ?int $navigationSort = 1;
 
     protected static ?string $recordTitleAttribute = 'name';
@@ -79,7 +86,7 @@ class MaintenanceScheduleResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Pekerjaan')
+            Section::make('Work')
                 ->columns(2)
                 ->schema([
                     Select::make('asset_id')
@@ -106,7 +113,7 @@ class MaintenanceScheduleResource extends Resource
                         ->helperText('Daftar ini disalin ke perintah kerja saat dibuat, jadi petugas tidak perlu mengingatnya sendiri.'),
                 ]),
 
-            Section::make('Perulangan')
+            Section::make('Recurrence')
                 ->columns(3)
                 ->schema([
                     TextInput::make('interval_months')
@@ -129,7 +136,8 @@ class MaintenanceScheduleResource extends Resource
                         ->helperText('Matikan kalau pekerjaan ini dihentikan sementara. Riwayatnya tetap tersimpan.'),
                 ]),
 
-            Section::make('Pelaksana dan biaya')
+            Section::make('Assignee & Cost')
+                ->columnSpanFull()
                 ->columns(3)
                 ->description('Boleh dikosongkan. Kalau diisi, keduanya jadi bawaan saat perintah kerja dibuat dari jadwal ini.')
                 ->schema([
@@ -179,7 +187,7 @@ class MaintenanceScheduleResource extends Resource
     public static function infolist(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Jadwal')
+            Section::make('Schedule')
                 ->columns(3)
                 ->schema([
                     TextEntry::make('name')
@@ -210,7 +218,7 @@ class MaintenanceScheduleResource extends Resource
                         ->columnSpanFull(),
                 ]),
 
-            Section::make('Rekap')
+            Section::make('Summary')
                 ->columns(3)
                 ->description('Dihitung dari riwayat kunjungan di bawah, bukan diketik.')
                 ->schema([
@@ -333,14 +341,14 @@ class MaintenanceScheduleResource extends Resource
     public static function catatKunjunganAction(): Action
     {
         return Action::make('catat_kunjungan')
-            ->label('Catat sudah dikerjakan')
+            ->label('Mark as Done')
             ->icon('heroicon-o-check-circle')
             ->color('success')
             ->iconButton()
             ->visible(fn (MaintenanceVisit $record): bool => $record->isOpen())
-            ->modalHeading(fn (MaintenanceVisit $record): string => 'Catat kunjungan ke '.$record->sequence)
+            ->modalHeading(fn (MaintenanceVisit $record): string => 'Log Visit '.$record->sequence)
             ->modalDescription(fn (MaintenanceVisit $record): string => 'Jatuh tempo kunjungan ini '.$record->due_date->translatedFormat('d F Y').'. Setelah disimpan, kunjungan berikutnya dibuat sendiri, dihitung dari tanggal pengerjaan di bawah ditambah interval jadwalnya.')
-            ->modalSubmitActionLabel('Simpan')
+            ->modalSubmitActionLabel('Save')
             ->fillForm(fn (MaintenanceVisit $record): array => [
                 'completed_date' => now()->toDateString(),
                 'vendor_id' => $record->vendor_id,
@@ -412,14 +420,14 @@ class MaintenanceScheduleResource extends Resource
     public static function lewatiKunjunganAction(): Action
     {
         return Action::make('lewati_kunjungan')
-            ->label('Lewati')
+            ->label('Skip')
             ->icon('heroicon-o-forward')
             ->color('gray')
             ->iconButton()
             ->visible(fn (MaintenanceVisit $record): bool => $record->isOpen())
-            ->modalHeading(fn (MaintenanceVisit $record): string => 'Lewati kunjungan ke '.$record->sequence)
+            ->modalHeading(fn (MaintenanceVisit $record): string => 'Skip Visit '.$record->sequence)
             ->modalDescription(fn (MaintenanceVisit $record): string => 'Kunjungan yang jatuh tempo '.$record->due_date->translatedFormat('d F Y').' ditandai tidak dikerjakan, dan alasannya ikut tersimpan di riwayat. Kunjungan berikutnya dihitung dari tanggal jatuh tempo ini, bukan dari hari ini, supaya siklusnya tetap menempel di kalender.')
-            ->modalSubmitActionLabel('Tandai dilewati')
+            ->modalSubmitActionLabel('Mark as Skipped')
             ->schema([
                 Textarea::make('skip_reason')
                     ->label('Alasan tidak dikerjakan')
@@ -455,14 +463,14 @@ class MaintenanceScheduleResource extends Resource
     public static function buatPerintahKerjaAction(): Action
     {
         return Action::make('buat_perintah_kerja')
-            ->label('Buat perintah kerja')
+            ->label('Create Work Order')
             ->icon('heroicon-o-wrench-screwdriver')
             ->color('primary')
             ->iconButton()
             ->requiresConfirmation()
-            ->modalHeading(fn (MaintenanceVisit $record): string => 'Buat perintah kerja untuk kunjungan ke '.$record->sequence)
+            ->modalHeading(fn (MaintenanceVisit $record): string => 'Create Work Order for Visit '.$record->sequence)
             ->modalDescription(fn (MaintenanceVisit $record): string => 'Dipakai kalau pekerjaannya perlu penugasan, lampiran foto, atau uraian panjang. Untuk kunjungan vendor rutin, tombol Catat sudah dikerjakan lebih cepat. Menyelesaikan perintah kerjanya nanti ikut menutup kunjungan ini.')
-            ->modalSubmitActionLabel('Buat perintah kerja')
+            ->modalSubmitActionLabel('Create Work Order')
             ->visible(fn (MaintenanceVisit $record): bool => $record->isOpen()
                 && ! $record->workOrders()->whereIn('status', WorkOrder::OPEN_STATUSES)->exists())
             ->action(function (MaintenanceVisit $record, $livewire): void {

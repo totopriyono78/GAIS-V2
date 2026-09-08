@@ -61,15 +61,15 @@ class ServiceRequestResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-lifebuoy';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Pemeliharaan';
+    protected static string|UnitEnum|null $navigationGroup = 'Maintenance';
 
-    protected static ?string $navigationLabel = 'Permintaan perbaikan';
+    protected static ?string $navigationLabel = 'Corrective Maintenance';
 
-    protected static ?string $modelLabel = 'permintaan perbaikan';
+    protected static ?string $modelLabel = 'corrective maintenance';
 
-    protected static ?string $pluralModelLabel = 'permintaan perbaikan';
+    protected static ?string $pluralModelLabel = 'corrective maintenance';
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 2;
 
     protected static ?string $recordTitleAttribute = 'code';
 
@@ -159,7 +159,7 @@ class ServiceRequestResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Apa yang perlu diperbaiki')
+            Section::make('What Needs Fixing')
                 ->columns(2)
                 ->schema([
                     TextInput::make('code')
@@ -213,7 +213,7 @@ class ServiceRequestResource extends Resource
                         ->helperText('Makin jelas keterangannya, makin kecil kemungkinan teknisi datang tanpa membawa alat yang tepat.'),
                 ]),
 
-            Section::make('Di mana')
+            Section::make('Where')
                 ->columns(2)
                 ->schema([
                     Select::make('location_id')
@@ -236,7 +236,8 @@ class ServiceRequestResource extends Resource
                         ->helperText('Boleh dikosongkan. Lampu koridor yang mati bukan kerusakan satu aset tertentu.'),
                 ]),
 
-            Section::make('Pemohon')
+            Section::make('Requester')
+                ->columnSpanFull()
                 ->columns(2)
                 ->schema([
                     Select::make('requester_employee_id')
@@ -280,7 +281,7 @@ class ServiceRequestResource extends Resource
     public static function infolist(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Permintaan')
+            Section::make('Request')
                 ->columns(3)
                 ->schema([
                     TextEntry::make('code')
@@ -314,7 +315,7 @@ class ServiceRequestResource extends Resource
                             ?: 'Bukan aset tertentu'),
                 ]),
 
-            Section::make('Perjalanan tiket')
+            Section::make('Ticket Progress')
                 ->columns(3)
                 ->description('Urutan waktunya, dari yang melapor sampai pekerjaannya selesai.')
                 ->schema([
@@ -508,13 +509,13 @@ class ServiceRequestResource extends Resource
     public static function setujuiAction(bool $iconOnly = true): Action
     {
         $aksi = Action::make('setujui')
-            ->label('Setujui')
+            ->label('Approve')
             ->icon('heroicon-o-check-badge')
             ->color('success')
             ->visible(fn (ServiceRequest $record): bool => $record->status === 'diajukan' && static::bolehMenyetujui($record))
-            ->modalHeading(fn (ServiceRequest $record): string => 'Setujui '.$record->code)
+            ->modalHeading(fn (ServiceRequest $record): string => 'Approve '.$record->code)
             ->modalDescription('Setelah disetujui, permintaan ini masuk antrean tim GA dan menunggu diterima. Batas waktu penyelesaian baru mulai dihitung saat tim GA menerimanya, bukan sekarang.')
-            ->modalSubmitActionLabel('Setujui permintaan')
+            ->modalSubmitActionLabel('Approve Request')
             ->schema([
                 Textarea::make('approval_note')
                     ->label('Catatan')
@@ -547,14 +548,14 @@ class ServiceRequestResource extends Resource
     public static function tolakAction(bool $iconOnly = true): Action
     {
         $aksi = Action::make('tolak')
-            ->label('Tolak')
+            ->label('Reject')
             ->icon('heroicon-o-hand-raised')
             ->color('danger')
             ->visible(fn (ServiceRequest $record): bool => in_array($record->status, ['diajukan', 'disetujui'], true)
                 && (static::bolehMenyetujui($record) || static::allows('accept')))
-            ->modalHeading(fn (ServiceRequest $record): string => 'Tolak '.$record->code)
+            ->modalHeading(fn (ServiceRequest $record): string => 'Reject '.$record->code)
             ->modalDescription('Permintaan yang ditolak tetap tersimpan beserta alasannya, dan pemohon bisa membacanya. Kalau masalahnya belum selesai, pemohon perlu membuat permintaan baru.')
-            ->modalSubmitActionLabel('Tolak permintaan')
+            ->modalSubmitActionLabel('Reject Request')
             ->schema([
                 Textarea::make('rejection_reason')
                     ->label('Alasan ditolak')
@@ -592,16 +593,16 @@ class ServiceRequestResource extends Resource
     public static function terimaAction(bool $iconOnly = true): Action
     {
         $aksi = Action::make('terima')
-            ->label('Terima')
+            ->label('Accept')
             ->icon('heroicon-o-inbox-arrow-down')
             ->color('primary')
             ->visible(fn (ServiceRequest $record): bool => $record->status === 'disetujui' && static::allows('accept'))
-            ->modalHeading(fn (ServiceRequest $record): string => 'Terima '.$record->code)
+            ->modalHeading(fn (ServiceRequest $record): string => 'Accept '.$record->code)
             ->modalDescription(fn (ServiceRequest $record): string => 'Satu perintah kerja korektif akan dibuat, dan pekerjaannya dicatat di sana. '
                 .($record->category?->sla_hours
                     ? 'Batas waktu '.$record->category->slaLabel().' mulai dihitung sekarang.'
                     : 'Jenis permintaan ini belum punya target waktu, jadi tidak ada batas waktu yang dihitung.'))
-            ->modalSubmitActionLabel('Terima dan buat perintah kerja')
+            ->modalSubmitActionLabel('Accept and Create Work Order')
             ->schema([
                 DatePicker::make('scheduled_date')
                     ->label('Rencana dikerjakan')
@@ -661,15 +662,15 @@ class ServiceRequestResource extends Resource
     public static function batalkanAction(bool $iconOnly = true): Action
     {
         $aksi = Action::make('batalkan')
-            ->label('Batalkan')
+            ->label('Cancel')
             ->icon('heroicon-o-x-circle')
             ->color('gray')
             ->visible(fn (ServiceRequest $record): bool => in_array($record->status, ['diajukan', 'disetujui'], true)
                 && static::bolehMembatalkan($record))
             ->requiresConfirmation()
-            ->modalHeading(fn (ServiceRequest $record): string => 'Batalkan '.$record->code)
+            ->modalHeading(fn (ServiceRequest $record): string => 'Cancel '.$record->code)
             ->modalDescription('Permintaan yang dibatalkan tetap tersimpan sebagai catatan, tetapi tidak lagi masuk antrean tim GA.')
-            ->modalSubmitActionLabel('Batalkan permintaan')
+            ->modalSubmitActionLabel('Cancel Request')
             ->action(function (ServiceRequest $record): void {
                 if (! $record->batalkan()) {
                     Notification::make()

@@ -38,7 +38,7 @@ class TripsRelationManager extends RelationManager
 {
     protected static string $relationship = 'trips';
 
-    protected static ?string $title = 'Log perjalanan';
+    protected static ?string $title = 'Trip Log';
 
     protected static bool $isLazy = false;
 
@@ -143,9 +143,9 @@ class TripsRelationManager extends RelationManager
             ])
             ->headerActions([
                 CreateAction::make()
-                    ->label('Catat keberangkatan')
-                    ->modalHeading('Catat keberangkatan')
-                    ->modalSubmitActionLabel('Simpan keberangkatan')
+                    ->label('Log Departure')
+                    ->modalHeading('Log Departure')
+                    ->modalSubmitActionLabel('Save Departure')
                     ->visible(fn (): bool => VehicleResource::canEdit($this->getOwnerRecord())),
             ])
             ->recordActions([
@@ -170,15 +170,15 @@ class TripsRelationManager extends RelationManager
     protected function tutupAction(): Action
     {
         return Action::make('tutup')
-            ->label('Catat kembali')
+            ->label('Log Return')
             ->icon('heroicon-o-flag')
             ->color('success')
             ->iconButton()
             ->visible(fn (VehicleTrip $record): bool => ! $record->selesai()
                 && VehicleResource::canEdit($this->getOwnerRecord()))
-            ->modalHeading(fn (VehicleTrip $record): string => 'Catat kembalinya perjalanan ke '.$record->destination)
+            ->modalHeading(fn (VehicleTrip $record): string => 'Log Return from Trip to '.$record->destination)
             ->modalDescription('Setelah disimpan, odometer kendaraan ikut maju ke angka ini, dan pemesanan yang menyertainya ikut ditutup.')
-            ->modalSubmitActionLabel('Simpan kepulangan')
+            ->modalSubmitActionLabel('Save Return')
             ->fillForm(fn (VehicleTrip $record): array => ['returned_at' => now()->format('Y-m-d H:i:s')])
             ->schema([
                 DateTimePicker::make('returned_at')

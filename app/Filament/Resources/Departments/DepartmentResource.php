@@ -32,13 +32,13 @@ class DepartmentResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-building-office-2';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Data Induk';
+    protected static string|UnitEnum|null $navigationGroup = 'Master Data';
 
-    protected static ?string $navigationLabel = 'Departemen';
+    protected static ?string $navigationLabel = 'Departments';
 
-    protected static ?string $modelLabel = 'departemen';
+    protected static ?string $modelLabel = 'department';
 
-    protected static ?string $pluralModelLabel = 'departemen';
+    protected static ?string $pluralModelLabel = 'departments';
 
     protected static ?int $navigationSort = 1;
 
@@ -48,6 +48,7 @@ class DepartmentResource extends Resource
     {
         return $schema->components([
             Section::make()
+                ->columnSpanFull()
                 ->columns(2)
                 ->schema([
                     TextInput::make('code')

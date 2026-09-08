@@ -38,13 +38,13 @@ class VendorResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-building-storefront';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Data Induk';
+    protected static string|UnitEnum|null $navigationGroup = 'Master Data';
 
-    protected static ?string $navigationLabel = 'Rekanan';
+    protected static ?string $navigationLabel = 'Vendors';
 
-    protected static ?string $modelLabel = 'rekanan';
+    protected static ?string $modelLabel = 'vendor';
 
-    protected static ?string $pluralModelLabel = 'rekanan';
+    protected static ?string $pluralModelLabel = 'vendors';
 
     protected static ?int $navigationSort = 40;
 
@@ -53,7 +53,7 @@ class VendorResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Identitas rekanan')
+            Section::make('Vendor Identity')
                 ->columns(2)
                 ->schema([
                     TextInput::make('code')
@@ -80,7 +80,7 @@ class VendorResource extends Resource
                         ->placeholder('Contoh: AC dan pendingin ruangan'),
                 ]),
 
-            Section::make('Kontak')
+            Section::make('Contact')
                 ->columns(2)
                 ->schema([
                     TextInput::make('contact_person')
@@ -104,7 +104,8 @@ class VendorResource extends Resource
                         ->columnSpanFull(),
                 ]),
 
-            Section::make('Catatan')
+            Section::make('Notes')
+                ->columnSpanFull()
                 ->schema([
                     Textarea::make('notes')
                         ->label('Catatan')

@@ -97,6 +97,7 @@ class UserResource extends Resource
                 ]),
 
             Section::make('Izin khusus pengguna ini')
+                ->columnSpanFull()
                 ->description('Dipakai untuk pengecualian, misalnya satu orang yang boleh menghapus data padahal rolenya tidak. Pengecualian menang atas role.')
                 ->collapsed()
                 ->schema([

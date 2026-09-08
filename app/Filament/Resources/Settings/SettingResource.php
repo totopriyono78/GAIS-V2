@@ -29,13 +29,13 @@ class SettingResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-adjustments-horizontal';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Sistem';
+    protected static string|UnitEnum|null $navigationGroup = 'System';
 
-    protected static ?string $navigationLabel = 'Pengaturan';
+    protected static ?string $navigationLabel = 'Settings';
 
-    protected static ?string $modelLabel = 'pengaturan';
+    protected static ?string $modelLabel = 'setting';
 
-    protected static ?string $pluralModelLabel = 'pengaturan';
+    protected static ?string $pluralModelLabel = 'settings';
 
     protected static ?int $navigationSort = 1;
 
@@ -45,6 +45,7 @@ class SettingResource extends Resource
     {
         return $schema->components([
             Section::make()
+                ->columnSpanFull()
                 ->schema([
                     TextInput::make('label')
                         ->label('Nama pengaturan')
@@ -109,7 +110,7 @@ class SettingResource extends Resource
                         ->all()),
             ])
             ->recordActions([
-                EditAction::make()->label('Ubah nilai')->iconButton(),
+                EditAction::make()->label('Edit Value')->iconButton(),
             ])
             ->emptyStateHeading('Belum ada pengaturan')
             ->emptyStateDescription('Jalankan php artisan db:seed --class=SettingSeeder untuk mengisi pengaturan bawaan.');

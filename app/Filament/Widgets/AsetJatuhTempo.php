@@ -30,7 +30,7 @@ class AsetJatuhTempo extends StatsOverviewWidget
 
     protected int|string|array $columnSpan = 'full';
 
-    protected ?string $heading = 'Garansi dan sewa yang akan habis';
+    protected ?string $heading = 'Expiring Warranties & Leases';
 
     public static function canView(): bool
     {

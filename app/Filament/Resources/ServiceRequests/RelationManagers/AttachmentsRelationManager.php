@@ -31,7 +31,7 @@ class AttachmentsRelationManager extends RelationManager
 {
     protected static string $relationship = 'attachments';
 
-    protected static ?string $title = 'Foto keadaan';
+    protected static ?string $title = 'Condition Photos';
 
     protected static bool $isLazy = false;
 
@@ -83,12 +83,12 @@ class AttachmentsRelationManager extends RelationManager
             ->defaultSort('created_at', 'asc')
             ->headerActions([
                 CreateAction::make()
-                    ->label('Unggah foto')
+                    ->label('Upload Photo')
                     ->visible(fn (): bool => $this->masihBolehDiubah()),
             ])
             ->recordActions([
                 Action::make('unduh')
-                    ->label('Buka')
+                    ->label('Open')
                     ->icon('heroicon-o-arrow-top-right-on-square')
                     ->iconButton()
                     ->url(fn (ServiceRequestAttachment $record): ?string => filled($record->file_path)

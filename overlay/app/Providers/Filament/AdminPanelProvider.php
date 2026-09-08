@@ -13,6 +13,7 @@ use App\Filament\Pages\Dasbor;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Enums\Width;
+use Filament\View\PanelsRenderHook;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
@@ -68,17 +69,34 @@ class AdminPanelProvider extends PanelProvider
              * tombol, yang membaca izin modul, bukan oleh sifat halamannya.
              */
             ->readOnlyRelationManagersOnResourceViewPagesByDefault(false)
+            /*
+             * 16rem, bukan 20rem bawaan Filament.
+             *
+             * Layar kantor paling umum masih 1366 piksel, dan sidebar 20rem memakan 320
+             * piksel darinya sebelum satu kolom tabel pun tergambar. Angka 16rem dipilih
+             * dari pengukuran, bukan dari selera: nama menu terpanjang yang ada sekarang
+             * membutuhkan 204 piksel setelah ikon dan bantalannya, dan 16rem menyisakan
+             * 20 piksel di atas kebutuhan itu. Bantalan daftar menunya dikecilkan di
+             * gais.css supaya sisa itu benar benar ada.
+             */
+            ->sidebarWidth('16rem')
             ->sidebarCollapsibleOnDesktop()
             ->maxContentWidth(Width::Full)
             ->navigationGroups([
-                'Aset',
-                'Pemeliharaan',
-                'Kendaraan',
-                'Persediaan',
-                'Anggaran',
-                'Data Induk',
-                'Pengaturan Akses',
-                'Sistem',
+                'Assets',
+                'Maintenance',
+                'Vehicles',
+                // Ditaruh setelah Vehicles, bersama dua kelompok di atasnya yang sama sama
+                // mengurus gedung dan isinya. Kelompok yang tidak disebut di daftar ini
+                // ditempatkan Filament di paling bawah, jadi menghilangkannya dari sini
+                // berarti menaruh pekerjaan harian tim GA di bawah Pengaturan.
+                'Facility Services',
+                'Correspondence',
+                'Office Supplies',
+                'Budget & Expenses',
+                'Master Data',
+                'Access Control',
+                'System',
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
@@ -106,7 +124,27 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+            ])
+            /*
+             * Baris hak cipta di kaki halaman.
+             *
+             * Dipasang di dua tempat karena panel ini punya dua tata letak. FOOTER
+             * mengisi halaman panel biasa, SIMPLE_LAYOUT_END mengisi halaman masuk yang
+             * memakai tata letak sederhana dan tidak punya kaki halaman sendiri.
+             * Memasang satu saja membuat baris ini hilang persis di halaman pertama yang
+             * dilihat orang.
+             */
+            /*
+             * Peluncur menu di ujung kiri topbar.
+             *
+             * Isinya tidak ditulis di mana pun. Ia dibaca dari navigasi panel yang sama
+             * dengan yang menggambar sidebar, jadi menu yang disembunyikan izin juga
+             * hilang dari peluncur, dan modul baru muncul di keduanya sekaligus. Ini yang
+             * membuat aturan "menu tidak pernah ditulis manual" tetap berlaku.
+             */
+            ->renderHook(PanelsRenderHook::TOPBAR_START, fn (): string => view('filament.peluncur-menu')->render())
+            ->renderHook(PanelsRenderHook::FOOTER, fn (): string => view('filament.footer')->render())
+            ->renderHook(PanelsRenderHook::SIMPLE_LAYOUT_END, fn (): string => view('filament.footer')->render());
     }
 
     /**

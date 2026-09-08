@@ -30,7 +30,7 @@ class AttachmentsRelationManager extends RelationManager
 {
     protected static string $relationship = 'attachments';
 
-    protected static ?string $title = 'Lampiran';
+    protected static ?string $title = 'Attachments';
 
     protected static bool $isLazy = false;
 
@@ -114,12 +114,12 @@ class AttachmentsRelationManager extends RelationManager
             ])
             ->headerActions([
                 CreateAction::make()
-                    ->label('Unggah lampiran')
+                    ->label('Upload Attachment')
                     ->visible(fn (): bool => WorkOrderResource::canEdit($this->getOwnerRecord())),
             ])
             ->recordActions([
                 Action::make('unduh')
-                    ->label('Unduh')
+                    ->label('Download')
                     ->icon('heroicon-o-arrow-down-tray')
                     ->iconButton()
                     ->url(fn (WorkOrderAttachment $record): ?string => filled($record->file_path)

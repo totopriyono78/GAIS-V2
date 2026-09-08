@@ -22,16 +22,16 @@ class ListAssets extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()->label('Tambah aset'),
+            CreateAction::make()->label('Add Asset'),
 
             Action::make('impor')
-                ->label('Impor dari CSV')
+                ->label('Import from CSV')
                 ->icon('heroicon-o-arrow-up-tray')
                 ->color('gray')
                 ->visible(fn (): bool => AssetResource::canCreate())
-                ->modalHeading('Impor data aset dari CSV')
+                ->modalHeading('Import Assets from CSV')
                 ->modalDescription('Simpan berkas Excel Anda sebagai CSV terlebih dulu. Pemisah titik koma maupun koma sama sama diterima.')
-                ->modalSubmitActionLabel('Jalankan impor')
+                ->modalSubmitActionLabel('Run Import')
                 ->schema([
                     FileUpload::make('berkas')
                         ->label('Berkas CSV')
@@ -51,7 +51,7 @@ class ListAssets extends ListRecords
                 }),
 
             Action::make('templat')
-                ->label('Unduh templat CSV')
+                ->label('Download CSV Template')
                 ->icon('heroicon-o-document-arrow-down')
                 ->color('gray')
                 ->visible(fn (): bool => AssetResource::canCreate())
@@ -62,7 +62,7 @@ class ListAssets extends ListRecords
                 )),
 
             Action::make('laporan_impor')
-                ->label('Unduh laporan impor terakhir')
+                ->label('Download Last Import Report')
                 ->icon('heroicon-o-clipboard-document-check')
                 ->color('gray')
                 ->visible(fn (): bool => AssetResource::canCreate() && $this->latestReportPath() !== null)

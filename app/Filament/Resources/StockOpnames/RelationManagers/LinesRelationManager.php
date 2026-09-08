@@ -41,7 +41,7 @@ class LinesRelationManager extends RelationManager
 
     protected static string $relationship = 'lines';
 
-    protected static ?string $title = 'Daftar target pemeriksaan';
+    protected static ?string $title = 'Count Targets';
 
     #[On(self::REFRESH_EVENT)]
     public function muatUlangDaftar(): void
@@ -115,7 +115,7 @@ class LinesRelationManager extends RelationManager
             ])
             ->recordActions([
                 Action::make('sesuai')
-                    ->label('Tandai sesuai catatan')
+                    ->label('Mark as Matching')
                     ->icon('heroicon-o-check')
                     ->color('success')
                     ->iconButton()
@@ -125,12 +125,12 @@ class LinesRelationManager extends RelationManager
                     }),
 
                 Action::make('temuan')
-                    ->label('Catat temuan')
+                    ->label('Record Finding')
                     ->icon('heroicon-o-pencil-square')
                     ->iconButton()
                     ->visible(fn (): bool => $this->bolehMemeriksa())
-                    ->modalHeading(fn (StockOpnameLine $record): string => 'Temuan untuk '.$record->asset_code)
-                    ->modalSubmitActionLabel('Simpan temuan')
+                    ->modalHeading(fn (StockOpnameLine $record): string => 'Finding for '.$record->asset_code)
+                    ->modalSubmitActionLabel('Save Finding')
                     ->fillForm(fn (StockOpnameLine $record): array => [
                         'found' => $record->found ?? true,
                         'found_location_id' => $record->found_location_id ?? $record->expected_location_id,
@@ -178,25 +178,25 @@ class LinesRelationManager extends RelationManager
                     }),
 
                 Action::make('ulangi')
-                    ->label('Batalkan pemeriksaan baris ini')
+                    ->label('Clear This Row')
                     ->icon('heroicon-o-arrow-uturn-left')
                     ->color('gray')
                     ->iconButton()
                     ->visible(fn (StockOpnameLine $record): bool => $this->bolehMemeriksa() && $record->checked)
                     ->requiresConfirmation()
-                    ->modalHeading('Batalkan pemeriksaan baris ini')
+                    ->modalHeading('Clear This Row')
                     ->modalDescription('Temuan yang sudah dicatat untuk baris ini dihapus, dan barisnya kembali berstatus belum diperiksa.')
                     ->action(fn (StockOpnameLine $record) => $record->resetCheck()),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     BulkAction::make('sesuai_massal')
-                        ->label('Tandai sesuai catatan')
+                        ->label('Mark as Matching')
                         ->icon('heroicon-o-check')
                         ->color('success')
                         ->visible(fn (): bool => $this->bolehMemeriksa())
                         ->requiresConfirmation()
-                        ->modalHeading('Tandai baris terpilih sesuai catatan')
+                        ->modalHeading('Mark Selected Rows as Matching')
                         ->modalDescription('Dipakai kalau satu rak atau satu ruangan sudah dicek sekaligus dan semuanya cocok. Baris yang sudah diperiksa tidak diubah.')
                         ->deselectRecordsAfterCompletion()
                         ->action(function (Collection $selectedRecords): void {

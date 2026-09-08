@@ -33,13 +33,13 @@ class AssetCategoryResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-group';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Aset';
+    protected static string|UnitEnum|null $navigationGroup = 'Assets';
 
-    protected static ?string $navigationLabel = 'Kategori aset';
+    protected static ?string $navigationLabel = 'Asset Categories';
 
-    protected static ?string $modelLabel = 'kategori aset';
+    protected static ?string $modelLabel = 'asset category';
 
-    protected static ?string $pluralModelLabel = 'kategori aset';
+    protected static ?string $pluralModelLabel = 'asset categories';
 
     protected static ?int $navigationSort = 1;
 
@@ -48,7 +48,7 @@ class AssetCategoryResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Kategori')
+            Section::make('Category')
                 ->columns(2)
                 ->schema([
                     TextInput::make('code')
@@ -74,7 +74,7 @@ class AssetCategoryResource extends Resource
                         ->default(true),
                 ]),
 
-            Section::make('Nomor akun COA')
+            Section::make('COA Account Number')
                 ->description('Nomor akun aset tetap menjadi segmen kedua kode aset, contohnya FIN-1201-2026-0001. Karena itu nomor akun wajib diisi sebelum kategori ini bisa dipakai mencatat aset. Angkanya ditentukan tim finance, bukan ditebak sistem.')
                 ->columns(3)
                 ->schema([
@@ -93,7 +93,8 @@ class AssetCategoryResource extends Resource
                         ->helperText('Dipakai saat jurnal penyusutan dibangun.'),
                 ]),
 
-            Section::make('Penyusutan')
+            Section::make('Depreciation')
+                ->columnSpanFull()
                 ->description('Perhitungan penyusutannya sendiri belum dibangun, jadi angka di seksi ini baru tersimpan sebagai kebijakan, belum menghasilkan nilai buku atau jurnal. Kelompok pajak menentukan masa manfaat bawaan, angkanya mengikuti PMK 72 Tahun 2023. Kalau kebijakan akuntansi perusahaan berbeda dari kelompok pajaknya, isi masa manfaat secara manual dan angka itu yang dipakai.')
                 ->columns(3)
                 ->schema([

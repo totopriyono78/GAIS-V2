@@ -61,6 +61,7 @@ class VendorBill extends Model
     protected $fillable = [
         'code',
         'vendor_id',
+        'supply_purchase_id',
         'invoice_number',
         'invoice_date',
         'due_date',
@@ -114,6 +115,17 @@ class VendorBill extends Model
         return $this->hasMany(VendorBillLine::class);
     }
 
+    /**
+     * Pesanan pembelian ATK yang ditagih faktur ini, kalau memang ada.
+     *
+     * Boleh kosong, dan sebagian besar tagihan GA memang kosong: listrik, sewa gedung, dan
+     * jasa kebersihan datang tanpa didahului pesanan barang.
+     */
+    public function purchase(): BelongsTo
+    {
+        return $this->belongsTo(SupplyPurchase::class, 'supply_purchase_id');
+    }
+
     public function approvedByUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approved_by_user_id');
@@ -135,6 +147,76 @@ class VendorBill extends Model
     public function total(): float
     {
         return round((float) $this->lines()->sum('amount'), 2);
+    }
+
+    /**
+     * Selisih antara nilai tagihan ini dan nilai barang yang benar benar sudah diterima
+     * atas pesanan yang ditunjuknya, atau null kalau tagihan ini tidak menunjuk pesanan.
+     *
+     * Angka pembandingnya sengaja nilai yang **sudah diterima**, bukan nilai pesanan. Faktur
+     * yang menagih sepuluh box sementara yang datang baru tujuh adalah keadaan yang perlu
+     * dilihat manajer sebelum menandatangani, dan membandingkannya dengan nilai pesanan akan
+     * menyembunyikan persis keadaan itu.
+     *
+     * Positif berarti tagihannya lebih besar daripada barang yang sudah datang.
+     */
+    public function selisihTerhadapPenerimaan(): ?float
+    {
+        if ($this->purchase === null) {
+            return null;
+        }
+
+        return round($this->total() - $this->purchase->totalDiterima(), 2);
+    }
+
+    /**
+     * Selisih itu diceritakan sebagai kalimat, bukan angka telanjang, karena angka telanjang
+     * di layar persetujuan hanya melahirkan pertanyaan berikutnya.
+     */
+    public function selisihLabel(): ?string
+    {
+        $selisih = $this->selisihTerhadapPenerimaan();
+
+        if ($selisih === null) {
+            return null;
+        }
+
+        $pesanan = $this->purchase;
+        $diterima = Rupiah::penuh($pesanan->totalDiterima());
+        $belum = $pesanan->barisBelumLengkap();
+
+        if (abs($selisih) < 0.01) {
+            return 'Cocok dengan barang yang sudah diterima, '.$diterima.'.';
+        }
+
+        if ($selisih > 0) {
+            return 'Tagihan lebih besar '.Rupiah::penuh($selisih).' daripada barang yang sudah diterima, '
+                .$diterima.'.'
+                .($belum > 0
+                    ? ' Masih ada '.$belum.' jenis barang yang belum datang seluruhnya, jadi selisih ini wajar kalau fakturnya menagih seluruh pesanan di muka.'
+                    : ' Seluruh barang pesanan itu sudah datang, jadi selisih ini perlu ditanyakan ke rekanannya.');
+        }
+
+        return 'Tagihan lebih kecil '.Rupiah::penuh(abs($selisih)).' daripada barang yang sudah diterima, '
+            .$diterima.'. Kemungkinan masih ada faktur susulan atas pesanan yang sama.';
+    }
+
+    /** Warna keterangan selisih. Abu abu berarti tidak ada yang perlu ditanyakan. */
+    public function selisihColor(): ?string
+    {
+        $selisih = $this->selisihTerhadapPenerimaan();
+
+        if ($selisih === null) {
+            return null;
+        }
+
+        if (abs($selisih) < 0.01) {
+            return 'success';
+        }
+
+        // Tagihan yang melebihi barang yang datang pada pesanan yang sudah lengkap adalah
+        // satu satunya keadaan yang benar benar perlu ditanyakan sebelum ditandatangani.
+        return $selisih > 0 && $this->purchase?->barisBelumLengkap() === 0 ? 'danger' : 'warning';
     }
 
     public function totalLabel(): string

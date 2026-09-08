@@ -53,13 +53,13 @@ class VehicleResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-truck';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Kendaraan';
+    protected static string|UnitEnum|null $navigationGroup = 'Vehicles';
 
-    protected static ?string $navigationLabel = 'Kendaraan dinas';
+    protected static ?string $navigationLabel = 'Vehicles';
 
-    protected static ?string $modelLabel = 'kendaraan';
+    protected static ?string $modelLabel = 'vehicle';
 
-    protected static ?string $pluralModelLabel = 'kendaraan';
+    protected static ?string $pluralModelLabel = 'vehicles';
 
     protected static ?int $navigationSort = 10;
 
@@ -81,7 +81,7 @@ class VehicleResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Aset yang menjadi kendaraan ini')
+            Section::make('Underlying Asset')
                 ->columns(2)
                 ->description('Kendaraan didaftarkan dulu sebagai aset, lalu diberi keterangan kendaraan di sini. Dengan begitu penyusutan, riwayat perbaikan, dan pelepasannya memakai jalur yang sama dengan aset lain.')
                 ->schema([
@@ -116,7 +116,7 @@ class VehicleResource extends Resource
                         ->live(),
                 ]),
 
-            Section::make('Cara dipakai')
+            Section::make('Usage')
                 ->columns(2)
                 ->schema([
                     Select::make('usage_mode')
@@ -143,7 +143,7 @@ class VehicleResource extends Resource
                         ->helperText('Kendaraan yang dimatikan tidak lagi diingatkan jatuh tempo dokumennya, tetapi riwayatnya tetap tersimpan. Untuk kendaraan yang benar benar dijual, pakai dokumen pelepasan aset.'),
                 ]),
 
-            Section::make('Keterangan teknis')
+            Section::make('Specifications')
                 ->columns(3)
                 ->description('Nomor rangka dan mesin ini yang diminta Samsat saat perpanjangan, dan yang dicocokkan polisi saat kendaraan diperiksa.')
                 ->schema([
@@ -216,7 +216,7 @@ class VehicleResource extends Resource
     public static function infolist(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Kendaraan')
+            Section::make('Vehicle')
                 ->columns(3)
                 ->schema([
                     TextEntry::make('plate_number')
@@ -291,7 +291,7 @@ class VehicleResource extends Resource
                         ->visible(fn (Vehicle $record): bool => filled($record->notes)),
                 ]),
 
-            Section::make('Dokumen yang berlaku')
+            Section::make('Current Documents')
                 ->columns(2)
                 ->description('Diambil dari riwayat di bawah: untuk tiap jenis, yang tanggal berakhirnya paling jauh.')
                 ->schema([

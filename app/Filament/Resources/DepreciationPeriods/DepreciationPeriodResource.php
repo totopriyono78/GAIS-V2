@@ -41,13 +41,13 @@ class DepreciationPeriodResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-arrow-trending-down';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Aset';
+    protected static string|UnitEnum|null $navigationGroup = 'Assets';
 
-    protected static ?string $navigationLabel = 'Penyusutan aset';
+    protected static ?string $navigationLabel = 'Depreciation';
 
-    protected static ?string $modelLabel = 'periode penyusutan';
+    protected static ?string $modelLabel = 'depreciation period';
 
-    protected static ?string $pluralModelLabel = 'periode penyusutan';
+    protected static ?string $pluralModelLabel = 'depreciation periods';
 
     protected static ?int $navigationSort = 6;
 
@@ -88,7 +88,7 @@ class DepreciationPeriodResource extends Resource
     public static function infolist(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Penutupan')
+            Section::make('Period Closing')
                 ->columns(3)
                 ->schema([
                     TextEntry::make('period')
@@ -183,9 +183,9 @@ class DepreciationPeriodResource extends Resource
             ->icon('heroicon-o-lock-open')
             ->color('danger')
             ->requiresConfirmation()
-            ->modalHeading(fn (DepreciationPeriod $record): string => 'Buka kembali '.$record->label())
+            ->modalHeading(fn (DepreciationPeriod $record): string => 'Reopen '.$record->label())
             ->modalDescription(fn (DepreciationPeriod $record): string => 'Seluruh beban penyusutan periode ini dihapus, dan '.$record->label().' kembali menjadi periode yang belum dihitung. Akumulasi penyusutan tiap aset ikut mundur ke keadaan sebelum periode ini ditutup. Penghapusannya tercatat di jejak audit.')
-            ->modalSubmitActionLabel('Buka kembali')
+            ->modalSubmitActionLabel('Reopen')
             ->visible(fn (DepreciationPeriod $record): bool => static::canReopen() && $record->canBeReopened())
             ->action(function (DepreciationPeriod $record, $livewire) use ($setelahnya): void {
                 $label = $record->label();
@@ -233,10 +233,10 @@ class DepreciationPeriodResource extends Resource
             ->modalHeading(function (): string {
                 $periode = app(PenyusutanAset::class)->periodeBerikutnya();
 
-                return 'Tutup penyusutan '.Periode::label($periode);
+                return 'Close Depreciation '.Periode::label($periode);
             })
             ->modalDescription('Angka di bawah dihitung ulang saat kotak ini dibuka. Setelah ditutup, angkanya dibekukan dan tidak ikut berubah kalau data asetnya nanti diperbaiki.')
-            ->modalSubmitActionLabel('Tutup periode')
+            ->modalSubmitActionLabel('Close Period')
             ->schema([
                 Placeholder::make('ringkasan')
                     ->label('Yang akan dicatat')

@@ -40,7 +40,40 @@ class RoleSeeder extends Seeder
             'asset_disposals.read', 'asset_disposals.create', 'asset_disposals.update', 'asset_disposals.delete',
             'supply_items.read', 'supply_items.create', 'supply_items.update',
             'supply_transactions.read', 'supply_transactions.create', 'supply_transactions.update', 'supply_transactions.delete',
+            // Manajer GA menyerahkan barang lewat issue. approve juga diberikan supaya
+            // antrean tidak tersangkut saat kepala departemen cuti panjang, dengan
+            // alasan yang sama seperti pada penggantian biaya.
+            'supply_requests.read', 'supply_requests.read_all', 'supply_requests.create',
+            'supply_requests.update', 'supply_requests.delete', 'supply_requests.approve',
+            'supply_requests.issue', 'supply_requests.request_for_others',
+            // Manajer GA menyetujui pesanan sebelum dikirim ke pemasok. receive juga
+            // diberikan karena di perusahaan menengah ia sering yang menerima kiriman
+            // saat staf gudangnya sedang tidak di tempat.
+            'supply_purchases.read', 'supply_purchases.create', 'supply_purchases.update',
+            'supply_purchases.delete', 'supply_purchases.approve', 'supply_purchases.receive',
+            // Manajer GA memegang adjust, karena menggeser angka gudang adalah keputusan
+            // yang perlu dipertanggungjawabkan, bukan pekerjaan harian.
+            'supply_opnames.read', 'supply_opnames.create', 'supply_opnames.update',
+            'supply_opnames.delete', 'supply_opnames.adjust',
             'vendors.read', 'vendors.create', 'vendors.update',
+            // Kebersihan. Manajer GA memegang data induknya sekaligus, karena menentukan siapa
+            // penanggung jawab area adalah keputusan penugasan, bukan pekerjaan harian.
+            'service_staff.read', 'service_staff.create', 'service_staff.update', 'service_staff.delete',
+            'service_areas.read', 'service_areas.create', 'service_areas.update', 'service_areas.delete',
+            'cleaning_inspections.read', 'cleaning_inspections.create', 'cleaning_inspections.update', 'cleaning_inspections.delete',
+            // Keamanan. Menyusun jadwal jaga adalah keputusan penugasan, jadi ia sekelompok
+            // dengan data induk petugas di atasnya.
+            'security_shifts.read', 'security_shifts.create', 'security_shifts.update', 'security_shifts.delete',
+            'incident_reports.read', 'incident_reports.create', 'incident_reports.update', 'incident_reports.delete',
+            // Surat. Manajer GA melihat dan mencatat seluruh agenda surat.
+            'letters.read', 'letters.create', 'letters.update', 'letters.delete',
+            'parcel_shipments.read', 'parcel_shipments.create', 'parcel_shipments.update', 'parcel_shipments.delete',
+            // Manajer GA menyetujui perjalanan dan menyerahkan uang mukanya. verify juga
+            // diberikan supaya antrean tidak tersangkut saat stafnya cuti, dengan alasan yang
+            // sama seperti pada tagihan dan penggantian biaya.
+            'business_trips.read', 'business_trips.read_all', 'business_trips.create',
+            'business_trips.update', 'business_trips.delete', 'business_trips.approve',
+            'business_trips.pay', 'business_trips.verify',
             'maintenance_schedules.read', 'maintenance_schedules.create', 'maintenance_schedules.update', 'maintenance_schedules.delete',
             'work_orders.read', 'work_orders.create', 'work_orders.update', 'work_orders.delete',
             'service_request_categories.read', 'service_request_categories.create', 'service_request_categories.update',
@@ -83,7 +116,41 @@ class RoleSeeder extends Seeder
             'asset_disposals.read',
             'supply_items.read', 'supply_items.create', 'supply_items.update',
             'supply_transactions.read', 'supply_transactions.create', 'supply_transactions.update',
+            // issue tanpa approve, sama seperti pola tagihan dan penggantian biaya. Staf
+            // GA yang membuka lemari dan menyerahkan barangnya, tetapi tanda tangan
+            // persetujuan tetap milik kepala departemen pemohon.
+            'supply_requests.read', 'supply_requests.read_all', 'supply_requests.create',
+            'supply_requests.update', 'supply_requests.issue', 'supply_requests.request_for_others',
+            // receive tanpa approve, mengikuti pola yang sama dengan tagihan dan penggantian
+            // biaya. Staf GA menyusun pesanan dan menerima barangnya, tetapi tanda tangan
+            // yang membolehkan pesanan dikirim ke pemasok tetap milik manajer.
+            'supply_purchases.read', 'supply_purchases.create', 'supply_purchases.update',
+            'supply_purchases.receive',
+            // Tanpa adjust, mengikuti pola yang sama dengan opname aset: staf menyusun daftar,
+            // menghitung, dan menutup sesi, tetapi yang menggeser angka gudang bukan dia.
+            'supply_opnames.read', 'supply_opnames.create', 'supply_opnames.update',
             'vendors.read',
+            // Staf GA yang berkeliling memeriksa, jadi ia memegang penuh putaran pemeriksaan.
+            // Data induk petugas dan area hanya bisa dibaca: menentukan siapa penanggung jawab
+            // sebuah area adalah keputusan penugasan yang tetap milik manajer.
+            'service_staff.read',
+            'service_areas.read',
+            'cleaning_inspections.read', 'cleaning_inspections.create', 'cleaning_inspections.update',
+            // Staf GA mencatat kehadiran dan menulis laporan insiden, tetapi tidak menyusun
+            // jadwal jaga. Menyusun jadwal berarti menentukan siapa bekerja kapan, dan itu
+            // tetap milik manajer, pola yang sama dengan penanggung jawab area kebersihan.
+            'security_shifts.read', 'security_shifts.update',
+            'incident_reports.read', 'incident_reports.create', 'incident_reports.update',
+            // Staf GA yang menerima surat di meja depan dan mencatat serah terimanya.
+            // Tanpa delete, karena menghapus baris agenda meninggalkan lubang di urutan
+            // nomor yang tidak bisa diterangkan kepada orang yang mencari suratnya.
+            'letters.read', 'letters.create', 'letters.update',
+            // Staf GA yang mengantar paket ke gerai dan menyalin angka dari resinya.
+            'parcel_shipments.read', 'parcel_shipments.create', 'parcel_shipments.update',
+            // Perjalanan dinas: staf GA mencatat pengajuan dan memeriksa pertanggungjawaban,
+            // tetapi tidak menyetujui perjalanannya dan tidak menyerahkan uang mukanya.
+            'business_trips.read', 'business_trips.read_all', 'business_trips.create',
+            'business_trips.update', 'business_trips.verify',
             'maintenance_schedules.read', 'maintenance_schedules.create', 'maintenance_schedules.update',
             'work_orders.read', 'work_orders.create', 'work_orders.update',
             'service_request_categories.read',
@@ -131,6 +198,21 @@ class RoleSeeder extends Seeder
              * tercatat sebagai penyetuju pengajuannya, bukan karena punya izin global.
              */
             'reimbursements.read', 'reimbursements.create', 'reimbursements.update',
+            /*
+             * read tanpa read_all, dan tanpa request_for_others. Itu yang membuat
+             * karyawan biasa hanya bisa meminta ATK atas namanya sendiri, sementara
+             * perwakilan departemen yang mengumpulkan kebutuhan seluruh timnya perlu
+             * diberi izin request_for_others satu per satu lewat layar Role atau lewat
+             * penambahan izin per pengguna.
+             */
+            'supply_requests.read', 'supply_requests.create', 'supply_requests.update',
+            /*
+             * read tanpa read_all, sama seperti permintaan perbaikan dan penggantian biaya.
+             * Karyawan hanya melihat perjalanannya sendiri dan perjalanan departemen yang ia
+             * kepalai. Kepala departemen menyetujui karena namanya tercatat sebagai penyetuju
+             * pengajuan itu, bukan karena memegang izin approve.
+             */
+            'business_trips.read', 'business_trips.create', 'business_trips.update',
         ]);
     }
 

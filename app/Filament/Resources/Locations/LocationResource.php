@@ -32,13 +32,13 @@ class LocationResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-map-pin';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Data Induk';
+    protected static string|UnitEnum|null $navigationGroup = 'Master Data';
 
-    protected static ?string $navigationLabel = 'Lokasi';
+    protected static ?string $navigationLabel = 'Locations';
 
-    protected static ?string $modelLabel = 'lokasi';
+    protected static ?string $modelLabel = 'location';
 
-    protected static ?string $pluralModelLabel = 'lokasi';
+    protected static ?string $pluralModelLabel = 'locations';
 
     protected static ?int $navigationSort = 2;
 
@@ -48,6 +48,7 @@ class LocationResource extends Resource
     {
         return $schema->components([
             Section::make()
+                ->columnSpanFull()
                 ->description('Aset perusahaan berada di satu lokasi, yaitu Head Office. Karena itu yang dicatat di sini adalah kedalamannya: gedung, lantai, ruangan, sampai area.')
                 ->columns(2)
                 ->schema([

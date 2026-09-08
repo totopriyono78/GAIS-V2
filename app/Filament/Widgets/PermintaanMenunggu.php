@@ -29,7 +29,7 @@ class PermintaanMenunggu extends TableWidget
 
     protected int|string|array $columnSpan = 'full';
 
-    protected static ?string $heading = 'Permintaan yang menunggu tindakan';
+    protected static ?string $heading = 'Corrective Maintenance Awaiting Action';
 
     public static function canView(): bool
     {

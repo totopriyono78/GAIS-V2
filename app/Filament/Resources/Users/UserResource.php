@@ -38,13 +38,13 @@ class UserResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-user-circle';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Pengaturan Akses';
+    protected static string|UnitEnum|null $navigationGroup = 'Access Control';
 
-    protected static ?string $navigationLabel = 'Pengguna';
+    protected static ?string $navigationLabel = 'Users';
 
-    protected static ?string $modelLabel = 'pengguna';
+    protected static ?string $modelLabel = 'user';
 
-    protected static ?string $pluralModelLabel = 'pengguna';
+    protected static ?string $pluralModelLabel = 'users';
 
     protected static ?int $navigationSort = 2;
 
@@ -53,7 +53,7 @@ class UserResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Akun')
+            Section::make('Account')
                 ->columns(2)
                 ->schema([
                     TextInput::make('name')
@@ -96,7 +96,8 @@ class UserResource extends Resource
                         ->bulkToggleable(),
                 ]),
 
-            Section::make('Izin khusus pengguna ini')
+            Section::make('Per User Permissions')
+                ->columnSpanFull()
                 ->description('Dipakai untuk pengecualian, misalnya satu orang yang boleh menghapus data padahal rolenya tidak. Pengecualian menang atas role.')
                 ->collapsed()
                 ->schema([

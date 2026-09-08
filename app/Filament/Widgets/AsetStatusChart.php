@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
  */
 class AsetStatusChart extends ChartWidget
 {
-    protected ?string $heading = 'Aset menurut status';
+    protected ?string $heading = 'Assets by Status';
 
     protected ?string $description = 'Aset yang sudah dilepas tidak ikut dihitung.';
 

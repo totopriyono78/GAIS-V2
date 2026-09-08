@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Widgets\AnggaranRingkasan;
 use App\Filament\Widgets\AsetJatuhTempo;
 use App\Filament\Widgets\AsetJatuhTempoTabel;
 use App\Filament\Widgets\AsetKategoriChart;
@@ -12,6 +13,9 @@ use App\Filament\Widgets\KendaraanRingkasan;
 use App\Filament\Widgets\PemeliharaanBiayaChart;
 use App\Filament\Widgets\PemeliharaanJatuhTempoTabel;
 use App\Filament\Widgets\PemeliharaanRingkasan;
+use App\Filament\Widgets\PenggantianBiayaRingkasan;
+use App\Filament\Widgets\PenggantianMenunggu;
+use App\Filament\Widgets\PermintaanBarangMenunggu;
 use App\Filament\Widgets\PermintaanMenunggu;
 use App\Filament\Widgets\PersediaanPemakaianChart;
 use App\Filament\Widgets\PersediaanPerluDipesan;
@@ -45,14 +49,24 @@ class Dasbor extends Dashboard
         return 'filament.pages.dasbor';
     }
 
+    /**
+     * Nama di menu ditulis di sini, bukan dibiarkan memakai bawaan Filament, karena
+     * bawaannya ikut bahasa panel dan akan tetap berbunyi "Dasbor" sementara seluruh
+     * menu lain sudah berbahasa Inggris.
+     */
+    public static function getNavigationLabel(): string
+    {
+        return 'Dashboard';
+    }
+
     public function getTitle(): string
     {
-        return 'Dasbor';
+        return 'Dashboard';
     }
 
     public function getHeading(): string
     {
-        return 'Dasbor';
+        return 'Dashboard';
     }
 
     public function getSubheading(): ?string
@@ -78,11 +92,11 @@ class Dasbor extends Dashboard
     {
         $semua = [
             'ringkasan' => [
-                'judul' => 'Ringkasan',
+                'judul' => 'Overview',
                 'widget' => [RingkasanTahapSatu::class],
             ],
             'aset' => [
-                'judul' => 'Aset',
+                'judul' => 'Assets',
                 'widget' => [
                     AsetRingkasan::class,
                     AsetStatusChart::class,
@@ -92,7 +106,7 @@ class Dasbor extends Dashboard
                 ],
             ],
             'pemeliharaan' => [
-                'judul' => 'Pemeliharaan',
+                'judul' => 'Maintenance',
                 'widget' => [
                     PemeliharaanRingkasan::class,
                     PermintaanMenunggu::class,
@@ -101,16 +115,28 @@ class Dasbor extends Dashboard
                 ],
             ],
             'kendaraan' => [
-                'judul' => 'Kendaraan',
+                'judul' => 'Vehicles',
                 'widget' => [
                     KendaraanRingkasan::class,
                     KendaraanJatuhTempoTabel::class,
                 ],
             ],
+            'anggaran' => [
+                'judul' => 'Budget',
+                'widget' => [
+                    AnggaranRingkasan::class,
+                    PenggantianBiayaRingkasan::class,
+                    PenggantianMenunggu::class,
+                ],
+            ],
             'persediaan' => [
-                'judul' => 'Persediaan',
+                'judul' => 'Office Supplies',
                 'widget' => [
                     PersediaanRingkasan::class,
+                    // Antrean permintaan ditaruh sebelum diagram pemakaian, karena yang
+                    // pertama bisa ditindaklanjuti hari ini dan yang kedua hanya bisa
+                    // dibaca. Yang bisa dikerjakan selalu didahulukan di halaman ini.
+                    PermintaanBarangMenunggu::class,
                     PersediaanPemakaianChart::class,
                     PersediaanPerluDipesan::class,
                 ],

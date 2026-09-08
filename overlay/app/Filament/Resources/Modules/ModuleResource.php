@@ -45,6 +45,7 @@ class ModuleResource extends Resource
     {
         return $schema->components([
             Section::make('Modul')
+                ->columnSpanFull()
                 ->description('Registri ini adalah sumber daftar izin. Menyimpan perubahan di sini langsung menyamakan baris izin yang tersedia di layar role.')
                 ->columns(2)
                 ->schema([

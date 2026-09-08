@@ -17,126 +17,264 @@ class ModuleSeeder extends Seeder
         $modules = [
             [
                 'code' => 'roles',
-                'name' => 'Role',
+                'name' => 'Roles',
                 'description' => 'Membuat role dan menentukan modul serta aksi yang boleh diaksesnya.',
-                'group' => 'Pengaturan Akses',
+                'group' => 'Access Control',
                 'icon' => 'heroicon-o-shield-check',
                 'sort' => 10,
                 'available_actions' => ['read', 'create', 'update', 'delete'],
             ],
             [
                 'code' => 'users',
-                'name' => 'Pengguna',
+                'name' => 'Users',
                 'description' => 'Akun yang bisa masuk ke aplikasi beserta role dan izin khususnya.',
-                'group' => 'Pengaturan Akses',
+                'group' => 'Access Control',
                 'icon' => 'heroicon-o-user-circle',
                 'sort' => 20,
                 'available_actions' => ['read', 'create', 'update', 'delete'],
             ],
             [
                 'code' => 'modules',
-                'name' => 'Modul',
+                'name' => 'Modules',
                 'description' => 'Registri modul yang menjadi sumber daftar izin.',
-                'group' => 'Pengaturan Akses',
+                'group' => 'Access Control',
                 'icon' => 'heroicon-o-squares-2x2',
                 'sort' => 30,
                 'available_actions' => ['read', 'update'],
             ],
             [
                 'code' => 'asset_categories',
-                'name' => 'Kategori aset',
+                'name' => 'Asset Categories',
                 'description' => 'Kelompok aset beserta awalan kode, umur ekonomis, dan metode penyusutannya.',
-                'group' => 'Aset',
+                'group' => 'Assets',
                 'icon' => 'heroicon-o-rectangle-group',
                 'sort' => 10,
                 'available_actions' => ['read', 'create', 'update', 'delete'],
             ],
             [
                 'code' => 'assets',
-                'name' => 'Daftar aset',
+                'name' => 'Assets',
                 'description' => 'Pendataan aset tetap dan aset bergerak, lokasi, penanggung jawab, status, dan kondisinya.',
-                'group' => 'Aset',
+                'group' => 'Assets',
                 'icon' => 'heroicon-o-cube',
                 'sort' => 20,
                 'available_actions' => ['read', 'create', 'update', 'delete', 'print'],
             ],
             [
                 'code' => 'stock_opnames',
-                'name' => 'Stock opname',
+                'name' => 'Stock Opname',
                 'description' => 'Sesi pemeriksaan fisik aset, pencatatan temuan, dan penyesuaian data.',
-                'group' => 'Aset',
+                'group' => 'Assets',
                 'icon' => 'heroicon-o-clipboard-document-check',
                 'sort' => 30,
                 'available_actions' => ['read', 'create', 'update', 'delete', 'approve'],
             ],
             [
                 'code' => 'asset_transfers',
-                'name' => 'Serah terima aset',
+                'name' => 'Asset Transfers',
                 'description' => 'Dokumen perpindahan aset antar ruangan, penanggung jawab, dan departemen.',
-                'group' => 'Aset',
+                'group' => 'Assets',
                 'icon' => 'heroicon-o-arrow-right-start-on-rectangle',
                 'sort' => 40,
                 'available_actions' => ['read', 'create', 'delete'],
             ],
             [
                 'code' => 'asset_disposals',
-                'name' => 'Pelepasan aset',
+                'name' => 'Asset Disposals',
                 'description' => 'Dokumen penjualan, hibah, pemusnahan, dan kehilangan aset beserta dasarnya.',
-                'group' => 'Aset',
+                'group' => 'Assets',
                 'icon' => 'heroicon-o-archive-box-x-mark',
                 'sort' => 50,
                 'available_actions' => ['read', 'create', 'update', 'delete'],
             ],
             [
                 'code' => 'supply_items',
-                'name' => 'Barang habis pakai',
+                'name' => 'Supply Items',
                 'description' => 'Daftar ATK dan perlengkapan habis pakai beserta stok dan batas pemesanan ulangnya.',
-                'group' => 'Persediaan',
+                'group' => 'Office Supplies',
                 'icon' => 'heroicon-o-archive-box',
                 'sort' => 10,
                 'available_actions' => ['read', 'create', 'update', 'delete'],
             ],
             [
                 'code' => 'supply_transactions',
-                'name' => 'Mutasi barang',
+                'name' => 'Supply Movements',
                 'description' => 'Barang masuk, barang keluar, dan koreksi stok. Daftar ini yang menjadi dasar perhitungan stok.',
-                'group' => 'Persediaan',
+                'group' => 'Office Supplies',
                 'icon' => 'heroicon-o-arrows-right-left',
                 'sort' => 20,
                 'available_actions' => ['read', 'create', 'update', 'delete'],
             ],
             [
+                'code' => 'supply_requests',
+                'name' => 'Supply Requests',
+                'description' => 'Permintaan pemakaian ATK oleh karyawan, persetujuan atasan, dan penyerahan barang oleh tim GA. Penyerahannya yang melahirkan mutasi barang keluar.',
+                'group' => 'Office Supplies',
+                'icon' => 'heroicon-o-clipboard-document-list',
+                'sort' => 30,
+                /*
+                 * Karyawan cukup read dan create, dan tanpa read_all ia hanya melihat
+                 * permintaannya sendiri. Kepala departemen menyetujui karena namanya
+                 * tercatat sebagai penyetuju, bukan karena memegang approve. Tim GA
+                 * menyerahkan barangnya lewat issue, dan itu satu satunya izin yang
+                 * bisa mengurangi stok lewat modul ini. request_for_others yang
+                 * memisahkan karyawan biasa dari perwakilan departemen.
+                 */
+                'available_actions' => ['read', 'read_all', 'create', 'update', 'delete', 'approve', 'issue', 'request_for_others'],
+            ],
+            [
+                'code' => 'supply_purchases',
+                'name' => 'Supply Purchases',
+                'description' => 'Pesanan pembelian ATK ke pemasok dan pembelian langsung, beserta penerimaan barangnya. Penerimaannya yang melahirkan mutasi barang masuk.',
+                'group' => 'Office Supplies',
+                'icon' => 'heroicon-o-shopping-cart',
+                'sort' => 40,
+                /*
+                 * approve dipegang manajer GA, yang menyetujui pesanan sebelum dikirim ke
+                 * pemasok. receive dipegang staf gudang, yang menghitung barang saat datang.
+                 * Keduanya dipisah karena menjawab pertanyaan yang berbeda: apakah kita
+                 * boleh membeli ini, dan apakah barangnya benar benar sudah sampai.
+                 */
+                'available_actions' => ['read', 'create', 'update', 'delete', 'approve', 'receive'],
+            ],
+            [
+                'code' => 'supply_opnames',
+                'name' => 'Supply Opname',
+                'description' => 'Penghitungan fisik barang habis pakai dan penyesuaian stok dari hasilnya. Tiap selisih lahir sebagai mutasi koreksi, bukan mengubah angka diam diam.',
+                'group' => 'Office Supplies',
+                'icon' => 'heroicon-o-clipboard-document-check',
+                'sort' => 50,
+                /*
+                 * adjust dipisah dari update, sesuai keputusan pemilik proyek pada
+                 * 8 September 2026. Menyusun daftar, menghitung, dan menutup sesi cukup
+                 * dengan update. Menggeser angka gudang butuh izin tersendiri, dan itulah
+                 * satu satunya tindakan di modul ini yang mengubah stok.
+                 */
+                'available_actions' => ['read', 'create', 'update', 'delete', 'adjust'],
+            ],
+            [
+                'code' => 'service_staff',
+                'name' => 'Service Staff',
+                'description' => 'Petugas kebersihan dan keamanan, karyawan perusahaan maupun tenaga dari rekanan penyedia.',
+                'group' => 'Master Data',
+                'icon' => 'heroicon-o-identification',
+                'sort' => 70,
+                'available_actions' => ['read', 'create', 'update', 'delete'],
+            ],
+            [
+                'code' => 'service_areas',
+                'name' => 'Service Areas',
+                'description' => 'Area yang dibersihkan dan diperiksa, beserta seberapa sering dan siapa penanggung jawabnya.',
+                'group' => 'Master Data',
+                'icon' => 'heroicon-o-sparkles',
+                'sort' => 80,
+                'available_actions' => ['read', 'create', 'update', 'delete'],
+            ],
+            [
+                'code' => 'cleaning_inspections',
+                'name' => 'Cleaning Inspections',
+                'description' => 'Putaran pemeriksaan kebersihan oleh pengawas GA. Yang tercatat adalah hasil pemeriksaan, bukan laporan petugas.',
+                'group' => 'Facility Services',
+                'icon' => 'heroicon-o-clipboard-document-list',
+                'sort' => 10,
+                /*
+                 * Tanpa aksi tersendiri untuk menyelesaikan putaran. Berbeda dari opname yang
+                 * memisahkan adjust, di sini menyelesaikan pemeriksaan tidak mengubah angka
+                 * apa pun di tempat lain, jadi tidak ada yang perlu dipertanggungjawabkan
+                 * terpisah dari mencatat hasilnya.
+                 */
+                'available_actions' => ['read', 'create', 'update', 'delete'],
+            ],
+            [
+                'code' => 'security_shifts',
+                'name' => 'Security Shifts',
+                'description' => 'Jadwal jaga keamanan beserta kehadirannya. Rencana dan kenyataan disimpan berdampingan, tidak saling menimpa.',
+                'group' => 'Facility Services',
+                'icon' => 'heroicon-o-shield-exclamation',
+                'sort' => 20,
+                'available_actions' => ['read', 'create', 'update', 'delete'],
+            ],
+            [
+                'code' => 'incident_reports',
+                'name' => 'Incident Reports',
+                'description' => 'Buku kejadian keamanan. Insiden yang butuh perbaikan fisik diteruskan menjadi tiket perbaikan.',
+                'group' => 'Facility Services',
+                'icon' => 'heroicon-o-exclamation-triangle',
+                'sort' => 30,
+                /*
+                 * Tanpa aksi tersendiri untuk meneruskan insiden menjadi tiket. Yang lahir
+                 * dari tombol itu adalah permintaan perbaikan, jadi izinnya pun izin membuat
+                 * permintaan perbaikan, bukan izin baru di modul ini. Menambah izin sendiri
+                 * di sini akan membuat orang bisa membuat tiket tanpa boleh membuat tiket.
+                 */
+                'available_actions' => ['read', 'create', 'update', 'delete'],
+            ],
+            [
+                'code' => 'letters',
+                'name' => 'Letters',
+                'description' => 'Buku agenda surat masuk dan surat keluar, beserta serah terima surat masuk ke orang yang dituju.',
+                'group' => 'Correspondence',
+                'icon' => 'heroicon-o-envelope',
+                'sort' => 10,
+                'available_actions' => ['read', 'create', 'update', 'delete'],
+            ],
+            [
+                'code' => 'parcel_shipments',
+                'name' => 'Parcel Shipments',
+                'description' => 'Permintaan kirim paket keluar dan biaya sebenarnya dari resi ekspedisi. Biayanya memotong pagu anggaran departemen yang dibebani.',
+                'group' => 'Correspondence',
+                'icon' => 'heroicon-o-inbox-stack',
+                'sort' => 20,
+                'available_actions' => ['read', 'create', 'update', 'delete'],
+            ],
+            [
+                'code' => 'business_trips',
+                'name' => 'Business Trips',
+                'description' => 'Perjalanan dinas beserta uang muka dan pertanggungjawabannya. Biaya yang sudah ditutup memotong pagu anggaran departemen yang dibebani.',
+                'group' => 'Vehicles',
+                'icon' => 'heroicon-o-map',
+                'sort' => 30,
+                /*
+                 * Empat izin untuk empat tangan yang berbeda. approve dipegang atasan,
+                 * pay dipegang tim GA yang menyerahkan uang mukanya, dan verify dipegang
+                 * yang memeriksa pertanggungjawabannya. Menyatukan pay dan verify berarti
+                 * orang yang menyerahkan uang sekaligus yang menyatakan uang itu terpakai
+                 * dengan benar.
+                 */
+                'available_actions' => ['read', 'read_all', 'create', 'update', 'delete', 'approve', 'pay', 'verify'],
+            ],
+            [
                 'code' => 'departments',
-                'name' => 'Departemen',
+                'name' => 'Departments',
                 'description' => 'Struktur departemen dan cost center untuk pembebanan biaya.',
-                'group' => 'Data Induk',
+                'group' => 'Master Data',
                 'icon' => 'heroicon-o-building-office-2',
                 'sort' => 10,
                 'available_actions' => ['read', 'create', 'update', 'delete'],
             ],
             [
                 'code' => 'locations',
-                'name' => 'Lokasi',
+                'name' => 'Locations',
                 'description' => 'Gedung, lantai, ruangan, dan area di Head Office.',
-                'group' => 'Data Induk',
+                'group' => 'Master Data',
                 'icon' => 'heroicon-o-map-pin',
                 'sort' => 20,
                 'available_actions' => ['read', 'create', 'update', 'delete'],
             ],
             [
                 'code' => 'employees',
-                'name' => 'Karyawan',
+                'name' => 'Employees',
                 'description' => 'Data karyawan yang dipakai sebagai penanggung jawab dan pengaju permintaan.',
-                'group' => 'Data Induk',
+                'group' => 'Master Data',
                 'icon' => 'heroicon-o-identification',
                 'sort' => 30,
                 'available_actions' => ['read', 'create', 'update', 'delete'],
             ],
             [
                 'code' => 'depreciation_periods',
-                'name' => 'Penyusutan aset',
+                'name' => 'Depreciation',
                 'description' => 'Penutupan penyusutan bulanan dan beban per aset.',
-                'group' => 'Aset',
+                'group' => 'Assets',
                 'icon' => 'heroicon-o-arrow-trending-down',
                 'sort' => 60,
                 // Tidak ada create dan delete. Periode tidak dibuat tangan, melainkan
@@ -146,18 +284,18 @@ class ModuleSeeder extends Seeder
             ],
             [
                 'code' => 'vendors',
-                'name' => 'Rekanan',
+                'name' => 'Vendors',
                 'description' => 'Tukang servis, bengkel, dan pemasok yang mengerjakan pemeliharaan.',
-                'group' => 'Data Induk',
+                'group' => 'Master Data',
                 'icon' => 'heroicon-o-building-storefront',
                 'sort' => 40,
                 'available_actions' => ['read', 'create', 'update', 'delete'],
             ],
             [
                 'code' => 'service_requests',
-                'name' => 'Permintaan perbaikan',
+                'name' => 'Corrective Maintenance',
                 'description' => 'Tiket kerusakan dari karyawan, persetujuan atasannya, dan penerimaannya oleh tim GA.',
-                'group' => 'Pemeliharaan',
+                'group' => 'Maintenance',
                 'icon' => 'heroicon-o-lifebuoy',
                 'sort' => 5,
                 /*
@@ -171,45 +309,45 @@ class ModuleSeeder extends Seeder
             ],
             [
                 'code' => 'service_request_categories',
-                'name' => 'Jenis permintaan',
+                'name' => 'Request Types',
                 'description' => 'Kelompok permintaan perbaikan beserta prioritas bawaan dan target waktu penyelesaiannya.',
-                'group' => 'Data Induk',
+                'group' => 'Master Data',
                 'icon' => 'heroicon-o-tag',
                 'sort' => 50,
                 'available_actions' => ['read', 'create', 'update', 'delete'],
             ],
             [
                 'code' => 'maintenance_schedules',
-                'name' => 'Jadwal pemeliharaan',
+                'name' => 'Preventive Maintenance',
                 'description' => 'Pekerjaan preventif yang berulang beserta jatuh temponya.',
-                'group' => 'Pemeliharaan',
+                'group' => 'Maintenance',
                 'icon' => 'heroicon-o-calendar-days',
                 'sort' => 10,
                 'available_actions' => ['read', 'create', 'update', 'delete'],
             ],
             [
                 'code' => 'work_orders',
-                'name' => 'Perintah kerja',
+                'name' => 'Work Orders',
                 'description' => 'Pekerjaan pemeliharaan preventif dan korektif beserta biayanya.',
-                'group' => 'Pemeliharaan',
+                'group' => 'Maintenance',
                 'icon' => 'heroicon-o-wrench-screwdriver',
                 'sort' => 20,
                 'available_actions' => ['read', 'create', 'update', 'delete'],
             ],
             [
                 'code' => 'vehicles',
-                'name' => 'Kendaraan dinas',
+                'name' => 'Vehicles',
                 'description' => 'Data kendaraan yang menempel pada aset, beserta pajak, STNK, KIR, dan asuransinya.',
-                'group' => 'Kendaraan',
+                'group' => 'Vehicles',
                 'icon' => 'heroicon-o-truck',
                 'sort' => 10,
                 'available_actions' => ['read', 'create', 'update', 'delete'],
             ],
             [
                 'code' => 'vehicle_bookings',
-                'name' => 'Pemesanan kendaraan',
+                'name' => 'Vehicle Bookings',
                 'description' => 'Pemesanan pool car, persetujuan atasan, dan penugasan kendaraan beserta sopirnya.',
-                'group' => 'Kendaraan',
+                'group' => 'Vehicles',
                 'icon' => 'heroicon-o-calendar-days',
                 'sort' => 20,
                 /*
@@ -223,27 +361,27 @@ class ModuleSeeder extends Seeder
             ],
             [
                 'code' => 'expense_categories',
-                'name' => 'Kategori biaya',
+                'name' => 'Expense Categories',
                 'description' => 'Kelompok biaya GA beserta sumber realisasinya dan pemetaan ke akun perusahaan.',
-                'group' => 'Data Induk',
+                'group' => 'Master Data',
                 'icon' => 'heroicon-o-banknotes',
                 'sort' => 60,
                 'available_actions' => ['read', 'create', 'update', 'delete'],
             ],
             [
                 'code' => 'budgets',
-                'name' => 'Anggaran dan realisasi',
+                'name' => 'Budgets',
                 'description' => 'Pagu per departemen per kategori per tahun, dibandingkan dengan realisasi yang dijumlahkan sendiri dari catatan yang sudah ada.',
-                'group' => 'Anggaran',
+                'group' => 'Budget & Expenses',
                 'icon' => 'heroicon-o-calculator',
                 'sort' => 10,
                 'available_actions' => ['read', 'create', 'update', 'delete'],
             ],
             [
                 'code' => 'vendor_bills',
-                'name' => 'Tagihan rekanan',
+                'name' => 'Vendor Bills',
                 'description' => 'Faktur dari rekanan, pembebanannya ke departemen dan kategori biaya, persetujuan, dan penandaan pembayaran.',
-                'group' => 'Anggaran',
+                'group' => 'Budget & Expenses',
                 'icon' => 'heroicon-o-document-currency-dollar',
                 'sort' => 20,
                 /*
@@ -257,9 +395,9 @@ class ModuleSeeder extends Seeder
             ],
             [
                 'code' => 'reimbursements',
-                'name' => 'Penggantian biaya',
+                'name' => 'Reimbursements',
                 'description' => 'Pengajuan penggantian biaya karyawan beserta struknya, persetujuan atasan, pemeriksaan tim GA, dan penandaan transfer.',
-                'group' => 'Anggaran',
+                'group' => 'Budget & Expenses',
                 'icon' => 'heroicon-o-receipt-percent',
                 'sort' => 30,
                 /*
@@ -274,18 +412,18 @@ class ModuleSeeder extends Seeder
             ],
             [
                 'code' => 'settings',
-                'name' => 'Pengaturan',
+                'name' => 'Settings',
                 'description' => 'Identitas perusahaan dan pengaturan sistem lainnya.',
-                'group' => 'Sistem',
+                'group' => 'System',
                 'icon' => 'heroicon-o-adjustments-horizontal',
                 'sort' => 10,
                 'available_actions' => ['read', 'update'],
             ],
             [
                 'code' => 'audit_logs',
-                'name' => 'Jejak audit',
+                'name' => 'Audit Log',
                 'description' => 'Riwayat penambahan, perubahan, dan penghapusan data.',
-                'group' => 'Sistem',
+                'group' => 'System',
                 'icon' => 'heroicon-o-clipboard-document-list',
                 'sort' => 20,
                 'available_actions' => ['read'],

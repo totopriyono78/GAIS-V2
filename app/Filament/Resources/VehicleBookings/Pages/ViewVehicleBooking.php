@@ -27,7 +27,7 @@ class ViewVehicleBooking extends ViewRecord
         /** @var VehicleBooking $pemesanan */
         $pemesanan = $this->getRecord();
 
-        return $pemesanan->code.' ke '.$pemesanan->destination;
+        return $pemesanan->code.' to '.$pemesanan->destination;
     }
 
     public function getSubheading(): ?string
@@ -57,7 +57,7 @@ class ViewVehicleBooking extends ViewRecord
             VehicleBookingResource::tolakAction(iconOnly: false),
             VehicleBookingResource::batalkanAction(iconOnly: false),
             EditAction::make()
-                ->label('Ubah pemesanan')
+                ->label('Edit Booking')
                 ->visible(fn (): bool => VehicleBookingResource::canEdit($this->getRecord())),
         ];
     }

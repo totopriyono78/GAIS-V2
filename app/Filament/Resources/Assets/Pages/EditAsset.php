@@ -15,13 +15,13 @@ class EditAsset extends EditRecord
     {
         return [
             Action::make('riwayat')
-                ->label('Kartu riwayat')
+                ->label('History Card')
                 ->icon('heroicon-o-clock')
                 ->color('gray')
                 ->url(fn (): string => route('gais.aset.riwayat', ['asset' => $this->record->getKey()]))
                 ->openUrlInNewTab(),
             Action::make('label')
-                ->label('Cetak label')
+                ->label('Print Labels')
                 ->icon('heroicon-o-printer')
                 ->color('gray')
                 ->url(fn (): string => route('gais.cetak.label-aset', ['ids' => $this->record->getKey()]))

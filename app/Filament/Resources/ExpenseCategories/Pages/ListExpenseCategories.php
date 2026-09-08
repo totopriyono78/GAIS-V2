@@ -29,8 +29,8 @@ class ListExpenseCategories extends ListRecords
     {
         return [
             CreateAction::make()
-                ->label('Tambah kategori')
-                ->modalHeading('Tambah kategori biaya'),
+                ->label('Add Category')
+                ->modalHeading('Add Expense Category'),
         ];
     }
 }

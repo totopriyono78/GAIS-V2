@@ -6,10 +6,21 @@ use App\Filament\Resources\VendorBills\VendorBillResource;
 use App\Models\VendorBill;
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
+use Livewire\Attributes\On;
 
 class ViewVendorBill extends ViewRecord
 {
     protected static string $resource = VendorBillResource::class;
+
+    /**
+     * Menggambar ulang halaman saat baris rincian di relation manager berubah.
+     *
+     * Metodenya sengaja kosong. Livewire menggambar ulang komponen setiap kali ia menangani
+     * sebuah peristiwa, jadi keberadaan pendengar inilah yang menyegarkan angka turunan di
+     * infolist, bukan isi metodenya.
+     */
+    #[On('rincian-berubah')]
+    public function rincianBerubah(): void {}
 
     public function getSubheading(): ?string
     {

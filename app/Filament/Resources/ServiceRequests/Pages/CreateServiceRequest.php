@@ -13,12 +13,12 @@ class CreateServiceRequest extends CreateRecord
 
     public function getTitle(): string
     {
-        return 'Ajukan permintaan perbaikan';
+        return 'New Corrective Maintenance';
     }
 
     public function getHeading(): string
     {
-        return 'Ajukan permintaan perbaikan';
+        return 'New Corrective Maintenance';
     }
 
     public function getSubheading(): ?string

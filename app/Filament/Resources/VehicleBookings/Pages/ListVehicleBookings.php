@@ -42,7 +42,7 @@ class ListVehicleBookings extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()->label('Pesan kendaraan'),
+            CreateAction::make()->label('Book Vehicle'),
         ];
     }
 }

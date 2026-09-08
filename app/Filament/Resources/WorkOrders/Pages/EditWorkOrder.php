@@ -12,12 +12,12 @@ class EditWorkOrder extends EditRecord
 
     public function getTitle(): string
     {
-        return 'Perintah kerja '.$this->getRecord()->code;
+        return 'Work Order '.$this->getRecord()->code;
     }
 
     public function getHeading(): string
     {
-        return 'Perintah kerja '.$this->getRecord()->code;
+        return 'Work Order '.$this->getRecord()->code;
     }
 
     public function getSubheading(): ?string

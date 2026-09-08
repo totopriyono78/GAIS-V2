@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
  */
 class AsetKategoriChart extends ChartWidget
 {
-    protected ?string $heading = 'Aset menurut kategori';
+    protected ?string $heading = 'Assets by Category';
 
     protected ?string $description = 'Kategori yang belum punya aset tidak ditampilkan.';
 

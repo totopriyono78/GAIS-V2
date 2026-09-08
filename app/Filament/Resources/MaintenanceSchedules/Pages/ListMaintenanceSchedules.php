@@ -41,7 +41,7 @@ class ListMaintenanceSchedules extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()->label('Tambah jadwal'),
+            CreateAction::make()->label('Add Schedule'),
         ];
     }
 }

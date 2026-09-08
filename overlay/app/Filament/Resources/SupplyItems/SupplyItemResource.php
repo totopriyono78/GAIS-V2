@@ -46,13 +46,13 @@ class SupplyItemResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-archive-box';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Persediaan';
+    protected static string|UnitEnum|null $navigationGroup = 'Office Supplies';
 
-    protected static ?string $navigationLabel = 'Barang habis pakai';
+    protected static ?string $navigationLabel = 'Supply Items';
 
-    protected static ?string $modelLabel = 'barang habis pakai';
+    protected static ?string $modelLabel = 'supply item';
 
-    protected static ?string $pluralModelLabel = 'barang habis pakai';
+    protected static ?string $pluralModelLabel = 'supply items';
 
     protected static ?int $navigationSort = 1;
 
@@ -61,7 +61,7 @@ class SupplyItemResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->columns(1)->components([
-            Section::make('Barang')
+            Section::make('Item')
                 ->columns(3)
                 ->schema([
                     TextInput::make('code')
@@ -100,7 +100,7 @@ class SupplyItemResource extends Resource
                         ->placeholder('Belum ditentukan'),
                 ]),
 
-            Section::make('Batas pemesanan ulang')
+            Section::make('Reorder Level')
                 ->description('Angka ini yang membuat barang muncul di penyaring Perlu dipesan. Isi sebanyak pemakaian selama waktu tunggu pengadaan, supaya barang tidak habis sebelum kiriman berikutnya datang.')
                 ->columns(3)
                 ->schema([
@@ -126,7 +126,7 @@ class SupplyItemResource extends Resource
                         ->helperText('Dipakai saat pembebanan biaya ke finance dibangun.'),
                 ]),
 
-            Section::make('Keterangan')
+            Section::make('Notes')
                 ->columns(1)
                 ->schema([
                     Toggle::make('is_active')
@@ -235,7 +235,7 @@ class SupplyItemResource extends Resource
     public static function catatMutasiAction(bool $iconOnly = true): Action
     {
         $action = Action::make('catat_mutasi')
-            ->label('Catat mutasi')
+            ->label('Record Movement')
             ->icon('heroicon-o-arrows-right-left');
 
         if ($iconOnly) {
@@ -244,10 +244,10 @@ class SupplyItemResource extends Resource
 
         return $action
             ->visible(fn (SupplyItem $record): bool => $record->is_active && static::allows('update'))
-            ->modalHeading(fn (SupplyItem $record): string => 'Catat mutasi '.$record->name)
+            ->modalHeading(fn (SupplyItem $record): string => 'Record Movement for '.$record->name)
             ->modalDescription(fn (SupplyItem $record): string => 'Stok sekarang '
                 .$record->formatQuantity($record->currentStock()).'.')
-            ->modalSubmitActionLabel('Simpan mutasi')
+            ->modalSubmitActionLabel('Save Movement')
             ->fillForm(fn (): array => [
                 'type' => 'keluar',
                 'transaction_date' => now()->toDateString(),

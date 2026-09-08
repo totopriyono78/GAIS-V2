@@ -37,7 +37,7 @@ class LinesRelationManager extends RelationManager
 {
     protected static string $relationship = 'lines';
 
-    protected static ?string $title = 'Rincian pembebanan';
+    protected static ?string $title = 'Cost Allocation';
 
     protected static bool $isLazy = false;
 
@@ -113,15 +113,18 @@ class LinesRelationManager extends RelationManager
             ->defaultSort('id')
             ->headerActions([
                 CreateAction::make()
-                    ->label('Tambah pembebanan')
+                    ->label('Add Allocation')
+                    ->after(fn () => $this->segarkanHalaman())
                     ->visible(fn (): bool => $this->bisaDiubah()),
             ])
             ->recordActions([
                 EditAction::make()
                     ->iconButton()
+                    ->after(fn () => $this->segarkanHalaman())
                     ->visible(fn (): bool => $this->bisaDiubah()),
                 DeleteAction::make()
                     ->iconButton()
+                    ->after(fn () => $this->segarkanHalaman())
                     ->visible(fn (): bool => $this->bisaDiubah())
                     ->modalDescription('Menghapus baris ini mengurangi nilai tagihannya, karena nilai tagihan adalah jumlah seluruh barisnya.'),
             ])
@@ -129,6 +132,25 @@ class LinesRelationManager extends RelationManager
             ->emptyStateDescription($this->bisaDiubah()
                 ? 'Tambahkan minimal satu baris: kategori biayanya, departemen yang memakainya, dan nilainya. Jumlah seluruh baris inilah nilai tagihannya, dan tagihan tanpa rincian tidak bisa diajukan untuk disetujui.'
                 : 'Tagihan ini sudah tidak berstatus draf, jadi rinciannya tidak bisa diubah lagi. Untuk memperbaikinya, tagihan perlu ditolak lebih dulu lalu dikembalikan ke draf.');
+    }
+
+    /**
+     * Menggambar ulang halaman induk setelah baris berubah.
+     *
+     * Nilai tagihan, dan sejak kiriman N juga selisihnya terhadap barang yang sudah diterima,
+     * dihitung dari baris baris ini tetapi ditampilkan di infolist halaman induk. Halaman
+     * induk adalah komponen Livewire yang berbeda dan tidak ikut digambar ulang saat baris di
+     * sini berubah, jadi tanpa penyegaran ini angkanya tetap memperlihatkan keadaan sebelum
+     * baris terakhir ditambahkan.
+     *
+     * Untuk nilai tagihan, angka basi hanya membingungkan sebentar. Untuk kalimat selisih,
+     * angka basi berbahaya: kalimat itu ada justru untuk menahan orang menandatangani faktur
+     * yang menagih lebih banyak daripada barang yang datang, dan kalimat yang salah lebih
+     * buruk daripada tidak ada kalimat sama sekali.
+     */
+    protected function segarkanHalaman(): void
+    {
+        $this->dispatch('rincian-berubah');
     }
 
     /**
