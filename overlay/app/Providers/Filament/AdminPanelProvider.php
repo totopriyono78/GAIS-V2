@@ -143,6 +143,15 @@ class AdminPanelProvider extends PanelProvider
              * membuat aturan "menu tidak pernah ditulis manual" tetap berlaku.
              */
             ->renderHook(PanelsRenderHook::TOPBAR_START, fn (): string => view('filament.peluncur-menu')->render())
+            /*
+             * Daftar akun demo di bawah formulir masuk.
+             *
+             * Tampilannya sendiri yang memutuskan menggambar atau tidak, dan bawaannya
+             * tidak. Ia hanya muncul kalau GAIS_DEMO_LOGIN menyala dan akun demonya
+             * benar benar ada di basis data, karena menawarkan akun yang belum pernah
+             * dibuat berarti menyodorkan tombol yang berujung penolakan masuk.
+             */
+            ->renderHook(PanelsRenderHook::AUTH_LOGIN_FORM_AFTER, fn (): string => view('filament.akun-demo')->render())
             ->renderHook(PanelsRenderHook::FOOTER, fn (): string => view('filament.footer')->render())
             ->renderHook(PanelsRenderHook::SIMPLE_LAYOUT_END, fn (): string => view('filament.footer')->render());
     }

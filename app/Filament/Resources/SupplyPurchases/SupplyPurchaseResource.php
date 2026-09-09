@@ -861,7 +861,7 @@ class SupplyPurchaseResource extends Resource
      */
     public static function canEdit(Model $record): bool
     {
-        return parent::canEdit($record) && $record->status === 'draft';
+        return static::allows('update') && $record->status === 'draft';
     }
 
     /**
@@ -871,7 +871,7 @@ class SupplyPurchaseResource extends Resource
      */
     public static function canDelete(Model $record): bool
     {
-        return parent::canDelete($record)
+        return static::allows('delete')
             && in_array($record->status, ['draft', 'ditolak', 'dibatalkan'], true)
             && ! $record->adaYangSudahDiterima();
     }

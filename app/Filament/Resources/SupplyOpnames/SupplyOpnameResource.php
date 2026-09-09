@@ -560,7 +560,7 @@ class SupplyOpnameResource extends Resource
     /** Kepala sesi hanya bisa diubah selama masih draf. */
     public static function canEdit(Model $record): bool
     {
-        return parent::canEdit($record) && $record->isDraft();
+        return static::allows('update') && $record->isDraft();
     }
 
     /**
@@ -570,7 +570,7 @@ class SupplyOpnameResource extends Resource
      */
     public static function canDelete(Model $record): bool
     {
-        return parent::canDelete($record) && ! $record->isAdjusted();
+        return static::allows('delete') && ! $record->isAdjusted();
     }
 
     public static function getRelations(): array

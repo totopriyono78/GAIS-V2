@@ -467,7 +467,7 @@ class WorkOrderResource extends Resource
      */
     public static function canDelete(Model $record): bool
     {
-        return parent::canDelete($record) && $record->status === 'dibuka';
+        return static::allows('delete') && $record->status === 'dibuka';
     }
 
     public static function getRelations(): array

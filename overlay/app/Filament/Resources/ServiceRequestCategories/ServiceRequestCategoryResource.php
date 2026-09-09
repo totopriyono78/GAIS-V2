@@ -42,13 +42,13 @@ class ServiceRequestCategoryResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-tag';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Data Induk';
+    protected static string|UnitEnum|null $navigationGroup = 'Master Data';
 
-    protected static ?string $navigationLabel = 'Jenis permintaan';
+    protected static ?string $navigationLabel = 'Request Types';
 
-    protected static ?string $modelLabel = 'jenis permintaan';
+    protected static ?string $modelLabel = 'request type';
 
-    protected static ?string $pluralModelLabel = 'jenis permintaan';
+    protected static ?string $pluralModelLabel = 'request types';
 
     protected static ?int $navigationSort = 50;
 
@@ -164,7 +164,7 @@ class ServiceRequestCategoryResource extends Resource
      */
     public static function canDelete(Model $record): bool
     {
-        return parent::canDelete($record) && ! $record->serviceRequests()->exists();
+        return static::allows('delete') && ! $record->serviceRequests()->exists();
     }
 
     public static function getPages(): array

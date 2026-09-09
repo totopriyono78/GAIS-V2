@@ -617,12 +617,12 @@ class VehicleBookingResource extends Resource
      */
     public static function canEdit(Model $record): bool
     {
-        return parent::canEdit($record) && in_array($record->status, ['diajukan', 'disetujui'], true);
+        return static::allows('update') && in_array($record->status, ['diajukan', 'disetujui'], true);
     }
 
     public static function canDelete(Model $record): bool
     {
-        return parent::canDelete($record) && $record->status === 'diajukan';
+        return static::allows('delete') && $record->status === 'diajukan';
     }
 
     public static function getPages(): array

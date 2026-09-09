@@ -675,7 +675,7 @@ class VendorBillResource extends Resource
      */
     public static function canEdit(Model $record): bool
     {
-        return parent::canEdit($record) && in_array($record->status, ['draft', 'diajukan'], true);
+        return static::allows('update') && in_array($record->status, ['draft', 'diajukan'], true);
     }
 
     /**
@@ -685,7 +685,7 @@ class VendorBillResource extends Resource
      */
     public static function canDelete(Model $record): bool
     {
-        return parent::canDelete($record) && in_array($record->status, ['draft', 'ditolak', 'dibatalkan'], true);
+        return static::allows('delete') && in_array($record->status, ['draft', 'ditolak', 'dibatalkan'], true);
     }
 
     public static function getRelations(): array

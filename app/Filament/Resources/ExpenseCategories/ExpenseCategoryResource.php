@@ -170,7 +170,7 @@ class ExpenseCategoryResource extends Resource
      */
     public static function canDelete(Model $record): bool
     {
-        return parent::canDelete($record) && ! $record->budgets()->exists();
+        return static::allows('delete') && ! $record->budgets()->exists();
     }
 
     public static function getPages(): array

@@ -731,7 +731,7 @@ class ServiceRequestResource extends Resource
      */
     public static function canEdit(Model $record): bool
     {
-        return parent::canEdit($record)
+        return static::allows('update')
             && in_array($record->status, ['diajukan', 'disetujui'], true);
     }
 
@@ -741,7 +741,7 @@ class ServiceRequestResource extends Resource
      */
     public static function canDelete(Model $record): bool
     {
-        return parent::canDelete($record) && blank($record->work_order_id);
+        return static::allows('delete') && blank($record->work_order_id);
     }
 
     public static function getRelations(): array

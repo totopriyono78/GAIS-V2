@@ -337,7 +337,8 @@ class AssetTransferResource extends Resource
                         'transfer' => $record->getKey(),
                         'jenis' => 'bam',
                     ]))
-                    ->openUrlInNewTab(),
+                    ->openUrlInNewTab()
+                    ->visible(fn (): bool => static::allows('print')),
                 Action::make('bast')
                     ->label('Download BAST')
                     ->icon('heroicon-o-document-check')
@@ -346,7 +347,8 @@ class AssetTransferResource extends Resource
                         'transfer' => $record->getKey(),
                         'jenis' => 'bast',
                     ]))
-                    ->openUrlInNewTab(),
+                    ->openUrlInNewTab()
+                    ->visible(fn (): bool => static::allows('print')),
                 DeleteAction::make()
                     ->label('Cancel Transfer')
                     ->iconButton()

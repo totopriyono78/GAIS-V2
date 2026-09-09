@@ -450,3 +450,106 @@ html.fi [role='switch']:focus-visible {
         height: 2.5rem;
     }
 }
+
+/* ------------------------------------------------------------------ akun demo */
+
+/*
+ * Daftar akun demo di bawah formulir masuk. Hanya tergambar pada pemasangan yang
+ * memang dipakai memperagakan sistem, lihat config/gais.php.
+ */
+.gais-demo {
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--gais-garis);
+}
+
+.gais-demo-kepala {
+    margin-bottom: 0.75rem;
+}
+
+/* Motif identitas 1 dipakai ulang, sama seperti judul seksi di halaman lain. */
+.gais-demo-judul {
+    border-inline-start: 3px solid var(--gais-accent);
+    padding-inline-start: 0.5rem;
+    font-family: "Source Serif 4", Georgia, "Times New Roman", serif;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--gais-ink);
+}
+
+.gais-demo-catatan {
+    margin-top: 0.375rem;
+    font-size: 0.75rem;
+    line-height: 1.45;
+    color: var(--gais-redup);
+}
+
+.gais-demo-daftar {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+/*
+ * Satu kolom, bukan kisi. Kartu masuk hanya selebar 24rem, dan dua kolom di
+ * dalamnya membuat keterangan tiap peran terpotong menjadi dua tiga kata, padahal
+ * keterangan itulah yang menentukan orang memilih yang mana.
+ */
+.gais-demo-akun {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    width: 100%;
+    min-height: 2.75rem;
+    padding: 0.625rem 0.75rem;
+    border: 1px solid var(--gais-garis);
+    border-radius: 0.5rem;
+    background-color: #ffffff;
+    color: var(--gais-ink);
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+    transition: border-color 120ms ease, background-color 120ms ease;
+}
+
+.gais-demo-akun:hover {
+    border-color: var(--gais-petrol);
+    background-color: var(--gais-petrol-tipis);
+}
+
+.gais-demo-peran {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--gais-petrol);
+}
+
+.gais-demo-ringkas {
+    font-size: 0.75rem;
+    line-height: 1.4;
+    color: var(--gais-ink);
+}
+
+.gais-demo-surel {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.6875rem;
+    color: var(--gais-redup);
+}
+
+.gais-demo-sandi {
+    margin-top: 0.75rem;
+    font-size: 0.75rem;
+    text-align: center;
+    color: var(--gais-redup);
+}
+
+.gais-demo-sandi code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.75rem;
+    padding: 0.0625rem 0.3125rem;
+    border-radius: 0.25rem;
+    background-color: var(--gais-petrol-muda);
+    color: var(--gais-petrol);
+}

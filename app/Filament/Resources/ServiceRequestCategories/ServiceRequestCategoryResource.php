@@ -164,7 +164,7 @@ class ServiceRequestCategoryResource extends Resource
      */
     public static function canDelete(Model $record): bool
     {
-        return parent::canDelete($record) && ! $record->serviceRequests()->exists();
+        return static::allows('delete') && ! $record->serviceRequests()->exists();
     }
 
     public static function getPages(): array

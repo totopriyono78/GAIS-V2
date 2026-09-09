@@ -76,7 +76,7 @@ class ModuleSeeder extends Seeder
                 'group' => 'Assets',
                 'icon' => 'heroicon-o-arrow-right-start-on-rectangle',
                 'sort' => 40,
-                'available_actions' => ['read', 'create', 'delete'],
+                'available_actions' => ['read', 'create', 'delete', 'print'],
             ],
             [
                 'code' => 'asset_disposals',

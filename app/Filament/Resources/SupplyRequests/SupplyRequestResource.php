@@ -773,7 +773,7 @@ class SupplyRequestResource extends Resource
      */
     public static function canEdit(Model $record): bool
     {
-        return parent::canEdit($record)
+        return static::allows('update')
             && $record->status === 'draft'
             && static::bolehMengubah($record);
     }
@@ -785,7 +785,7 @@ class SupplyRequestResource extends Resource
      */
     public static function canDelete(Model $record): bool
     {
-        return parent::canDelete($record)
+        return static::allows('delete')
             && in_array($record->status, ['draft', 'ditolak', 'dibatalkan'], true);
     }
 

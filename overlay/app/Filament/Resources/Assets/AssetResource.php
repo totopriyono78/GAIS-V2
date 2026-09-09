@@ -607,7 +607,10 @@ class AssetResource extends Resource
                     ->icon('heroicon-o-clock')
                     ->iconButton()
                     ->url(fn (Asset $record): string => route('gais.aset.riwayat', ['asset' => $record->getKey()]))
-                    ->openUrlInNewTab(),
+                    ->openUrlInNewTab()
+                    // Kartu riwayat adalah dokumen cetak, sama seperti label, jadi izinnya
+                    // izin cetak. Filament tidak pernah memeriksa tindakan buatan sendiri.
+                    ->visible(fn (): bool => static::canPrint()),
                 Action::make('label')
                     ->label('Print Labels')
                     ->icon('heroicon-o-printer')
