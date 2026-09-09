@@ -19,7 +19,17 @@ return [
     |
     */
 
-    'demo_login' => (bool) env('GAIS_DEMO_LOGIN', false),
+    /*
+     * Dibaca dengan FILTER_VALIDATE_BOOLEAN, bukan dengan (bool) biasa.
+     *
+     * Alasannya sepele tetapi nyata: (bool) menganggap teks apa pun yang tidak kosong
+     * sebagai benar, termasuk kata "no" dan "off", sedangkan skrip pra-deploy di
+     * railway/init-app.sh hanya menerima daftar ejaan tertentu. Dua tempat yang membaca
+     * satu saklar dengan aturan yang berbeda adalah cara termudah membuat akun demonya
+     * ada tetapi daftarnya tidak muncul, atau sebaliknya. Filter ini menerima true, 1,
+     * yes, dan on, sama seperti skrip itu.
+     */
+    'demo_login' => filter_var(env('GAIS_DEMO_LOGIN', false), FILTER_VALIDATE_BOOLEAN),
 
     'demo_password' => env('GAIS_DEMO_PASSWORD', 'demo1234'),
 
