@@ -38,18 +38,85 @@ untuk Laravel, tetapi tidak tahu bahwa proyek ini punya langkah menurunkan izin 
 antara keduanya. Tanpa langkah itu, peran Manajer GA dan Staf GA lahir tanpa satu izin pun,
 dan orang yang masuk dengan peran itu melihat panel tanpa menu apa apa.
 
-**3. Berkas panduan ini sendiri.**
+**3. `composer.json`, batasan versi PHP.**
+
+Semula tertulis `"php": "^8.3"`, sekarang `"php": "^8.4.1"`. Angka lama itu warisan kerangka
+Laravel dan sudah tidak menggambarkan kenyataan: `composer.lock` proyek ini terkunci pada
+Symfony 8.1 yang menuntut PHP 8.4.1. Selama batasannya masih `^8.3`, Railway memasang PHP 8.3
+lalu `composer install` berhenti dengan daftar panjang paket yang menolak. Di komputer Anda hal
+ini tidak pernah terlihat karena PHP di sana sudah 8.5.
+
+Setelah mengubahnya, sidik jari berkas kunci perlu disegarkan:
+
+```bash
+composer update --lock
+```
+
+Perintah itu hanya menulis ulang sidik jarinya. Tidak satu pun versi paket berubah, jadi apa
+yang berjalan di komputer Anda tetap persis sama.
+
+**4. `composer.json`, ekstensi PHP yang dibutuhkan.**
+
+Ditambahkan `ext-intl`, `ext-pdo_pgsql`, dan `ext-zip` pada `require`.
+
+Railpack memasang ekstensi PHP berdasarkan `require` di `composer.json` **milik proyek ini
+saja**, bukan milik seluruh paket yang ikut terpasang. Filament sendiri sudah menyebut
+`ext-intl` di berkasnya sendiri, tetapi Railpack tidak membacanya, jadi `composer install`
+berhenti dengan keluhan ekstensi yang hilang. Menuliskannya di sini menyelesaikan itu, dan
+sekaligus jujur: aplikasi ini memang tidak bisa jalan tanpa ketiganya.
+
+**5. `railpack.json`, menerbitkan aset panel saat citra dibangun.**
+
+```json
+{
+    "$schema": "https://schema.railpack.com",
+    "steps": {
+        "build": {
+            "commands": ["...", "php artisan filament:assets"]
+        }
+    }
+}
+```
+
+Railway menjalankan `composer install` dengan `--no-scripts`, sehingga blok
+`post-autoload-dump` di `composer.json` dilewati dan `filament:upgrade` yang biasanya
+menerbitkan aset panel ikut tidak berjalan. Tanpa langkah ini panel terbit tanpa satu pun
+berkas gaya dan tampil sebagai teks polos.
+
+Tanda `"..."` berarti "kerjakan dulu semua langkah bawaan", termasuk `npm run build`, baru
+kerjakan yang di bawahnya. Tanpa tanda itu, daftar ini menggantikan langkah bawaannya, bukan
+menambah.
+
+Langkah ini harus terjadi saat citra dibangun, bukan di pra-deploy, karena pra-deploy berjalan
+di wadah yang berbeda dan berkas yang ditulisnya tidak pernah sampai ke wadah yang melayani
+permintaan.
+
+**6. Berkas panduan ini sendiri.**
 
 ### Kirim ketiganya ke GitHub
 
 Di folder `D:\DEVELOPMENT\Sistem GA`:
 
 ```bash
-git add bootstrap/app.php railway/init-app.sh DEPLOY-RAILWAY.md
+composer update --lock
+git add bootstrap/app.php railway/init-app.sh railpack.json DEPLOY-RAILWAY.md composer.json composer.lock
 git add app resources database
 git commit -m "Siapkan penerapan ke Railway"
 git push origin main
 ```
+
+**Tentang `composer update --lock`.** Mengubah `require` di `composer.json` mengubah sidik jari
+yang tersimpan di `composer.lock`, dan tanpa menyegarkannya `composer install` di Railway
+memulai dengan peringatan bahwa berkas kuncinya tidak sejalan. Perintah itu hanya menulis ulang
+sidik jarinya, tidak satu pun versi paket berubah.
+
+Peringatan itu **tidak menggagalkan** pembangunan, dan Railpack membaca ekstensi PHP dari
+`composer.json`, bukan dari `composer.lock`. Jadi kalau perintah ini bermasalah di komputer
+Anda, silakan tetap push tanpa menjalankannya, dan bereskan belakangan. Penyebab tersering di
+Windows: `composer` di terminal yang sedang dipakai berjalan di atas PHP lama yang lain,
+misalnya PHP 7.4 bawaan XAMPP, bukan PHP 8.5 yang dipakai proyek ini. Periksa dengan `php -v`
+di terminal yang sama, lalu jalankan perintahnya di terminal yang biasa Anda pakai untuk
+`php artisan`.
 
 Sebelum melanjutkan, pastikan tiga hal ini benar benar ikut terkirim, karena ketiganya mudah
 tertinggal dan ketiganya membuat aplikasi tampil rusak di Railway:
@@ -81,20 +148,121 @@ Basis data dibuat lebih dulu supaya datanya sudah ada saat aplikasinya pertama k
 
 1. Di kanvas proyek, **Create** lalu **Database** lalu **Add PostgreSQL**.
 2. Tunggu sampai layanannya hijau.
-3. Buka layanan Postgres itu, tab **Variables**, dan catat dua nilai:
-   - `DATABASE_URL`, alamat dari dalam jaringan Railway. Ini yang nanti dipakai aplikasi.
-   - `DATABASE_PUBLIC_URL`, alamat dari luar. Ini yang Anda pakai dari komputer untuk
-     menyalin data.
+3. Buka layanan Postgres itu, tab **Variables**. Nilainya disembunyikan, tekan ikon mata atau
+   **Show values** untuk melihatnya. Yang ada di sana `DATABASE_URL`, yaitu alamat dari dalam
+   jaringan Railway. Ini yang nanti dipakai aplikasi, dan Anda tidak perlu menyalinnya.
 
-`DATABASE_PUBLIC_URL` adalah pintu masuk ke basis data Anda dari internet. Perlakukan seperti
-kata sandi, dan jangan tempelkan ke mana pun selain terminal Anda sendiri.
+**`DATABASE_PUBLIC_URL` belum ada di daftar itu, dan itu memang benar.** Basis data di Railway
+tertutup dari internet secara bawaan, jadi alamat dari luar belum lahir. Cara membukanya ada
+di bagian 3, karena hanya di sanalah alamat itu dibutuhkan.
 
-## Bagian 3: salin data dari komputer ke Railway
+## Bagian 3: isi basis datanya
+
+Ada dua jalan, dan keduanya sah. Pilih satu.
+
+**Jalan A, biarkan Railway membangunnya sendiri.** Lewati seluruh bagian 3 ini. Skrip
+pra-deploy di bagian 7 menjalankan `migrate` dan seluruh seeder, jadi tabel, modul, izin,
+peran, kategori, penomoran, pengaturan, dan satu akun administrator terbentuk sendiri saat
+deploy pertama. Anda tidak perlu menyentuh basis datanya sama sekali, dan tidak perlu membuka
+aksesnya ke internet.
+
+Yang tidak ikut hanyalah transaksi: aset, tagihan, surat, paket, perjalanan dinas, dan
+anggaran yang sudah ada di komputer Anda. Railway mulai bersih.
+
+Jalan A punya dua keuntungan yang tidak kecil. Akun `test@gais.test` berkata sandi `password`
+tidak ikut naik ke internet, dan dua baris pagu anggaran bertanda `[DATA UJI]` yang angkanya
+saya karang juga tidak ikut. Keduanya adalah hal yang harus dibereskan sendiri kalau memilih
+jalan B.
+
+**Jalan B, salin isi basis data dari komputer.** Demo langsung memperlihatkan sistem yang
+sudah terisi, termasuk SPD/2026/09/0002 dengan rombongan lima orang dan angka anggaran yang
+sudah berjalan. Harganya: satu setelan jaringan perlu dibuka sementara, dan dua hal di
+paragraf sebelumnya perlu dibereskan setelah live.
+
+Sisa bagian 3 ini adalah jalan B.
+
+### 3a. Buka pintu basis datanya sementara
+
+Basis data di Railway tertutup dari internet secara bawaan. Selama masih tertutup,
+`RAILWAY_TCP_PROXY_DOMAIN` dan `RAILWAY_TCP_PROXY_PORT` belum ada, dan `psql` dari komputer
+Anda tidak bisa menjangkaunya sama sekali.
+
+1. Buka layanan **Postgres**, tab **Settings**, cari bagian **Networking**.
+2. Pilih **TCP Proxy**.
+3. Isi porta internalnya dengan **5432**, porta yang didengarkan PostgreSQL.
+4. Railway membuat alamat proxy dan **menampilkannya langsung di panel itu**, berbentuk
+   seperti `shuttle.proxy.rlwy.net:15140`. Dua angka itulah yang Anda butuhkan, jadi tidak
+   perlu mencari variabelnya di tab lain.
+5. Kalau ingin melihatnya sebagai variabel, tab **Variables** sekarang juga memuat
+   `RAILWAY_TCP_PROXY_DOMAIN` dan `RAILWAY_TCP_PROXY_PORT`. Nilainya tersembunyi, tekan ikon
+   mata atau **Show values**.
+
+`DATABASE_PUBLIC_URL` sendiri sudah ada sejak awal di daftar variabel, tetapi isinya hanya
+rumus yang menunjuk ke dua variabel di atas. Selama proxy-nya belum dibuat, rumus itu menunjuk
+ke sesuatu yang belum lahir. Uraiannya di 3a2.
+
+### 3a2. Isi `DATABASE_PUBLIC_URL` terbaca sebagai rumus, bukan alamat
+
+Yang tampil di layar biasanya begini:
+
+```
+postgresql://${{PGUSER}}:${{PGPASSWORD}}@${{RAILWAY_TCP_PROXY_DOMAIN}}:${{RAILWAY_TCP_PROXY_PORT}}/${{PGDATABASE}}
+```
+
+Itu bukan salah dan bukan alamat yang belum jadi. Railway menyimpan variabel sebagai rumus,
+dan `${{NAMA}}` berarti "ambil nilai variabel `NAMA` di layanan ini". Isinya baru dirakit
+menjadi alamat sungguhan saat dipakai. Yang Anda lihat adalah resepnya, bukan masakannya.
+
+Untuk mendapat alamat sungguhannya, buka nilai kelima variabel itu satu per satu di tab
+**Variables** yang sama. Nilainya kira kira begini:
+
+| Variabel | Contoh isinya |
+| --- | --- |
+| `PGUSER` | `postgres` |
+| `PGPASSWORD` | deretan huruf dan angka yang panjang |
+| `RAILWAY_TCP_PROXY_DOMAIN` | `centerbeam.proxy.rlwy.net` |
+| `RAILWAY_TCP_PROXY_PORT` | `43127` |
+| `PGDATABASE` | `railway` |
+
+Alamat rakitannya menjadi seperti ini:
+
+```
+postgresql://postgres:KATASANDIPANJANG@centerbeam.proxy.rlwy.net:43127/railway
+```
+
+**Sebenarnya alamat rakitan itu tidak perlu dibuat sama sekali.** `psql` menerima keempat
+bagiannya sebagai pilihan terpisah, dan itu lebih aman karena kata sandinya diketik ke
+pertanyaan, bukan ikut tertulis di perintah dan tersimpan di riwayat terminal. Cara ini juga
+kebal terhadap kata sandi yang memuat tanda seperti `@`, `:`, atau `/`, yang di dalam alamat
+justru punya arti sendiri dan membuat sambungannya gagal dengan pesan yang membingungkan.
+Bentuk perintahnya ada di 3c.
+
+**Alamat itu adalah pintu masuk ke basis data Anda dari mana pun di internet.** Perlakukan
+seperti kata sandi, jangan tempelkan ke mana pun selain terminal Anda sendiri, dan tutup lagi
+pintunya setelah selesai. Caranya ada di 3d, dan langkah itu jangan dilewati.
+
+**Jalan lain tanpa membuka pintu sama sekali.** Kalau Anda memasang Railway CLI, terowongan
+lewat SSH bisa dipakai menggantikan seluruh 3a dan 3d:
+
+```bash
+npm i -g @railway/cli
+railway login
+railway link
+railway connect --ssh --tunnel-only
+```
+
+Perintah terakhir menyebutkan porta lokal yang ia buka, misalnya 54321. Basis datanya lalu
+dijangkau seperti basis data di komputer sendiri, dan perintah pemulihan di 3c ditulis
+`-h 127.0.0.1 -p 54321` alih alih memakai alamat publik. Cara ini tidak pernah membuka basis
+data Anda ke internet dan tidak menimbulkan biaya lalu lintas keluar, hanya perlu satu alat
+tambahan.
+
+### 3b. Buat salinan basis data lokal
 
 Basis data lokal Anda bernama `gais`, di `127.0.0.1:5432` dengan pengguna `postgres`. Kata
 sandinya ada di `.env` pada kunci `DB_PASSWORD`.
 
-**Buat salinannya.** Di folder proyek, jalankan:
+Di folder proyek, jalankan:
 
 ```bash
 pg_dump --no-owner --no-privileges --clean --if-exists -h 127.0.0.1 -p 5432 -U postgres -d gais -f gais-lokal.sql
@@ -105,25 +273,43 @@ pg_dump --no-owner --no-privileges --clean --if-exists -h 127.0.0.1 -p 5432 -U p
 kepemilikan yang tidak berlaku di sana. `--clean --if-exists` membuat berkasnya bisa
 dijalankan berulang kali tanpa menggandakan apa pun.
 
-**Kirimkan ke Railway.** Ganti bagian dalam tanda kutip dengan `DATABASE_PUBLIC_URL` tadi:
+### 3c. Kirimkan ke Railway
+
+Ganti `<domain>` dan `<port>` dengan `RAILWAY_TCP_PROXY_DOMAIN` dan
+`RAILWAY_TCP_PROXY_PORT` milik layanan Postgres Anda. Kata sandinya ditanyakan setelah
+perintahnya dijalankan, dan yang diisikan adalah `PGPASSWORD`.
 
 ```bash
-psql "postgresql://postgres:xxxx@xxxx.proxy.rlwy.net:12345/railway" -f gais-lokal.sql
+psql -h <domain> -p <port> -U postgres -d railway -f gais-lokal.sql
 ```
+
+Beberapa pesan `NOTICE` tentang objek yang tidak ada adalah hal biasa, itu datang dari
+`--if-exists` pada berkas yang dijalankan di basis data yang masih kosong. Yang perlu
+diperhatikan hanya baris yang berbunyi `ERROR`.
 
 **Periksa hasilnya:**
 
 ```bash
-psql "postgresql://..." -c "select count(*) from business_trips;"
+psql -h <domain> -p <port> -U postgres -d railway -c "select count(*) from business_trips;"
 ```
 
 Jumlahnya harus sama dengan yang ada di komputer Anda. Kalau perintah `pg_dump` atau `psql`
 tidak dikenali, keduanya ada di folder `bin` instalasi PostgreSQL Anda, biasanya
 `C:\Program Files\PostgreSQL\17\bin`.
 
-**Hapus berkas salinannya setelah selesai.** `gais-lokal.sql` berisi seluruh isi basis data
-Anda termasuk hash kata sandi setiap akun, dan ia tidak masuk `.gitignore`, jadi jangan
-sampai ikut ter-commit.
+### 3d. Tutup lagi pintunya, dan bersihkan
+
+**Matikan Public Networking** di layanan Postgres, kembali ke **Settings** lalu **Networking**
+dan hapus akses publiknya. Aplikasi di Railway memakai `DATABASE_URL` yang lewat jaringan
+dalam, jadi mematikan akses publik tidak mengganggunya sama sekali. Membiarkannya menyala
+berarti basis data berisi seluruh data GA perusahaan tetap bisa dicoba dibuka dari mana pun,
+dan lalu lintas keluarnya ikut ditagih.
+
+**Hapus berkas salinannya.** `gais-lokal.sql` berisi seluruh isi basis data Anda termasuk hash
+kata sandi setiap akun, dan ia tidak masuk `.gitignore`, jadi jangan sampai ikut ter-commit.
+
+Kalau nanti perlu menyalin data lagi, 3a sampai 3d diulang seperlunya. Membuka dan menutup
+akses publik boleh dilakukan berkali kali dan tidak mengubah apa pun di dalam basis datanya.
 
 ## Bagian 4: buat layanan aplikasinya
 
@@ -168,7 +354,13 @@ FILESYSTEM_DISK=local
 GAIS_ADMIN_NAME=Administrator
 GAIS_ADMIN_EMAIL=
 GAIS_ADMIN_PASSWORD=
+
 ```
+
+Tidak ada variabel `RAILPACK_` apa pun di daftar ini, dan itu disengaja. Ekstensi PHP dan
+langkah menerbitkan aset panel keduanya diatur lewat berkas di repositori, bukan lewat setelan
+di dasbor, karena berkas ikut terbaca saat orang lain membuka repositorinya sedangkan setelan
+di dasbor hanya diketahui orang yang membukanya. Uraiannya ada di butir 4 dan 5 bagian 0.
 
 Empat nilai yang perlu Anda isi sendiri:
 
@@ -297,23 +489,76 @@ disimpan di tempat lain sudah jauh lebih baik daripada tidak ada sama sekali.
 
 ## Kalau gagal
 
-**Pembangunan berhenti pada versi PHP.** `composer.json` menyebut `php: ^8.3`, sedangkan
-proyek ini dikembangkan di PHP 8.5. Kalau `composer install` di Railway menolak sebuah paket
-karena versi PHP, tambahkan variabel `RAILPACK_PACKAGES` berisi `php@8.4`, lalu deploy ulang.
+**`Your lock file does not contain a compatible set of packages`, disusul daftar panjang paket
+symfony yang meminta `php >=8.4.1`.** Terjadi pada percobaan pertama 9 September 2026, dan
+sudah diperbaiki di repositori. Sebabnya `composer.json` menyebut `php: ^8.3`, sehingga Railway
+memasang PHP 8.3, padahal `composer.lock` proyek ini dikunci pada Laravel 13 dan Symfony 8.1
+yang menuntut 8.4.1. Perbaikannya mengganti batasan itu menjadi `"php": "^8.4.1"`, lalu
+menyegarkan sidik jari berkas kunci dengan `composer update --lock` dan mendorongnya ke GitHub.
+`composer update --lock` hanya menulis ulang sidik jarinya, tidak satu pun versi paket berubah.
 
-**Pembangunan berhenti pada ekstensi PHP yang hilang.** Gejalanya menyebut nama ekstensi,
-misalnya `pdo_pgsql` atau `gd`. Tambahkan variabel `RAILPACK_PHP_EXTENSIONS` berisi nama
-ekstensi itu, dipisah koma.
+**`ext-intl` atau `ext-zip` disebut hilang.** Terjadi pada percobaan kedua 9 September 2026, dan
+sudah diperbaiki di repositori lewat butir 4 bagian 0. Railpack hanya membaca `require` di
+`composer.json` proyek ini, tidak membaca milik paket yang ikut terpasang, jadi `ext-intl` yang
+sudah disebut Filament di berkasnya sendiri tetap tidak terpasang. Kalau kelak muncul nama
+ekstensi lain, tambahkan barisnya di `composer.json`, jalankan `composer update --lock`, lalu
+push.
 
-**Halaman tampil tanpa gaya, hurufnya berganti.** Berarti aset Filament belum terbit.
-Seharusnya terbit sendiri, karena `composer.json` memanggil `filament:upgrade` pada
-`post-autoload-dump` dan perintah itu ikut menerbitkan aset. Kalau tidak, tambahkan
-`php artisan filament:assets` di baris pertama `railway/init-app.sh`, lalu push dan deploy
-ulang.
+Menambahkan ekstensi lewat variabel `RAILPACK_PHP_EXTENSIONS` di dasbor juga dimungkinkan,
+tetapi pada percobaan yang sama cara itu tidak berpengaruh, jadi jalur `composer.json` yang
+dipakai. Jalur itu juga lebih benar, karena aplikasi ini memang tidak bisa jalan tanpa ketiga
+ekstensi tersebut, di Railway maupun di mana pun.
+
+**Log memulai dengan `The lock file is not up to date with the latest changes in
+composer.json`.** `composer update --lock` belum dijalankan setelah `composer.json` diubah. Itu
+baru peringatan, bukan penyebab kegagalan, tetapi tetap perlu dibereskan supaya yang terpasang
+di Railway benar benar sama dengan yang berjalan di komputer.
+
+**Halaman tampil tanpa gaya, hurufnya berganti.** Aset Filament belum terbit. Sudah ditutup
+oleh `railpack.json` di butir 5 bagian 0. Kalau masih terjadi, buka log pembangunan dan
+pastikan baris `php artisan filament:assets` benar benar berjalan dan tidak berhenti dengan
+galat. Kalau Anda sempat menambahkan variabel `RAILPACK_BUILD_CMD` di dasbor, hapus variabel
+itu: ia menggantikan seluruh langkah bawaan, termasuk `npm run build`.
 
 **Peramban menolak berkas gaya sebagai isi campuran, atau alamat http muncul di halaman
 https.** Berarti perubahan `bootstrap/app.php` belum ikut terkirim. Periksa dengan
 `git log --oneline -- bootstrap/app.php`.
+
+**`Database connection [psql] not configured`, wadahnya menyala lalu mati berulang kali.**
+Salah ketik pada variabel `DB_CONNECTION`. Nama sambungan PostgreSQL di Laravel adalah
+**`pgsql`**, bukan `psql`. `psql` adalah nama program baris perintahnya, dan keduanya memang
+mudah tertukar. Betulkan variabelnya, lalu deploy ulang.
+
+Kalau setelah dibetulkan muncul galat sambungan yang lain, periksa `DB_URL`. Rujukannya harus
+menyebut nama layanan basis data Anda apa adanya. Kalau layanan Postgres-nya Anda beri nama
+lain, `${{Postgres.DATABASE_URL}}` perlu ikut diganti mengikuti nama itu.
+
+**`connection to server at "127.0.0.1", port 5432 failed`, dengan `Database: laravel`.** Dua
+keterangan itu adalah nilai bawaan Laravel di `config/database.php`, bukan nilai milik basis
+data Anda. Artinya `DB_URL` kosong saat aplikasi berjalan, dan Laravel jatuh ke bawaannya.
+
+Penyebabnya hampir selalu rujukan `${{Postgres.DATABASE_URL}}` yang tidak menemukan
+tujuannya. Nama di dalam kurung harus sama persis dengan nama layanan basis data di kanvas,
+termasuk besar kecil hurufnya. Kalau layanan itu bernama `postgres` huruf kecil, atau pernah
+Anda ganti namanya, rujukannya ikut berubah.
+
+Cara memastikan tanpa menebak: buka layanan **Postgres**, tab **Variables**, tekan
+**Show values**, salin isi `DATABASE_URL` apa adanya, lalu tempelkan sebagai nilai `DB_URL` di
+layanan aplikasi. Kalau setelah itu sambungannya berhasil, yang bermasalah memang rujukannya,
+bukan basis datanya.
+
+Alamat itu memakai nama `postgres.railway.internal` yang hanya bisa dijangkau dari dalam
+jaringan Railway, jadi menempelkannya seperti ini tidak membuka apa apa ke luar. Yang hilang
+hanya kepraktisannya: kalau kata sandi basis datanya diputar, nilai yang ditempel itu perlu
+Anda perbarui sendiri. Setelah semuanya jalan, kembalikan ke bentuk rujukan lewat tombol
+penambah rujukan di tab Variables, bukan dengan mengetiknya lagi.
+
+**Log menyebut `Running migrations and seeding database ...` berulang ulang di setiap
+percobaan menyala.** Itu migrasi bawaan Railway yang berjalan saat wadah dinyalakan, bukan
+skrip pra-deploy kita. Keduanya mengerjakan hal yang sama, dan kalau salah satunya gagal
+wadahnya ikut mati. Pastikan variabel `RAILPACK_SKIP_MIGRATIONS=1` benar benar ada di layanan
+aplikasi, dan Pre-Deploy Command di bagian 7 benar benar terisi, supaya hanya satu tempat yang
+mengerjakannya.
 
 **Masuk selalu kembali ke halaman masuk.** Sesi tidak tersimpan. Pastikan
 `SESSION_DRIVER=database` dan tabel `sessions` ada. Kalau tabelnya tidak ada, migrasinya
@@ -322,6 +567,22 @@ belum jalan, dan itu terlihat di log pra-deploy.
 **Menu kosong untuk peran selain administrator.** `gais:sync-permissions` belum berjalan.
 Buka log pra-deploy dan cari barisnya. Administrator tetap melihat semuanya karena akun itu
 `is_super_admin`, jadi cacat ini hanya terlihat kalau Anda mencoba masuk sebagai Staf GA.
+
+**Deploy berhasil, tetapi membuka alamatnya menghasilkan 502 dalam belasan milidetik.**
+Cepatnya jawaban itu keterangannya: proxy Railway langsung ditolak, bukan menunggu aplikasi
+yang lambat. Artinya tidak ada yang mendengarkan di porta yang dituju proxy.
+
+Dua tempat yang perlu dicocokkan:
+
+1. **Porta yang benar benar didengarkan aplikasi.** Buka **Deploy Logs**, cari baris dari
+   peladen setelah `Starting Container` yang menyebut alamat dengarnya, biasanya berbentuk
+   `:8080` atau `0.0.0.0:8080`.
+2. **Porta tujuan milik domainnya.** Buka **Settings** lalu **Networking**, lalu setelan porta
+   pada domain yang sudah dibuat. Angkanya harus sama dengan yang di log.
+
+Kalau di Deploy Logs tidak ada baris peladen sama sekali, atau ada baris keluar dan wadahnya
+menyala ulang terus, yang bermasalah bukan portanya melainkan aplikasinya yang mati saat
+dinyalakan. Baca baris terakhir sebelum matinya.
 
 **Aplikasi menyala lalu mati berulang kali.** Buka Logs dan baca baris terakhir sebelum
 matinya. Penyebab yang paling sering adalah volume dipasang di `/app/storage`, bukan di
