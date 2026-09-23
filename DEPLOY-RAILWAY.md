@@ -403,16 +403,31 @@ dibuat ulang setiap kali versi baru naik.
 2. **Add Volume**, dan isi **Mount path** dengan tepat:
 
 ```
-/app/storage/app/public
+/app/storage/app/dokumen
 ```
 
-Itu folder yang dipakai seluruh `FileUpload` di aplikasi ini. Tautan `public/storage` yang
-menunjuk ke sana sudah dibuat saat citra dibangun, dan tautan hanyalah penunjuk alamat, jadi
-ia tetap benar setelah folder tujuannya menjadi volume.
+Itu folder disk `dokumen`, tempat seluruh `FileUpload` di aplikasi ini menyimpan berkasnya.
 
 Jangan memasang volume di `/app/storage` saja. Folder itu juga berisi `framework` dan `logs`
 yang disiapkan saat citra dibangun, dan menimpanya dengan volume kosong membuat aplikasi
 gagal menyala.
+
+### Kalau volume Anda sudah terpasang di `/app/storage/app/public`
+
+Itu alamat yang dipakai sebelum 23 September 2026, waktu lampiran masih disimpan di disk
+`public`. Ubah **Mount path** volume yang sama menjadi `/app/storage/app/dokumen`, jangan
+membuat volume baru. Isi volumenya tidak berubah, dan susunan foldernya kebetulan sudah
+persis sama, karena yang berpindah hanya nama disk di sisi aplikasi, bukan jalur berkas di
+dalam basis data.
+
+Setelah deploy berikutnya, buktikan berkasnya masih ada sebelum menghapus apa pun:
+
+```
+ls -la storage/app/dokumen
+```
+
+Kalau ternyata kosong, berkas lokal Anda masih utuh. Jalankan `php artisan gais:pindah-berkas`
+di komputer sendiri lebih dulu, lalu unggah ulang isi `storage/app/dokumen` ke volume.
 
 ## Bagian 7: pre-deploy dan pemeriksaan kesehatan
 

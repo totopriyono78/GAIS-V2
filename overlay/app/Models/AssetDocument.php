@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
+use App\Support\Berkas;
 use App\Support\Concerns\Auditable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * Berkas pendukung satu aset: kartu garansi, buku manual, faktur, kontrak sewa,
@@ -67,8 +67,8 @@ class AssetDocument extends Model
                 return;
             }
 
-            $document->size_bytes = (filled($document->file_path) && Storage::disk('public')->exists($document->file_path))
-                ? Storage::disk('public')->size($document->file_path)
+            $document->size_bytes = (filled($document->file_path) && Berkas::disk()->exists($document->file_path))
+                ? Berkas::disk()->size($document->file_path)
                 : null;
         });
 
@@ -76,7 +76,7 @@ class AssetDocument extends Model
         // tidak lagi bisa dibuka dari layar mana pun.
         static::deleted(function (AssetDocument $document) {
             if (filled($document->file_path)) {
-                Storage::disk('public')->delete($document->file_path);
+                Berkas::disk()->delete($document->file_path);
             }
         });
     }

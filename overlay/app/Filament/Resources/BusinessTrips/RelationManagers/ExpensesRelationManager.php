@@ -4,6 +4,7 @@ namespace App\Filament\Resources\BusinessTrips\RelationManagers;
 
 use App\Models\BusinessTrip;
 use App\Models\BusinessTripExpense;
+use App\Support\Berkas;
 use App\Support\Concerns\DetectsTableFilters;
 use App\Support\Rupiah;
 use Filament\Actions\Action;
@@ -68,9 +69,8 @@ class ExpensesRelationManager extends RelationManager
                 ->required(),
             FileUpload::make('file_path')
                 ->label('Bukti')
-                ->disk('public')
+                ->disk(Berkas::DISK)
                 ->directory('bukti-perjalanan')
-                ->visibility('public')
                 ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png', 'image/webp'])
                 ->maxSize(10240)
                 ->openable()

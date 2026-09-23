@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use App\Support\Berkas;
 use App\Support\Concerns\Auditable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * Satu area yang diperiksa dalam satu putaran.
@@ -93,7 +93,7 @@ class CleaningInspectionLine extends Model
     public function fotoUrl(): ?string
     {
         return filled($this->file_path)
-            ? Storage::disk('public')->url($this->file_path)
+            ? Berkas::url($this->file_path)
             : null;
     }
 
@@ -109,7 +109,7 @@ class CleaningInspectionLine extends Model
             return;
         }
 
-        Storage::disk('public')->delete($this->file_path);
+        Berkas::disk()->delete($this->file_path);
     }
 
     public function getAuditLabel(): string

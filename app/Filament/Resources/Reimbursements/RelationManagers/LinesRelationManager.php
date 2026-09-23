@@ -6,6 +6,7 @@ use App\Filament\Resources\Reimbursements\ReimbursementResource;
 use App\Models\ExpenseCategory;
 use App\Models\Reimbursement;
 use App\Models\ReimbursementLine;
+use App\Support\Berkas;
 use App\Support\Rupiah;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
@@ -20,7 +21,6 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * Struk struk dalam satu pengajuan.
@@ -80,9 +80,8 @@ class LinesRelationManager extends RelationManager
                 ->helperText('Sesuai yang tertulis di struk.'),
             FileUpload::make('file_path')
                 ->label('Foto struk')
-                ->disk('public')
+                ->disk(Berkas::DISK)
                 ->directory('struk-penggantian')
-                ->visibility('public')
                 ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png', 'image/webp'])
                 ->maxSize(10240)
                 ->openable()
@@ -135,7 +134,7 @@ class LinesRelationManager extends RelationManager
                     ->iconButton()
                     ->visible(fn (ReimbursementLine $record): bool => filled($record->file_path))
                     ->url(fn (ReimbursementLine $record): ?string => filled($record->file_path)
-                        ? Storage::disk('public')->url($record->file_path)
+                        ? Berkas::url($record->file_path)
                         : null)
                     ->openUrlInNewTab(),
                 EditAction::make()

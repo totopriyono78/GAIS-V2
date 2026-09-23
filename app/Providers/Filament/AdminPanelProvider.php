@@ -92,6 +92,10 @@ class AdminPanelProvider extends PanelProvider
                 // berarti menaruh pekerjaan harian tim GA di bawah Pengaturan.
                 'Facility Services',
                 'Correspondence',
+                // Ditaruh setelah Correspondence karena keduanya mengurus kertas, tetapi
+                // dua hal yang berbeda: yang satu perpindahan fisik amplop, yang satu isi
+                // dan keabsahan dokumennya. Mereka memang tidak boleh digabung.
+                'Documents',
                 'Office Supplies',
                 'Budget & Expenses',
                 'Master Data',

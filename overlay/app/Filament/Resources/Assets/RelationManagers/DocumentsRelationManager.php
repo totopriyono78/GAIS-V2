@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Assets\RelationManagers;
 
 use App\Filament\Resources\Assets\AssetResource;
 use App\Models\AssetDocument;
+use App\Support\Berkas;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -17,7 +18,6 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * Berkas pendukung satu aset: kartu garansi, buku manual, faktur, kontrak sewa,
@@ -31,7 +31,7 @@ class DocumentsRelationManager extends RelationManager
 {
     protected static string $relationship = 'documents';
 
-    protected static ?string $title = 'Dokumen pendukung';
+    protected static ?string $title = 'Supporting Documents';
 
     /*
      * Daftar dokumen ikut dimuat bersama halaman aset, bukan lewat permintaan susulan.
@@ -56,9 +56,8 @@ class DocumentsRelationManager extends RelationManager
                 ->placeholder('Contoh: Kartu garansi 2 tahun dari distributor'),
             FileUpload::make('file_path')
                 ->label('Berkas')
-                ->disk('public')
+                ->disk(Berkas::DISK)
                 ->directory('dokumen-aset')
-                ->visibility('public')
                 ->acceptedFileTypes([
                     'application/pdf',
                     'image/jpeg',
@@ -131,16 +130,16 @@ class DocumentsRelationManager extends RelationManager
             ])
             ->headerActions([
                 CreateAction::make()
-                    ->label('Unggah dokumen')
+                    ->label('Upload Document')
                     ->visible(fn (): bool => AssetResource::canEdit($this->getOwnerRecord())),
             ])
             ->recordActions([
                 Action::make('unduh')
-                    ->label('Unduh')
+                    ->label('Download')
                     ->icon('heroicon-o-arrow-down-tray')
                     ->iconButton()
                     ->url(fn (AssetDocument $record): ?string => filled($record->file_path)
-                        ? Storage::disk('public')->url($record->file_path)
+                        ? Berkas::url($record->file_path)
                         : null)
                     ->openUrlInNewTab(),
                 EditAction::make()

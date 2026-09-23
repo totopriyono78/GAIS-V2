@@ -5,6 +5,7 @@ namespace App\Filament\Resources\ServiceRequests\RelationManagers;
 use App\Filament\Resources\ServiceRequests\ServiceRequestResource;
 use App\Models\ServiceRequest;
 use App\Models\ServiceRequestAttachment;
+use App\Support\Berkas;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -14,7 +15,6 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * Foto keadaan yang dilampirkan pemohon.
@@ -31,7 +31,7 @@ class AttachmentsRelationManager extends RelationManager
 {
     protected static string $relationship = 'attachments';
 
-    protected static ?string $title = 'Foto keadaan';
+    protected static ?string $title = 'Condition Photos';
 
     protected static bool $isLazy = false;
 
@@ -45,9 +45,8 @@ class AttachmentsRelationManager extends RelationManager
                 ->placeholder('Contoh: Indoor unit menetes di sisi kiri'),
             FileUpload::make('file_path')
                 ->label('Berkas')
-                ->disk('public')
+                ->disk(Berkas::DISK)
                 ->directory('lampiran-permintaan')
-                ->visibility('public')
                 ->image()
                 ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'application/pdf'])
                 ->maxSize(10240)
@@ -83,16 +82,16 @@ class AttachmentsRelationManager extends RelationManager
             ->defaultSort('created_at', 'asc')
             ->headerActions([
                 CreateAction::make()
-                    ->label('Unggah foto')
+                    ->label('Upload Photo')
                     ->visible(fn (): bool => $this->masihBolehDiubah()),
             ])
             ->recordActions([
                 Action::make('unduh')
-                    ->label('Buka')
+                    ->label('Open')
                     ->icon('heroicon-o-arrow-top-right-on-square')
                     ->iconButton()
                     ->url(fn (ServiceRequestAttachment $record): ?string => filled($record->file_path)
-                        ? Storage::disk('public')->url($record->file_path)
+                        ? Berkas::url($record->file_path)
                         : null)
                     ->openUrlInNewTab(),
                 DeleteAction::make()

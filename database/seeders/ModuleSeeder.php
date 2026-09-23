@@ -228,6 +228,48 @@ class ModuleSeeder extends Seeder
                 'available_actions' => ['read', 'create', 'update', 'delete'],
             ],
             [
+                'code' => 'documents',
+                'name' => 'Documents',
+                'description' => 'Lemari dokumen bersama: SOP, kebijakan, sertifikat, kontrak, dan lampiran dari modul lain. Satu tempat, satu aturan retensi, satu jejak akses.',
+                'group' => 'Documents',
+                'icon' => 'heroicon-o-document-text',
+                'sort' => 10,
+                /*
+                 * download dipisah dari read dengan sengaja. Daftar dokumen boleh dibuka
+                 * lebih banyak orang daripada berkasnya, dan untuk audit yang dicatat
+                 * memang siapa yang mengunduh, bukan siapa yang melihat judulnya.
+                 *
+                 * Siapa boleh melihat dokumen yang mana tidak ditentukan di sini. Itu
+                 * urusan klasifikasi kerahasiaan dokumen dibanding tingkat kewenangan
+                 * orangnya, dan sengaja tidak dilebur menjadi nama izin.
+                 */
+                'available_actions' => ['read', 'create', 'update', 'delete', 'download', 'export'],
+            ],
+            [
+                'code' => 'document_categories',
+                'name' => 'Document Categories',
+                'description' => 'Tempat menaruh dokumen, maksimal dua tingkat. Menjawab pertanyaan ditaruh di mana, bukan pertanyaan ini dokumen apa.',
+                'group' => 'Documents',
+                'icon' => 'heroicon-o-folder',
+                'sort' => 20,
+                'available_actions' => ['read', 'create', 'update', 'delete'],
+            ],
+            [
+                'code' => 'document_types',
+                'name' => 'Document Types',
+                'description' => 'Profil tiap jenis dokumen: perlu versi atau tidak, perlu pengesahan atau tidak, masa berlaku, masa simpan, dan field metadatanya.',
+                'group' => 'Documents',
+                'icon' => 'heroicon-o-rectangle-stack',
+                'sort' => 30,
+                /*
+                 * Tanpa delete. Menghapus jenis dokumen yang sudah dipakai akan
+                 * menghilangkan arti kolom metadata dokumen dokumen lamanya, dan yang
+                 * sebenarnya dibutuhkan orang adalah menonaktifkannya supaya tidak bisa
+                 * dipilih lagi. Itu sudah tersedia lewat update.
+                 */
+                'available_actions' => ['read', 'create', 'update'],
+            ],
+            [
                 'code' => 'business_trips',
                 'name' => 'Business Trips',
                 'description' => 'Perjalanan dinas beserta uang muka dan pertanggungjawabannya. Biaya yang sudah ditutup memotong pagu anggaran departemen yang dibebani.',

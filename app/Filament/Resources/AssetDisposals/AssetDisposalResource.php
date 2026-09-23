@@ -9,8 +9,9 @@ use App\Models\Asset;
 use App\Models\AssetDisposal;
 use App\Models\Employee;
 use App\Services\PenyusutanAset;
-use App\Support\Rupiah;
+use App\Support\Berkas;
 use App\Support\Concerns\AuthorizesModule;
+use App\Support\Rupiah;
 use BackedEnum;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
@@ -158,7 +159,7 @@ class AssetDisposalResource extends Resource
                         ->placeholder('Belum dicatat'),
                     FileUpload::make('document_path')
                         ->label('Berkas pendukung')
-                        ->disk('public')
+                        ->disk(Berkas::DISK)
                         ->directory('pelepasan-aset')
                         ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png'])
                         ->maxSize(5120)

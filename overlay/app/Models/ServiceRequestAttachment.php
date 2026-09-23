@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
+use App\Support\Berkas;
 use App\Support\Concerns\Auditable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * Foto yang dilampirkan pemohon saat membuka tiket.
@@ -47,14 +47,14 @@ class ServiceRequestAttachment extends Model
                 return;
             }
 
-            $lampiran->size_bytes = (filled($lampiran->file_path) && Storage::disk('public')->exists($lampiran->file_path))
-                ? Storage::disk('public')->size($lampiran->file_path)
+            $lampiran->size_bytes = (filled($lampiran->file_path) && Berkas::disk()->exists($lampiran->file_path))
+                ? Berkas::disk()->size($lampiran->file_path)
                 : null;
         });
 
         static::deleted(function (ServiceRequestAttachment $lampiran) {
             if (filled($lampiran->file_path)) {
-                Storage::disk('public')->delete($lampiran->file_path);
+                Berkas::disk()->delete($lampiran->file_path);
             }
         });
     }

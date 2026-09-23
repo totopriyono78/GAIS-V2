@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
+use App\Support\Berkas;
 use App\Support\Concerns\Auditable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * Satu foto kendaraan.
@@ -65,14 +65,14 @@ class VehiclePhoto extends Model
                 return;
             }
 
-            $foto->size_bytes = (filled($foto->file_path) && Storage::disk('public')->exists($foto->file_path))
-                ? Storage::disk('public')->size($foto->file_path)
+            $foto->size_bytes = (filled($foto->file_path) && Berkas::disk()->exists($foto->file_path))
+                ? Berkas::disk()->size($foto->file_path)
                 : null;
         });
 
         static::deleted(function (VehiclePhoto $foto) {
             if (filled($foto->file_path)) {
-                Storage::disk('public')->delete($foto->file_path);
+                Berkas::disk()->delete($foto->file_path);
             }
         });
     }
@@ -105,7 +105,7 @@ class VehiclePhoto extends Model
 
     public function url(): ?string
     {
-        return filled($this->file_path) ? Storage::disk('public')->url($this->file_path) : null;
+        return filled($this->file_path) ? Berkas::url($this->file_path) : null;
     }
 
     /**

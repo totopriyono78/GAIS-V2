@@ -3,12 +3,12 @@
 namespace App\Models;
 
 use App\Services\NumberGenerator;
+use App\Support\Berkas;
 use App\Support\Concerns\Auditable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * Satu surat, masuk atau keluar.
@@ -232,14 +232,14 @@ class Letter extends Model
     public function pindaianUrl(): ?string
     {
         return filled($this->file_path)
-            ? Storage::disk('public')->url($this->file_path)
+            ? Berkas::url($this->file_path)
             : null;
     }
 
     public function hapusPindaian(): void
     {
         if (filled($this->file_path)) {
-            Storage::disk('public')->delete($this->file_path);
+            Berkas::disk()->delete($this->file_path);
         }
     }
 

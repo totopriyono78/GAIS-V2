@@ -25,6 +25,10 @@ class Module extends Model
         'delete' => 'Hapus',
         'export' => 'Ekspor',
         'print' => 'Cetak',
+        // Dipisah dari read karena membaca daftar dokumen dan mengunduh berkasnya
+        // adalah dua hal yang berbeda beratnya. Orang boleh tahu sebuah kontrak ada
+        // dan siapa pihaknya tanpa boleh membawa pulang salinan berkasnya.
+        'download' => 'Unduh berkas',
         'approve' => 'Setujui',
         'accept' => 'Terima dan tugaskan',
         'assign' => 'Tentukan pelaksana',

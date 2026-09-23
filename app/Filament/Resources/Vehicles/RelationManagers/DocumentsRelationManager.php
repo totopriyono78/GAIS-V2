@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Vehicles\RelationManagers;
 
 use App\Filament\Resources\Vehicles\VehicleResource;
 use App\Models\VehicleDocument;
+use App\Support\Berkas;
 use App\Support\Rupiah;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
@@ -21,7 +22,6 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * Riwayat dokumen satu kendaraan.
@@ -88,9 +88,8 @@ class DocumentsRelationManager extends RelationManager
                 ->helperText('Yang benar benar dibayar. Angka ini yang dipakai membandingkan biaya antar tahun.'),
             FileUpload::make('file_path')
                 ->label('Pindaian dokumen')
-                ->disk('public')
+                ->disk(Berkas::DISK)
                 ->directory('dokumen-kendaraan')
-                ->visibility('public')
                 ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png', 'image/webp'])
                 ->maxSize(10240)
                 ->openable()
@@ -177,7 +176,7 @@ class DocumentsRelationManager extends RelationManager
                     ->iconButton()
                     ->visible(fn (VehicleDocument $record): bool => filled($record->file_path))
                     ->url(fn (VehicleDocument $record): ?string => filled($record->file_path)
-                        ? Storage::disk('public')->url($record->file_path)
+                        ? Berkas::url($record->file_path)
                         : null)
                     ->openUrlInNewTab(),
                 EditAction::make()
@@ -244,9 +243,8 @@ class DocumentsRelationManager extends RelationManager
                     ->helperText('Sengaja dikosongkan, karena biaya tahun ini belum tentu sama dengan tahun lalu.'),
                 FileUpload::make('file_path')
                     ->label('Pindaian dokumen baru')
-                    ->disk('public')
+                    ->disk(Berkas::DISK)
                     ->directory('dokumen-kendaraan')
-                    ->visibility('public')
                     ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png', 'image/webp'])
                     ->maxSize(10240)
                     ->openable()

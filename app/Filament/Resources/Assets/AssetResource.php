@@ -15,6 +15,7 @@ use App\Models\Location;
 use App\Models\MaintenanceSchedule;
 use App\Models\Vendor;
 use App\Services\PenyusutanAset;
+use App\Support\Berkas;
 use App\Support\Concerns\AuthorizesModule;
 use App\Support\Concerns\DetectsTableFilters;
 use App\Support\Periode;
@@ -409,9 +410,8 @@ class AssetResource extends Resource
                     FileUpload::make('photo_path')
                         ->label('Foto aset')
                         ->image()
-                        ->disk('public')
+                        ->disk(Berkas::DISK)
                         ->directory('foto-aset')
-                        ->visibility('public')
                         ->maxSize(4096)
                         ->imagePreviewHeight('180')
                         ->openable()
@@ -428,7 +428,7 @@ class AssetResource extends Resource
             ->columns([
                 ImageColumn::make('photo_path')
                     ->label('Foto')
-                    ->disk('public')
+                    ->disk(Berkas::DISK)
                     ->square()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('code')

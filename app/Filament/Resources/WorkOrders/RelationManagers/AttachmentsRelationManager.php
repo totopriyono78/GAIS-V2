@@ -4,6 +4,7 @@ namespace App\Filament\Resources\WorkOrders\RelationManagers;
 
 use App\Filament\Resources\WorkOrders\WorkOrderResource;
 use App\Models\WorkOrderAttachment;
+use App\Support\Berkas;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -17,7 +18,6 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * Lampiran satu perintah kerja: foto sebelum, foto sesudah, nota, faktur.
@@ -49,9 +49,8 @@ class AttachmentsRelationManager extends RelationManager
                 ->placeholder('Contoh: Foto indoor unit sebelum dicuci'),
             FileUpload::make('file_path')
                 ->label('Berkas')
-                ->disk('public')
+                ->disk(Berkas::DISK)
                 ->directory('lampiran-perintah-kerja')
-                ->visibility('public')
                 ->acceptedFileTypes([
                     'application/pdf',
                     'image/jpeg',
@@ -123,7 +122,7 @@ class AttachmentsRelationManager extends RelationManager
                     ->icon('heroicon-o-arrow-down-tray')
                     ->iconButton()
                     ->url(fn (WorkOrderAttachment $record): ?string => filled($record->file_path)
-                        ? Storage::disk('public')->url($record->file_path)
+                        ? Berkas::url($record->file_path)
                         : null)
                     ->openUrlInNewTab(),
                 EditAction::make()

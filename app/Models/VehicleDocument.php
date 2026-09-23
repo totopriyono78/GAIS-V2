@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\Berkas;
 use App\Support\Concerns\Auditable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -9,7 +10,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * Satu masa berlaku dokumen kendaraan.
@@ -83,14 +83,14 @@ class VehicleDocument extends Model
                 return;
             }
 
-            $dokumen->size_bytes = (filled($dokumen->file_path) && Storage::disk('public')->exists($dokumen->file_path))
-                ? Storage::disk('public')->size($dokumen->file_path)
+            $dokumen->size_bytes = (filled($dokumen->file_path) && Berkas::disk()->exists($dokumen->file_path))
+                ? Berkas::disk()->size($dokumen->file_path)
                 : null;
         });
 
         static::deleted(function (VehicleDocument $dokumen) {
             if (filled($dokumen->file_path)) {
-                Storage::disk('public')->delete($dokumen->file_path);
+                Berkas::disk()->delete($dokumen->file_path);
             }
         });
     }

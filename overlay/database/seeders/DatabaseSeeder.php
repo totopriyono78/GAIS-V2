@@ -16,6 +16,10 @@ class DatabaseSeeder extends Seeder
             ServiceRequestCategorySeeder::class,
             ExpenseCategorySeeder::class,
             NumberSequenceSeeder::class,
+            // Dipanggil setelah NumberSequenceSeeder, karena menyimpan satu jenis
+            // dokumen ikut mendaftarkan urutan nomornya ke tabel yang sama.
+            DocumentTypeSeeder::class,
+            DocumentCategorySeeder::class,
             AdminUserSeeder::class,
         ]);
     }

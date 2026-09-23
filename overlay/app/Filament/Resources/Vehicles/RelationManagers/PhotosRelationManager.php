@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Vehicles\RelationManagers;
 
 use App\Filament\Resources\Vehicles\VehicleResource;
 use App\Models\VehiclePhoto;
+use App\Support\Berkas;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -36,7 +37,7 @@ class PhotosRelationManager extends RelationManager
 {
     protected static string $relationship = 'photos';
 
-    protected static ?string $title = 'Foto kendaraan';
+    protected static ?string $title = 'Vehicle Photos';
 
     protected static bool $isLazy = false;
 
@@ -74,9 +75,8 @@ class PhotosRelationManager extends RelationManager
                 }),
             FileUpload::make('file_path')
                 ->label('Foto')
-                ->disk('public')
+                ->disk(Berkas::DISK)
                 ->directory('foto-kendaraan')
-                ->visibility('public')
                 ->image()
                 ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                 ->maxSize(10240)
@@ -100,7 +100,7 @@ class PhotosRelationManager extends RelationManager
             ->columns([
                 ImageColumn::make('file_path')
                     ->label('Foto')
-                    ->disk('public')
+                    ->disk(Berkas::DISK)
                     ->height(64)
                     ->extraImgAttributes(['loading' => 'lazy']),
                 TextColumn::make('type')
@@ -141,13 +141,13 @@ class PhotosRelationManager extends RelationManager
             ])
             ->headerActions([
                 CreateAction::make()
-                    ->label('Unggah foto')
-                    ->modalHeading('Unggah foto kendaraan')
+                    ->label('Upload Photo')
+                    ->modalHeading('Upload Vehicle Photo')
                     ->visible(fn (): bool => VehicleResource::canEdit($this->getOwnerRecord())),
             ])
             ->recordActions([
                 Action::make('buka')
-                    ->label('Buka ukuran penuh')
+                    ->label('Open Full Size')
                     ->icon('heroicon-o-arrow-top-right-on-square')
                     ->iconButton()
                     ->url(fn (VehiclePhoto $record): ?string => $record->url())

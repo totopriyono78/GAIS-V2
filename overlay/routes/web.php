@@ -3,6 +3,7 @@
 use App\Http\Controllers\BeritaAcaraAsetController;
 use App\Http\Controllers\CetakLabelAsetController;
 use App\Http\Controllers\KartuRiwayatAsetController;
+use App\Http\Controllers\UnduhDokumenController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -34,4 +35,14 @@ Route::middleware('auth')->group(function () {
     Route::get('aset/serah-terima/{transfer}/berita-acara/{jenis}', BeritaAcaraAsetController::class)
         ->whereIn('jenis', ['bam', 'bast'])
         ->name('gais.aset.berita-acara');
+
+    /*
+     * Pintu unduhan berkas dokumen.
+     *
+     * Berbeda dari lampiran modul lain, yang dilayani alamat bertanda tangan
+     * bawaan Laravel, berkas dokumen dialirkan lewat controller supaya izinnya
+     * diperiksa saat berkasnya diambil dan pengunduhannya ikut tercatat.
+     */
+    Route::get('dokumen/{document}/versi/{version}/unduh', UnduhDokumenController::class)
+        ->name('gais.dokumen.unduh');
 });

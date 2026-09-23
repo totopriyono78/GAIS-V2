@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Vehicles\RelationManagers;
 
 use App\Filament\Resources\Vehicles\VehicleResource;
 use App\Models\VehiclePhoto;
+use App\Support\Berkas;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -74,9 +75,8 @@ class PhotosRelationManager extends RelationManager
                 }),
             FileUpload::make('file_path')
                 ->label('Foto')
-                ->disk('public')
+                ->disk(Berkas::DISK)
                 ->directory('foto-kendaraan')
-                ->visibility('public')
                 ->image()
                 ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                 ->maxSize(10240)
@@ -100,7 +100,7 @@ class PhotosRelationManager extends RelationManager
             ->columns([
                 ImageColumn::make('file_path')
                     ->label('Foto')
-                    ->disk('public')
+                    ->disk(Berkas::DISK)
                     ->height(64)
                     ->extraImgAttributes(['loading' => 'lazy']),
                 TextColumn::make('type')

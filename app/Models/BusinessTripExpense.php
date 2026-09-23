@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
+use App\Support\Berkas;
 use App\Support\Concerns\Auditable;
 use App\Support\Rupiah;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * Satu pengeluaran dalam satu perjalanan dinas.
@@ -68,7 +68,7 @@ class BusinessTripExpense extends Model
     public function buktiUrl(): ?string
     {
         return filled($this->file_path)
-            ? Storage::disk('public')->url($this->file_path)
+            ? Berkas::url($this->file_path)
             : null;
     }
 

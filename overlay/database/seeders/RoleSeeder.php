@@ -68,6 +68,19 @@ class RoleSeeder extends Seeder
             // Surat. Manajer GA melihat dan mencatat seluruh agenda surat.
             'letters.read', 'letters.create', 'letters.update', 'letters.delete',
             'parcel_shipments.read', 'parcel_shipments.create', 'parcel_shipments.update', 'parcel_shipments.delete',
+            /*
+             * Lemari dokumen. Manajer GA memegang jenis dokumen dan kategorinya, karena
+             * menentukan sebuah jenis perlu pengesahan atau tidak dan berapa lama disimpan
+             * adalah keputusan kebijakan, bukan pekerjaan harian.
+             *
+             * delete tetap diberikan, tetapi perlu diingat menghapus dokumen berbeda dari
+             * mengarsipkannya. Pengarsipan dan pemusnahan berberita acara adalah pekerjaan
+             * fase berikutnya dan izinnya belum ada di sini.
+             */
+            'documents.read', 'documents.create', 'documents.update', 'documents.delete',
+            'documents.download', 'documents.export',
+            'document_categories.read', 'document_categories.create', 'document_categories.update', 'document_categories.delete',
+            'document_types.read', 'document_types.create', 'document_types.update',
             // Manajer GA menyetujui perjalanan dan menyerahkan uang mukanya. verify juga
             // diberikan supaya antrean tidak tersangkut saat stafnya cuti, dengan alasan yang
             // sama seperti pada tagihan dan penggantian biaya.
@@ -147,6 +160,15 @@ class RoleSeeder extends Seeder
             'letters.read', 'letters.create', 'letters.update',
             // Staf GA yang mengantar paket ke gerai dan menyalin angka dari resinya.
             'parcel_shipments.read', 'parcel_shipments.create', 'parcel_shipments.update',
+            /*
+             * Staf GA mengisi dan merawat lemari dokumennya, tetapi tidak menentukan
+             * bentuknya. Jenis dokumen hanya bisa dilihat, karena mengubah skema metadata
+             * sebuah jenis mengubah arti kolom metadata seluruh dokumen yang sudah memakai
+             * jenis itu, dan itu bukan perubahan yang pantas terjadi tanpa keputusan.
+             */
+            'documents.read', 'documents.create', 'documents.update', 'documents.download', 'documents.export',
+            'document_categories.read', 'document_categories.create', 'document_categories.update',
+            'document_types.read',
             // Perjalanan dinas: staf GA mencatat pengajuan dan memeriksa pertanggungjawaban,
             // tetapi tidak menyetujui perjalanannya dan tidak menyerahkan uang mukanya.
             'business_trips.read', 'business_trips.read_all', 'business_trips.create',
@@ -183,6 +205,17 @@ class RoleSeeder extends Seeder
             'employees.read',
             'locations.read',
             'assets.read',
+            /*
+             * Karyawan boleh membaca dan mengunduh dokumen, dan justru inilah gunanya
+             * lemari dokumen: supaya SOP yang berlaku dibaca dari satu tempat, bukan dari
+             * lampiran surel yang beredar entah versi keberapa.
+             *
+             * Yang membatasi bukan izin ini, melainkan klasifikasi tiap dokumen dibanding
+             * tingkat kewenangan orangnya. Karyawan bawaannya bertingkat 1, jadi ia melihat
+             * dokumen publik dan internal, dan dokumen rahasia tidak muncul sama sekali di
+             * daftarnya, bukan muncul lalu ditolak saat diklik.
+             */
+            'documents.read', 'documents.download',
             /*
              * read tanpa read_all. Itu yang membuat karyawan hanya melihat permintaan
              * yang ia ajukan sendiri, ditambah permintaan departemen yang ia kepalai

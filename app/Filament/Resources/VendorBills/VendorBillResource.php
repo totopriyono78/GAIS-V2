@@ -9,6 +9,7 @@ use App\Filament\Resources\VendorBills\Pages\ViewVendorBill;
 use App\Models\SupplyPurchase;
 use App\Models\Vendor;
 use App\Models\VendorBill;
+use App\Support\Berkas;
 use App\Support\Concerns\AuthorizesModule;
 use BackedEnum;
 use Filament\Actions\Action;
@@ -21,6 +22,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
+use Filament\Resources\Pages\ViewRecord;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -31,8 +33,6 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
-use Filament\Resources\Pages\ViewRecord;
-use Illuminate\Support\Facades\Storage;
 use UnitEnum;
 
 /**
@@ -190,9 +190,8 @@ class VendorBillResource extends Resource
                         ->placeholder('Contoh: tagihan listrik gedung Head Office periode Agustus 2026.'),
                     FileUpload::make('file_path')
                         ->label('Pindaian faktur')
-                        ->disk('public')
+                        ->disk(Berkas::DISK)
                         ->directory('tagihan-rekanan')
-                        ->visibility('public')
                         ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png', 'image/webp'])
                         ->maxSize(10240)
                         ->openable()
@@ -260,7 +259,7 @@ class VendorBillResource extends Resource
                             ? ($record->original_name ?? 'Berkas tersimpan').', '.$record->sizeLabel()
                             : 'Tidak ada pindaian yang diunggah')
                         ->url(fn (VendorBill $record): ?string => filled($record->file_path)
-                            ? Storage::disk('public')->url($record->file_path)
+                            ? Berkas::url($record->file_path)
                             : null)
                         ->openUrlInNewTab(),
                     TextEntry::make('notes')->label('Catatan')->placeholder('Tidak ada')->columnSpanFull(),

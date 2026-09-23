@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Letters;
 use App\Filament\Resources\Letters\Pages\ListLetters;
 use App\Models\Employee;
 use App\Models\Letter;
+use App\Support\Berkas;
 use App\Support\Concerns\AuthorizesModule;
 use App\Support\Concerns\DetectsTableFilters;
 use BackedEnum;
@@ -175,9 +176,8 @@ class LetterResource extends Resource
 
                     FileUpload::make('file_path')
                         ->label('Pindaian surat')
-                        ->disk('public')
+                        ->disk(Berkas::DISK)
                         ->directory('surat')
-                        ->visibility('public')
                         ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png', 'image/webp'])
                         ->maxSize(10240)
                         ->openable()

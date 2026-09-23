@@ -190,14 +190,9 @@ Anda tidak bisa menjangkaunya sama sekali.
 1. Buka layanan **Postgres**, tab **Settings**, cari bagian **Networking**.
 2. Pilih **TCP Proxy**.
 3. Isi porta internalnya dengan **5432**, porta yang didengarkan PostgreSQL.
-4. Railway membuat alamat proxy dan **menampilkannya langsung di panel itu**, berbentuk seperti
-   `shuttle.proxy.rlwy.net:15140`. Alamat itu contoh, bukan alamat Anda. Pakai yang benar benar
-   tertulis di panel Anda sendiri.
-
-   **Portanya bukan 5432.** Angka 5432 tadi porta di dalam jaringan Railway. Porta proxy yang
-   dipakai dari luar selalu angka lima digit yang dibuatkan Railway, dan berbeda untuk tiap
-   layanan. Memakai 5432 dari komputer akan berakhir dengan `Connection timed out`, karena
-   porta itu memang tidak dibuka ke internet.
+4. Railway membuat alamat proxy dan **menampilkannya langsung di panel itu**, berbentuk
+   seperti `shuttle.proxy.rlwy.net:15140`. Dua angka itulah yang Anda butuhkan, jadi tidak
+   perlu mencari variabelnya di tab lain.
 5. Kalau ingin melihatnya sebagai variabel, tab **Variables** sekarang juga memuat
    `RAILWAY_TCP_PROXY_DOMAIN` dan `RAILWAY_TCP_PROXY_PORT`. Nilainya tersembunyi, tekan ikon
    mata atau **Show values**.
@@ -408,16 +403,31 @@ dibuat ulang setiap kali versi baru naik.
 2. **Add Volume**, dan isi **Mount path** dengan tepat:
 
 ```
-/app/storage/app/public
+/app/storage/app/dokumen
 ```
 
-Itu folder yang dipakai seluruh `FileUpload` di aplikasi ini. Tautan `public/storage` yang
-menunjuk ke sana sudah dibuat saat citra dibangun, dan tautan hanyalah penunjuk alamat, jadi
-ia tetap benar setelah folder tujuannya menjadi volume.
+Itu folder disk `dokumen`, tempat seluruh `FileUpload` di aplikasi ini menyimpan berkasnya.
 
 Jangan memasang volume di `/app/storage` saja. Folder itu juga berisi `framework` dan `logs`
 yang disiapkan saat citra dibangun, dan menimpanya dengan volume kosong membuat aplikasi
 gagal menyala.
+
+### Kalau volume Anda sudah terpasang di `/app/storage/app/public`
+
+Itu alamat yang dipakai sebelum 23 September 2026, waktu lampiran masih disimpan di disk
+`public`. Ubah **Mount path** volume yang sama menjadi `/app/storage/app/dokumen`, jangan
+membuat volume baru. Isi volumenya tidak berubah, dan susunan foldernya kebetulan sudah
+persis sama, karena yang berpindah hanya nama disk di sisi aplikasi, bukan jalur berkas di
+dalam basis data.
+
+Setelah deploy berikutnya, buktikan berkasnya masih ada sebelum menghapus apa pun:
+
+```
+ls -la storage/app/dokumen
+```
+
+Kalau ternyata kosong, berkas lokal Anda masih utuh. Jalankan `php artisan gais:pindah-berkas`
+di komputer sendiri lebih dulu, lalu unggah ulang isi `storage/app/dokumen` ke volume.
 
 ## Bagian 7: pre-deploy dan pemeriksaan kesehatan
 

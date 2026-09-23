@@ -4,6 +4,7 @@ namespace App\Filament\Resources\CleaningInspections\RelationManagers;
 
 use App\Models\CleaningInspection;
 use App\Models\CleaningInspectionLine;
+use App\Support\Berkas;
 use App\Support\Concerns\DetectsTableFilters;
 use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
@@ -107,9 +108,8 @@ class LinesRelationManager extends RelationManager
                             ->helperText('Sebutkan bagian mana yang bermasalah, supaya petugasnya tahu persis apa yang perlu dikerjakan.'),
                         FileUpload::make('file_path')
                             ->label('Foto')
-                            ->disk('public')
+                            ->disk(Berkas::DISK)
                             ->directory('pemeriksaan-kebersihan')
-                            ->visibility('public')
                             ->image()
                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                             ->maxSize(10240)
