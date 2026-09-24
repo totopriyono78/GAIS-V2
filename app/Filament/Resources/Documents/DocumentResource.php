@@ -8,6 +8,7 @@ use App\Filament\Resources\Documents\Pages\CreateDocument;
 use App\Filament\Resources\Documents\Pages\EditDocument;
 use App\Filament\Resources\Documents\Pages\ListDocuments;
 use App\Filament\Resources\Documents\Pages\ViewDocument;
+use App\Filament\Resources\Documents\RelationManagers\VersionsRelationManager;
 use App\Models\Document;
 use App\Models\DocumentCategory;
 use App\Models\DocumentType;
@@ -460,6 +461,18 @@ class DocumentResource extends Resource
      * berada di kelas lain dan tetap perlu menanyakan hal yang sama, jadi
      * pertanyaannya dibukakan satu pintu, bukan izinnya dibuka seluruhnya.
      */
+    /**
+     * Riwayat versi tampil sebagai relation manager, bukan sebagai tabel di
+     * dalam halaman detail, karena ia butuh tombol: menambah versi, mengesahkan,
+     * menolak, dan menarik peredaran.
+     */
+    public static function getRelations(): array
+    {
+        return [
+            VersionsRelationManager::class,
+        ];
+    }
+
     public static function bolehUnduh(): bool
     {
         return static::allows('download');

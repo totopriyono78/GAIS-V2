@@ -78,7 +78,7 @@ class RoleSeeder extends Seeder
              * fase berikutnya dan izinnya belum ada di sini.
              */
             'documents.read', 'documents.create', 'documents.update', 'documents.delete',
-            'documents.download', 'documents.export',
+            'documents.download', 'documents.export', 'documents.approve',
             'document_categories.read', 'document_categories.create', 'document_categories.update', 'document_categories.delete',
             'document_types.read', 'document_types.create', 'document_types.update',
             // Manajer GA menyetujui perjalanan dan menyerahkan uang mukanya. verify juga
@@ -165,6 +165,12 @@ class RoleSeeder extends Seeder
              * bentuknya. Jenis dokumen hanya bisa dilihat, karena mengubah skema metadata
              * sebuah jenis mengubah arti kolom metadata seluruh dokumen yang sudah memakai
              * jenis itu, dan itu bukan perubahan yang pantas terjadi tanpa keputusan.
+             */
+            /*
+             * Tanpa approve, mengikuti pola yang sama dengan tagihan dan penggantian
+             * biaya di modul lain. Staf GA mengunggah dan merawat isinya, tetapi
+             * tanda tangan yang menyatakan sebuah versi berlaku bagi seluruh
+             * perusahaan tetap milik manajer.
              */
             'documents.read', 'documents.create', 'documents.update', 'documents.download', 'documents.export',
             'document_categories.read', 'document_categories.create', 'document_categories.update',
