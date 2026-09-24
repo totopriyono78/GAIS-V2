@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\Documents\RelationManagers;
 
 use App\Enums\VersionStatus;
-use App\Exceptions\KonflikVersi;
+use App\Exceptions\MasalahVersiDokumen;
 use App\Models\Document;
 use App\Models\DocumentVersion;
 use App\Services\PengelolaDokumen;
@@ -105,6 +105,12 @@ class VersionsRelationManager extends RelationManager
                     ->state(fn (DocumentVersion $record): string => match (true) {
                         $record->effective_from === null => 'Belum berlaku',
                         $record->effective_until === null => 'Sejak '.$record->effective_from->translatedFormat('d M Y'),
+                        // Mulai dan berakhir pada tanggal yang sama berarti versi
+                        // ini digantikan di hari yang sama, jadi ia tidak pernah
+                        // berlaku sehari penuh. Ditulis begitu supaya tidak
+                        // terbaca seperti masa berlaku selama satu hari.
+                        $record->effective_until->isSameDay($record->effective_from) => 'Digantikan di hari yang sama, '
+                            .$record->effective_from->translatedFormat('d M Y'),
                         default => $record->effective_from->translatedFormat('d M Y')
                             .' sampai '.$record->effective_until->translatedFormat('d M Y'),
                     }),
@@ -183,7 +189,24 @@ class VersionsRelationManager extends RelationManager
                             ->native(false)
                             ->default(now())
                             ->required()
-                            ->helperText('Boleh tanggal lampau, misalnya saat dokumen sudah ditandatangani minggu lalu dan baru diunggah sekarang.'),
+                            // Batas bawahnya adalah tanggal berlaku versi yang
+                            // sekarang berjalan, sebab versi itu akan ditutup
+                            // pada tanggal ini. Lebih awal dari itu berarti
+                            // meminta versi yang berakhir sebelum ia dimulai,
+                            // dan lebih baik pilihannya dimatikan di kalender
+                            // daripada ditolak setelah tombolnya ditekan.
+                            ->minDate(fn (): ?string => $this->mulaiVersiBerjalan())
+                            ->helperText(function (): string {
+                                $batas = $this->mulaiVersiBerjalan();
+
+                                $dasar = 'Boleh tanggal lampau, misalnya saat dokumen sudah ditandatangani minggu lalu dan baru diunggah sekarang.';
+
+                                return $batas === null
+                                    ? $dasar
+                                    : $dasar.' Paling awal '
+                                        .Carbon::parse($batas)->translatedFormat('d F Y')
+                                        .', yaitu tanggal berlaku versi yang sekarang.';
+                            }),
                     ])
                     ->action(function (DocumentVersion $record, array $data): void {
                         try {
@@ -192,9 +215,12 @@ class VersionsRelationManager extends RelationManager
                                 pengesah: Auth::user(),
                                 berlakuMulai: Carbon::parse($data['berlaku_mulai']),
                             );
-                        } catch (KonflikVersi $e) {
-                            // Bukan kerusakan. Ada pengesahan lain yang diproses
-                            // bersamaan dan sudah menempati periode itu.
+                        } catch (MasalahVersiDokumen $e) {
+                            // Bukan kerusakan, melainkan penolakan yang sah:
+                            // pengesahan lain sudah menempati periode itu, atau
+                            // tanggal yang dipilih lebih awal dari tanggal
+                            // berlaku versi yang sekarang. Keduanya bisa
+                            // diperbaiki sendiri oleh pemakainya.
                             Notification::make()
                                 ->title('Pengesahan tidak jadi disimpan')
                                 ->body($e->getMessage())
@@ -260,7 +286,18 @@ class VersionsRelationManager extends RelationManager
                             ->required(),
                     ])
                     ->action(function (DocumentVersion $record, array $data): void {
-                        app(PengelolaDokumen::class)->tarikTanpaPengganti($record, Carbon::parse($data['sampai']));
+                        try {
+                            app(PengelolaDokumen::class)->tarikTanpaPengganti($record, Carbon::parse($data['sampai']));
+                        } catch (MasalahVersiDokumen $e) {
+                            Notification::make()
+                                ->title('Penarikan tidak jadi disimpan')
+                                ->body($e->getMessage())
+                                ->warning()
+                                ->persistent()
+                                ->send();
+
+                            return;
+                        }
 
                         Notification::make()
                             ->title('Versi '.$record->version_number.' ditarik')
@@ -273,6 +310,21 @@ class VersionsRelationManager extends RelationManager
             ])
             ->emptyStateHeading('Belum ada versi')
             ->emptyStateDescription('Dokumen ini belum punya satu pun berkas. Tekan Add Version untuk mengunggah yang pertama.');
+    }
+
+    /**
+     * Tanggal berlaku versi yang sekarang berjalan, kalau ada. Dipakai sebagai
+     * batas bawah kalender pengesahan.
+     */
+    private function mulaiVersiBerjalan(): ?string
+    {
+        return $this->getOwnerRecord()
+            ->versions()
+            ->where('status', VersionStatus::Disahkan->value)
+            ->whereNull('effective_until')
+            ->whereNotNull('effective_from')
+            ->orderByDesc('effective_from')
+            ->value('effective_from');
     }
 
     /**

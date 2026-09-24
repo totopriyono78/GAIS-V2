@@ -2,8 +2,6 @@
 
 namespace App\Exceptions;
 
-use RuntimeException;
-
 /**
  * Dua pengesahan versi diproses bersamaan dan memperebutkan periode yang sama.
  *
@@ -12,7 +10,7 @@ use RuntimeException;
  * perlu dilakukan pemakainya cuma memuat ulang halamannya dan mencoba lagi,
  * karena kemungkinan besar versi yang ia sahkan sudah disahkan orang lain.
  */
-class KonflikVersi extends RuntimeException
+class KonflikVersi extends MasalahVersiDokumen
 {
     /** exclusion_violation pada PostgreSQL. */
     public const SQLSTATE = '23P01';

@@ -7,6 +7,7 @@ use App\Enums\LinkRelation;
 use App\Enums\ScanStatus;
 use App\Enums\VersionStatus;
 use App\Exceptions\KonflikVersi;
+use App\Exceptions\TanggalBerlakuMundur;
 use App\Models\Document;
 use App\Models\DocumentType;
 use App\Models\DocumentVersion;
@@ -150,6 +151,40 @@ class PengelolaDokumen
             return DB::transaction(function () use ($versi, $pengesah, $tanggal): DocumentVersion {
                 $dokumen = Document::query()->whereKey($versi->document_id)->lockForUpdate()->firstOrFail();
 
+                $berjalan = DocumentVersion::query()
+                    ->where('document_id', $dokumen->id)
+                    ->where('status', VersionStatus::Disahkan->value)
+                    ->whereNull('effective_until')
+                    ->whereKeyNot($versi->id)
+                    ->get();
+
+                /*
+                 * Tanggal yang mundur ditolak di sini, bukan dibiarkan jatuh ke
+                 * constraint.
+                 *
+                 * Menutup versi lama pada tanggal sebelum ia sendiri mulai
+                 * berlaku menghasilkan baris yang berakhir sebelum dimulai.
+                 * document_versions_valid_period memang menolaknya, tetapi
+                 * penolakan di sana keluar sebagai SQLSTATE 23514 yang tidak
+                 * bisa dibaca pemakainya. Di sini kita masih tahu versi mana
+                 * dan tanggal berapa yang menjadi batasnya, jadi pesannya bisa
+                 * menyebutkan keduanya.
+                 *
+                 * Tanggal yang SAMA dengan versi lama tetap diperbolehkan. Itu
+                 * penggantian di hari yang sama: rentangnya menjadi kosong,
+                 * bukan terbalik, sehingga versi lama tidak pernah terjawab
+                 * sebagai versi yang berlaku pada tanggal mana pun.
+                 */
+                foreach ($berjalan as $lama) {
+                    if ($lama->effective_from !== null && $lama->effective_from->toDateString() > $tanggal) {
+                        throw TanggalBerlakuMundur::untukPengesahan(
+                            $lama->version_number,
+                            $lama->effective_from,
+                            $tanggal,
+                        );
+                    }
+                }
+
                 /*
                  * Status versi lama sengaja TIDAK diubah menjadi ditarik.
                  *
@@ -161,15 +196,14 @@ class PengelolaDokumen
                  *
                  * Yang berubah cuma tanggal berakhirnya.
                  */
-                DocumentVersion::query()
-                    ->where('document_id', $dokumen->id)
-                    ->where('status', VersionStatus::Disahkan->value)
-                    ->whereNull('effective_until')
-                    ->whereKeyNot($versi->id)
-                    ->update([
-                        'effective_until' => $tanggal,
-                        'updated_at' => now(),
-                    ]);
+                if ($berjalan->isNotEmpty()) {
+                    DocumentVersion::query()
+                        ->whereKey($berjalan->modelKeys())
+                        ->update([
+                            'effective_until' => $tanggal,
+                            'updated_at' => now(),
+                        ]);
+                }
 
                 $versi->update([
                     'status' => VersionStatus::Disahkan->value,
@@ -189,6 +223,15 @@ class PengelolaDokumen
                 throw KonflikVersi::untukDokumen($versi->document_id);
             }
 
+            // Periode yang tidak masuk akal. Pemeriksaan di atas sudah menangkap
+            // sebab yang bisa dikenali, jadi sisanya diterjemahkan menjadi pesan
+            // yang menyuruh memeriksa masa berlaku tiap versi. Yang jelas bukan
+            // layar 500, karena pemakainya tidak bisa berbuat apa apa dengan itu.
+            if ($e->getCode() === TanggalBerlakuMundur::SQLSTATE
+                && str_contains($e->getMessage(), 'document_versions_valid_period')) {
+                throw TanggalBerlakuMundur::tidakTerduga($versi->document_id);
+            }
+
             throw $e;
         }
     }
@@ -203,6 +246,17 @@ class PengelolaDokumen
     public function tarikTanpaPengganti(DocumentVersion $versi, ?Carbon $sampai = null): DocumentVersion
     {
         $tanggal = ($sampai ?? now())->toDateString();
+
+        // Sama alasannya dengan pengesahan: versi tidak boleh ditutup pada
+        // tanggal sebelum ia mulai berlaku. Hari yang sama boleh, dan artinya
+        // versi itu tidak pernah berlaku sehari penuh.
+        if ($versi->effective_from !== null && $versi->effective_from->toDateString() > $tanggal) {
+            throw TanggalBerlakuMundur::untukPenarikan(
+                $versi->version_number,
+                $versi->effective_from,
+                $tanggal,
+            );
+        }
 
         return DB::transaction(function () use ($versi, $tanggal): DocumentVersion {
             $versi->update([

@@ -2,11 +2,14 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\VersionStatus;
+use App\Exceptions\MasalahVersiDokumen;
 use App\Models\Document;
 use App\Models\DocumentType;
 use App\Models\DocumentVersion;
 use App\Models\User;
 use App\Services\NumberGenerator;
+use App\Services\PengelolaDokumen;
 use App\Services\SkemaMetadata;
 use App\Support\Berkas;
 use Illuminate\Console\Command;
@@ -56,6 +59,7 @@ class PeriksaDokumen extends Command
         try {
             DB::transaction(function () {
                 $this->periksaConstraint();
+                $this->periksaPenggantianHariSama();
                 $this->periksaPenomoran();
 
                 // Sengaja dibatalkan. Pemeriksaan ini tidak boleh meninggalkan apa pun.
@@ -250,6 +254,114 @@ class PeriksaDokumen extends Command
         );
     }
 
+    /**
+     * Penggantian versi di hari yang sama.
+     *
+     * Kasus ini terlewat sampai ada yang menemukannya di lingkungan sungguhan.
+     * Pemeriksaan constraint di atas memakai 1 Januari dan 1 Juli, dan
+     * pengujian lewat antarmuka juga memakai dua tanggal yang berjauhan, jadi
+     * tidak satu pun menyentuh keadaan yang paling wajar terjadi: dokumen
+     * disahkan pagi ini, penggantinya disahkan sore ini juga.
+     *
+     * Berbeda dari periksaConstraint yang menyisipkan baris langsung, di sini
+     * yang dipanggil adalah PengelolaDokumen, yaitu jalan yang sama persis
+     * dengan yang dilalui tombol Approve.
+     */
+    private function periksaPenggantianHariSama(): void
+    {
+        $user = User::query()->first();
+        $jenis = DocumentType::query()->where('code', 'sop')->first();
+
+        if ($user === null || $jenis === null) {
+            $this->nilai('Ada pengguna dan jenis dokumen sop untuk diuji', false);
+
+            return;
+        }
+
+        $pengelola = app(PengelolaDokumen::class);
+        $hari = now()->toDateString();
+
+        $dokumen = Document::query()->create([
+            'document_type_id' => $jenis->id,
+            'title' => '[DATA UJI] Penggantian di hari yang sama',
+            'created_by_user_id' => $user->id,
+        ]);
+
+        $v1 = $this->versi($dokumen, $user, 1, 'draft', null, null);
+        $v2 = $this->versi($dokumen, $user, 2, 'draft', null, null);
+        $v3 = $this->versi($dokumen, $user, 3, 'draft', null, null);
+
+        $this->nilai(
+            'Versi pertama bisa disahkan berlaku hari ini',
+            $this->berhasil(fn () => $pengelola->sahkan($v1, $user, now())),
+        );
+
+        $this->nilai(
+            'Versi kedua bisa disahkan di hari yang sama',
+            $this->berhasil(fn () => $pengelola->sahkan($v2, $user, now())),
+            $hari,
+        );
+
+        $v1->refresh();
+
+        $this->nilai(
+            'Versi pertama ditutup pada tanggal mulai berlakunya sendiri',
+            $v1->effective_from?->toDateString() === $hari && $v1->effective_until?->toDateString() === $hari,
+            ($v1->effective_from?->toDateString() ?? 'kosong').' sampai '.($v1->effective_until?->toDateString() ?? 'kosong'),
+        );
+
+        $dokumen->refresh();
+        $berlaku = $dokumen->versiBerlakuPada($hari);
+
+        $this->nilai(
+            'Yang berlaku hari ini dijawab versi 2, bukan versi 1',
+            $berlaku?->version_number === 2,
+            'dijawab versi '.($berlaku?->version_number ?? 'kosong'),
+        );
+
+        $this->nilai(
+            'Versi 1 tidak terjawab berlaku hari ini, juga dari sisi PHP',
+            $v1->berlakuPada($hari) === false,
+        );
+
+        $this->nilai(
+            'Status versi 1 tetap disahkan, riwayatnya tidak diubah',
+            $v1->status === VersionStatus::Disahkan,
+            $v1->status->value,
+        );
+
+        $this->nilai(
+            'current_version_id menunjuk versi 2',
+            $dokumen->current_version_id === $v2->id,
+        );
+
+        // Tanggal yang mundur bukan penggantian di hari yang sama, dan memang
+        // harus ditolak. Yang diperiksa di sini bukan cuma penolakannya, tetapi
+        // bahwa penolakannya berupa pesan yang bisa dibaca, bukan QueryException
+        // 23514 yang berakhir sebagai layar 500.
+        $this->nilai(
+            'Pengesahan dengan tanggal lebih awal dari versi berjalan ditolak dengan pesan terbaca',
+            $this->ditolakDenganPesan(fn () => $pengelola->sahkan($v3, $user, now()->subDay())),
+        );
+
+        $this->nilai(
+            'Versi 3 tetap draf setelah penolakan itu',
+            $v3->refresh()->status === VersionStatus::Draf,
+            $v3->status->value,
+        );
+
+        // Penarikan tanpa pengganti di hari yang sama, lewat jalan yang sama.
+        $this->nilai(
+            'Versi yang berlaku bisa ditarik di hari yang sama',
+            $this->berhasil(fn () => $pengelola->tarikTanpaPengganti($v2, now())),
+        );
+
+        $this->nilai(
+            'Penarikan dengan tanggal lebih awal dari mulai berlaku ditolak dengan pesan terbaca',
+            $this->ditolakDenganPesan(fn () => $pengelola->tarikTanpaPengganti($v2->refresh(), now()->subDay())),
+        );
+    }
+
     private function periksaPenomoran(): void
     {
         $jenis = DocumentType::query()->where('code', 'sop')->first();
@@ -325,6 +437,29 @@ class PeriksaDokumen extends Command
         } catch (QueryException $e) {
             return $e->getCode() === $sqlstate;
         } catch (Throwable) {
+            return false;
+        }
+    }
+
+    /**
+     * Benar kalau aksinya ditolak lewat MasalahVersiDokumen, yaitu penolakan
+     * yang sudah punya pesan untuk pemakainya. QueryException yang lolos ke
+     * sini dihitung gagal, sebab artinya penolakannya baru terjadi di basis
+     * data dan pemakainya cuma melihat layar galat.
+     */
+    private function ditolakDenganPesan(callable $aksi): bool
+    {
+        try {
+            DB::transaction($aksi);
+
+            return false;
+        } catch (MasalahVersiDokumen $e) {
+            $this->line('    <fg=gray>'.$e->getMessage().'</>');
+
+            return true;
+        } catch (Throwable $e) {
+            $this->line('    <fg=red>'.$e::class.': '.$e->getMessage().'</>');
+
             return false;
         }
     }
