@@ -242,8 +242,13 @@ class ModuleSeeder extends Seeder
                  * Siapa boleh melihat dokumen yang mana tidak ditentukan di sini. Itu
                  * urusan klasifikasi kerahasiaan dokumen dibanding tingkat kewenangan
                  * orangnya, dan sengaja tidak dilebur menjadi nama izin.
+                 *
+                 * approve memegang pengesahan versi. Dipisah dari update karena
+                 * mengubah keterangan dokumen dan menyatakan sebuah versi berlaku
+                 * bagi seluruh perusahaan adalah dua tanggung jawab yang berbeda,
+                 * dan di banyak kantor dipegang dua orang yang berbeda pula.
                  */
-                'available_actions' => ['read', 'create', 'update', 'delete', 'download', 'export'],
+                'available_actions' => ['read', 'create', 'update', 'delete', 'download', 'export', 'approve'],
             ],
             [
                 'code' => 'document_categories',

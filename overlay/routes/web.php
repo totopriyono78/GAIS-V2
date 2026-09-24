@@ -3,6 +3,7 @@
 use App\Http\Controllers\BeritaAcaraAsetController;
 use App\Http\Controllers\CetakLabelAsetController;
 use App\Http\Controllers\KartuRiwayatAsetController;
+use App\Http\Controllers\PratinjauDokumenController;
 use App\Http\Controllers\UnduhDokumenController;
 use Illuminate\Support\Facades\Route;
 
@@ -45,4 +46,12 @@ Route::middleware('auth')->group(function () {
      */
     Route::get('dokumen/{document}/versi/{version}/unduh', UnduhDokumenController::class)
         ->name('gais.dokumen.unduh');
+
+    /*
+     * Pratinjau memakai izin documents.read, bukan documents.download, dan
+     * tercatat sebagai pratinjau. Melihat di layar dan membawa salinan keluar
+     * adalah dua hal yang berbeda, dan jejaknya pun perlu dibedakan.
+     */
+    Route::get('dokumen/{document}/versi/{version}/pratinjau', PratinjauDokumenController::class)
+        ->name('gais.dokumen.pratinjau');
 });

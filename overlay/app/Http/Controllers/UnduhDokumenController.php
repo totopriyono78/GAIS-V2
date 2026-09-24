@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\Confidentiality;
 use App\Models\Document;
 use App\Models\DocumentVersion;
 use App\Services\AksesDokumen;
 use App\Support\Berkas;
+use App\Support\Concerns\MemeriksaAksesDokumen;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -30,6 +30,8 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  */
 class UnduhDokumenController extends Controller
 {
+    use MemeriksaAksesDokumen;
+
     public function __invoke(
         Request $request,
         Document $document,
@@ -38,49 +40,7 @@ class UnduhDokumenController extends Controller
     ): StreamedResponse {
         $user = $request->user();
 
-        abort_if($user === null, 403);
-
-        // Lapis satu: izin modul.
-        abort_unless(
-            $user->hasPermission('documents.download'),
-            403,
-            'Anda tidak punya izin mengunduh berkas dokumen.',
-        );
-
-        // Versi harus benar benar milik dokumen yang disebut di alamatnya.
-        // Tanpa pemeriksaan ini, nomor versi milik dokumen lain bisa dipasang
-        // pada dokumen yang boleh dibuka, dan berkas yang seharusnya tertutup
-        // ikut terambil.
-        abort_unless($version->document_id === $document->id, 404);
-
-        // Lapis dua: klasifikasi kerahasiaan dibanding tingkat kewenangan.
-        abort_unless(
-            $document->confidentiality->tingkat() <= $user->clearanceLevel(),
-            403,
-            'Dokumen ini berklasifikasi '.$document->confidentiality->label()
-            .', dan tingkat kewenangan Anda belum mencukupi untuk membukanya.',
-        );
-
-        // Lapis tiga: cakupan data. Dipakai ulang dari scope yang sama dengan
-        // yang menyaring daftarnya, supaya layar dan pintu unduhan tidak pernah
-        // berbeda pendapat tentang dokumen mana yang boleh dilihat.
-        abort_unless(
-            Document::query()->whereKey($document->id)->terlihatOleh($user)->exists(),
-            403,
-            'Dokumen ini berada di luar cakupan data yang boleh Anda lihat.',
-        );
-
-        abort_unless(
-            $version->bolehDiunduh(),
-            403,
-            'Berkas versi ini belum lolos pemeriksaan, jadi belum bisa diunduh.',
-        );
-
-        abort_unless(
-            Berkas::ada($version->storage_path),
-            404,
-            'Berkasnya tidak ditemukan di penyimpanan. Kemungkinan besar ia hilang saat pemindahan penyimpanan.',
-        );
+        $this->pastikanBoleh($user, $document, $version, 'documents.download');
 
         $akses->catat($document, $user, 'download', $version);
 
@@ -88,22 +48,5 @@ class UnduhDokumenController extends Controller
         // bernama acak supaya judulnya tidak membocorkan isi dokumennya lewat
         // daftar berkas.
         return Berkas::disk()->download($version->storage_path, $version->original_name);
-    }
-
-    /**
-     * Daftar klasifikasi yang boleh dibuka seorang pengguna, untuk ditampilkan
-     * di layar saat ia bertanya kenapa sebuah dokumen tidak muncul.
-     *
-     * @return list<string>
-     */
-    public static function klasifikasiTerbuka(int $tingkat): array
-    {
-        return array_values(array_map(
-            static fn (Confidentiality $k): string => $k->label(),
-            array_filter(
-                Confidentiality::cases(),
-                static fn (Confidentiality $k): bool => $k->tingkat() <= $tingkat,
-            ),
-        ));
     }
 }

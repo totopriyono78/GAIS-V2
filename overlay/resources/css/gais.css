@@ -553,3 +553,175 @@ html.fi [role='switch']:focus-visible {
     background-color: var(--gais-petrol-muda);
     color: var(--gais-petrol);
 }
+
+/*
+ * Pratinjau dan riwayat dokumen.
+ *
+ * Warnanya seluruhnya diambil dari variabel Filament, bukan ditulis sebagai
+ * kode warna. Panel ini dibaca di tema terang dan gelap, dan warna yang
+ * dipatok akan benar di salah satunya lalu salah di yang lain.
+ */
+.gais-pratinjau {
+    border: 1px solid var(--gray-200);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    background: var(--gray-50);
+}
+
+.dark .gais-pratinjau {
+    border-color: var(--gray-700);
+    background: var(--gray-900);
+}
+
+.gais-pratinjau-kepala {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.625rem 0.875rem;
+    border-bottom: 1px solid var(--gray-200);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--gray-700);
+}
+
+.dark .gais-pratinjau-kepala {
+    border-bottom-color: var(--gray-700);
+    color: var(--gray-300);
+}
+
+.gais-pratinjau-ukuran {
+    font-weight: 400;
+    color: var(--gray-500);
+}
+
+/*
+ * Tinggi tetap dengan batas tinggi layar. Pratinjau yang meninggi mengikuti
+ * isinya membuat riwayat di bawahnya terdorong sampai perlu digulir jauh,
+ * padahal justru riwayat yang dicari saat audit.
+ */
+.gais-pratinjau-bingkai {
+    display: block;
+    width: 100%;
+    height: min(70vh, 40rem);
+    border: 0;
+    background: var(--gray-100);
+}
+
+.dark .gais-pratinjau-bingkai {
+    background: var(--gray-950);
+}
+
+.gais-pratinjau-gambar {
+    display: block;
+    width: 100%;
+    max-height: min(70vh, 40rem);
+    object-fit: contain;
+    background: var(--gray-100);
+}
+
+.dark .gais-pratinjau-gambar {
+    background: var(--gray-950);
+}
+
+.gais-pratinjau-kosong {
+    padding: 2rem 1rem;
+    text-align: center;
+    border: 1px dashed var(--gray-300);
+    border-radius: 0.75rem;
+    font-size: 0.875rem;
+    color: var(--gray-500);
+}
+
+.dark .gais-pratinjau-kosong {
+    border-color: var(--gray-700);
+    color: var(--gray-400);
+}
+
+.gais-pratinjau-judul {
+    font-weight: 600;
+    color: var(--gray-700);
+    margin-bottom: 0.25rem;
+}
+
+.dark .gais-pratinjau-judul {
+    color: var(--gray-200);
+}
+
+.gais-riwayat {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+}
+
+.gais-riwayat-judul {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--gray-500);
+    margin-bottom: 0.625rem;
+}
+
+.gais-riwayat-kosong {
+    font-size: 0.875rem;
+    color: var(--gray-500);
+}
+
+/*
+ * Tabelnya boleh digulir mendatar di layar sempit, dan hanya tabelnya. Halaman
+ * di belakangnya tetap tidak boleh ikut bergeser.
+ */
+.gais-riwayat-bagian {
+    overflow-x: auto;
+}
+
+.gais-riwayat-tabel {
+    width: 100%;
+    min-width: 34rem;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+.gais-riwayat-tabel th {
+    text-align: left;
+    font-weight: 500;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--gray-500);
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--gray-200);
+    white-space: nowrap;
+}
+
+.dark .gais-riwayat-tabel th {
+    border-bottom-color: var(--gray-700);
+}
+
+.gais-riwayat-tabel td {
+    padding: 0.625rem 0.75rem;
+    border-bottom: 1px solid var(--gray-100);
+    color: var(--gray-700);
+    vertical-align: top;
+}
+
+.dark .gais-riwayat-tabel td {
+    border-bottom-color: var(--gray-800);
+    color: var(--gray-300);
+}
+
+/* Versi yang sedang berlaku diberi garis di tepi kiri, bukan latar penuh.
+   Satu baris berlatar pekat di tengah tabel menarik mata lebih kuat daripada
+   perannya, dan membuat baris lain terbaca seperti sudah tidak berlaku. */
+.gais-riwayat-berlaku td:first-child {
+    box-shadow: inset 2px 0 0 var(--primary-600);
+    font-weight: 600;
+}
+
+.gais-riwayat-waktu {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--gray-500);
+}
