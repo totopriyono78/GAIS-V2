@@ -9,13 +9,16 @@
         dasbor bukan formulir dan tidak butuh keadaan tab yang ikut divalidasi. Yang
         dibutuhkan hanya satu hal: pindah kelompok tanpa memuat ulang halaman.
     --}}
+    {{--
+        Tab bergaya nav pills Vuexy: tab aktif berupa pil ungu bertulisan putih dengan
+        bayangan sewarna, tab lain teks biasa. Pil padat lebih mudah ditemukan mata
+        daripada garis bawah tipis saat dasbor dibuka sekilas di sela pekerjaan.
+    --}}
     <style>
         .gais-tab-baris {
             display: flex;
             flex-wrap: wrap;
-            gap: 6px;
-            border-bottom: 1px solid var(--gray-200, #D2DADE);
-            padding-bottom: 0;
+            gap: 8px;
             margin-bottom: 4px;
         }
 
@@ -26,25 +29,34 @@
             font: inherit;
             font-weight: 500;
             cursor: pointer;
-            padding: 8px 14px;
+            padding: 8px 18px;
             /* Tap target 44 piksel supaya tetap enak ditekan di telepon. */
             min-height: 44px;
-            color: var(--gray-600, #596A70);
-            border-bottom: 3px solid transparent;
-            margin-bottom: -1px;
+            border-radius: 0.357rem;
+            color: var(--gray-600);
+            transition: background-color 0.15s ease, box-shadow 0.2s ease;
         }
 
-        .gais-tab:hover { color: var(--primary-700, #17505E); }
+        .dark .gais-tab { color: var(--gray-300); }
 
-        .gais-tab[aria-selected="true"] {
-            color: var(--primary-700, #17505E);
-            border-bottom-color: var(--primary-700, #17505E);
+        .gais-tab:hover {
+            color: var(--primary-600);
+            background-color: color-mix(in srgb, var(--primary-400) 12%, transparent);
+        }
+
+        .dark .gais-tab:hover { color: var(--primary-300); }
+
+        /* primary-600 dengan tulisan putih: 5,68:1. */
+        .gais-tab[aria-selected="true"],
+        .dark .gais-tab[aria-selected="true"] {
+            color: #ffffff;
+            background-color: var(--primary-600);
+            box-shadow: 0 4px 18px -4px color-mix(in srgb, var(--primary-400) 65%, transparent);
         }
 
         .gais-tab:focus-visible {
-            outline: 2px solid #A2542F;
+            outline: 2px solid var(--primary-400);
             outline-offset: 2px;
-            border-radius: 4px;
         }
     </style>
 

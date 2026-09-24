@@ -50,18 +50,22 @@ class KendaraanRingkasan extends StatsOverviewWidget
 
         return [
             Stat::make('Kendaraan dipakai', number_format($aktif, 0, ',', '.'))
+                ->icon('heroicon-o-truck')
                 ->description($aktif > 0 ? 'Terhubung ke aset masing masing' : 'Belum ada kendaraan yang didata')
                 ->color($aktif > 0 ? 'primary' : 'gray'),
 
             Stat::make('Dokumen sudah lewat', number_format($terlambat, 0, ',', '.'))
+                ->icon('heroicon-o-document-minus')
                 ->description($terlambat > 0 ? 'Perlu diurus sekarang' : 'Tidak ada yang terlambat')
                 ->color($terlambat > 0 ? 'danger' : 'success'),
 
             Stat::make('Jatuh tempo 30 hari', number_format(max($segera, 0), 0, ',', '.'))
+                ->icon('heroicon-o-calendar-days')
                 ->description($segera > 0 ? 'Masih sempat diurus' : 'Tidak ada yang mendekati jatuh tempo')
                 ->color($segera > 0 ? 'warning' : 'success'),
 
             Stat::make('Biaya dokumen setahun', Rupiah::ringkas($biaya))
+                ->icon('heroicon-o-receipt-percent')
                 ->description(Rupiah::penuh($biaya).' dari dokumen yang terbit 12 bulan terakhir')
                 ->color('gray'),
         ];

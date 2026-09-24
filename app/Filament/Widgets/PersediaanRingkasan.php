@@ -65,18 +65,22 @@ class PersediaanRingkasan extends StatsOverviewWidget
 
         return [
             Stat::make('Jenis barang', number_format($jenis, 0, ',', '.'))
+                ->icon('heroicon-o-squares-2x2')
                 ->description('Masih dipakai')
                 ->color('primary'),
 
             Stat::make('Perlu dipesan', number_format($perluDipesan, 0, ',', '.'))
+                ->icon('heroicon-o-shopping-cart')
                 ->description($habis > 0 ? "Termasuk {$habis} yang stoknya sudah habis" : 'Belum ada yang habis')
                 ->color($perluDipesan > 0 ? 'warning' : 'success'),
 
             Stat::make('Perkiraan nilai persediaan', Rupiah::ringkas($nilai))
+                ->icon('heroicon-o-archive-box')
                 ->description(Rupiah::penuh($nilai).' dari harga terakhir, bukan nilai akuntansi')
                 ->color('gray'),
 
             Stat::make('Keluar bulan ini', number_format($keluarBulanIni, 0, ',', '.'))
+                ->icon('heroicon-o-arrow-up-tray')
                 ->description('Jumlah satuan dari seluruh barang')
                 ->color('gray'),
         ];

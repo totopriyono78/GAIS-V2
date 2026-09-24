@@ -43,18 +43,22 @@ class PemeliharaanRingkasan extends StatsOverviewWidget
 
         return [
             Stat::make('Pekerjaan belum selesai', number_format($terbuka, 0, ',', '.'))
+                ->icon('heroicon-o-wrench-screwdriver')
                 ->description($mendesak > 0 ? $mendesak.' di antaranya mendesak' : 'Tidak ada yang mendesak')
                 ->color($mendesak > 0 ? 'danger' : ($terbuka > 0 ? 'warning' : 'success')),
 
             Stat::make('Kunjungan lewat jatuh tempo', number_format($terlewat, 0, ',', '.'))
+                ->icon('heroicon-o-calendar')
                 ->description($terlewat > 0 ? 'Perlu dikerjakan atau ditandai dilewati' : 'Semua kunjungan masih di depan')
                 ->color($terlewat > 0 ? 'danger' : 'success'),
 
             Stat::make('Selesai bulan ini', number_format($selesaiBulanIni, 0, ',', '.'))
+                ->icon('heroicon-o-check-circle')
                 ->description('Preventif dan korektif, menurut tanggal selesainya')
                 ->color('primary'),
 
             Stat::make('Biaya bulan ini', Rupiah::ringkas($biayaBulanIni))
+                ->icon('heroicon-o-banknotes')
                 ->description(Rupiah::penuh($biayaBulanIni).' dari pekerjaan yang selesai')
                 ->color('gray'),
         ];

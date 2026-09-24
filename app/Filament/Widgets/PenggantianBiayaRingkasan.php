@@ -64,24 +64,28 @@ class PenggantianBiayaRingkasan extends StatsOverviewWidget
 
         return [
             Stat::make('Menunggu atasan', number_format($menungguAtasan, 0, ',', '.'))
+                ->icon('heroicon-o-user')
                 ->description($menungguAtasan > 0
                     ? 'Menunggu tanda tangan kepala departemen pemohon'
                     : 'Tidak ada yang menunggu tanda tangan atasan')
                 ->color($menungguAtasan > 0 ? 'warning' : 'success'),
 
             Stat::make('Menunggu tim GA', number_format($menungguGa, 0, ',', '.'))
+                ->icon('heroicon-o-inbox-stack')
                 ->description($menungguGa > 0
                     ? 'Struknya belum diperiksa'
                     : 'Tidak ada yang menunggu diperiksa')
                 ->color($menungguGa > 0 ? 'warning' : 'success'),
 
             Stat::make('Menunggu ditransfer', $menungguTransfer > 0 ? Rupiah::ringkas($nilaiTransfer) : 'Tidak ada')
+                ->icon('heroicon-o-arrows-right-left')
                 ->description($menungguTransfer > 0
                     ? $menungguTransfer.' pengajuan, '.Rupiah::penuh($nilaiTransfer).' uang karyawan yang belum kembali'
                     : 'Tidak ada uang karyawan yang belum kembali')
                 ->color($menungguTransfer > 0 ? 'danger' : 'success'),
 
             Stat::make('Sudah diganti tahun '.$tahun, $sudahDiganti > 0 ? Rupiah::ringkas($sudahDiganti) : 'Belum ada')
+                ->icon('heroicon-o-check-badge')
                 ->description($sudahDiganti > 0
                     ? Rupiah::penuh($sudahDiganti).' menurut tanggal struknya'
                     : 'Belum ada pengajuan yang selesai diganti tahun ini')

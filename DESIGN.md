@@ -4,7 +4,8 @@ Arah gaya untuk proyek ini. File ini adalah pasangan wajib dari `ANTISLOP.md`.
 
 `ANTISLOP.md` hanya bisa menolak yang buruk. File inilah yang menentukan yang baik.
 
-Status: **diisi oleh Claude pada 6 September 2026 atas permintaan pemilik proyek, menunggu review.**
+Status: **diisi oleh Claude pada 6 September 2026 atas permintaan pemilik proyek. Bagian 3 sampai 6
+ditulis ulang 24 September 2026 saat arah gaya diganti ke Vuexy atas permintaan pemilik proyek.**
 Bagian yang belum bisa saya ketahui sendiri (logo, angka nyata, testimoni) sengaja ditulis apa adanya
 sebagai belum ada, sesuai R-23 dan R-38.
 
@@ -62,17 +63,31 @@ yang dipakai untuk keputusan finansial, jadi tampilan harus terasa tenang dan ak
 
 ## 3. Karakter Visual
 
-**Tiga kata sifat:** tenang, presisi, hangat
+**Arah gaya:** Vuexy (templat admin dasbor Pixinvent), dipilih pemilik proyek pada
+24 September 2026 menggantikan arah "kertas hangat" sebelumnya. Referensinya
+[demo Vuexy eCommerce](https://demos.pixinvent.com/vuexy-vuejs-admin-template-vue2/demo-1/dashboard/ecommerce).
+Tiruan sengaja atas permintaan pemilik, jadi R-30 tidak dilanggar, tetapi yang ditiru adalah
+bahasa visualnya (warna, huruf, bentuk kartu), bukan isi, ilustrasi, atau logonya.
 
-**Tiga kata sifat yang HARUS dihindari:** futuristik, playful, korporat kaku
+**Tiga kata sifat:** ringan, rapi, bersahabat
 
-**Referensi rasa (bukan untuk dijiplak):** buku manual teknik terbitan lama, formulir kertas kantor yang
-dicetak rapi, papan inventaris kayu di gudang. Rasanya: kertas hangat, garis tegas, angka jelas.
+**Tiga kata sifat yang HARUS dihindari:** berat, ramai, dingin
 
-**Motif identitas:** setiap judul seksi dan setiap baris yang menunggu tindakan Anda ditandai
-**garis aksen terracotta setebal 3px di sisi kiri**. Selain itu, semua angka, kode aset, dan nomor dokumen
-selalu memakai tabular numerals sehingga kolom angka berbaris lurus. Dua kebiasaan ini yang membuat GAIS
-tetap dikenali kalau logonya dilepas.
+**Bahasa visual:** permukaan putih yang melayang di atas latar abu sangat muda. Semua yang
+berisi (navbar, kartu formulir, tabel, statistik, dialog) adalah kartu putih bersudut 6 piksel
+tanpa garis tepi, dipisahkan dari latar oleh bayangan lembut. Ungu hanya di tempat yang
+menuntut perhatian: tombol utama, menu aktif, tab aktif, fokus.
+
+**Motif identitas:** dua gestur Vuexy yang diulang di seluruh aplikasi.
+
+1. **Pil ungu bercahaya** menandai "Anda di sini": menu sidebar aktif dan tab dasbor aktif.
+   Satu satunya elemen bercahaya di aplikasi.
+2. **Lingkaran ikon berwarna tipis** (latar warna 12 persen, ikon warna penuh) untuk ikon
+   statistik dasbor, ubin peluncur menu, dan avatar inisial. Warnanya membawa arti: pada
+   statistik ia mengikuti kondisi data (merah terlambat, hijau aman).
+
+Angka, kode aset, dan nomor dokumen tetap memakai tabular numerals, dipertahankan dari arah
+sebelumnya karena alasannya fungsi.
 
 ---
 
@@ -80,42 +95,36 @@ tetap dikenali kalau logonya dilepas.
 
 | Peran | Nilai | Alasan singkat |
 |---|---|---|
-| Inti 1 | `#17505E` | Petrol tua untuk semua aksi utama, nav aktif, dan fokus. Tenang, bukan biru neon, dan kontras putih di atasnya 8.9:1 |
-| Inti 2 | `#3A4A50` | Slate hangat untuk teks sekunder, border struktural, dan header tabel. Menjaga tabel padat tetap terbaca tanpa menambah warna |
-| Aksen | `#A2542F` | Terracotta. Hanya untuk dua hal: garis motif 3px di kiri header seksi, dan penanda baris atau badge "menunggu tindakan Anda". Tidak dipakai di tempat lain |
-| Netral gelap | `#1C1A17` | Teks utama. Hitam kehangatan, bukan hitam murni, supaya tidak keras dibaca 8 jam |
-| Netral terang | `#FAF7F2` | Latar. Putih kertas hangat, mengurangi silau dibanding putih murni |
-| Sukses / Error | `#1F6B3F` / `#A32020` | Status selesai atau kondisi baik, dan status gagal atau kondisi rusak |
+| Inti 1 | `#7367F0` ungu Vuexy | Warna merek Vuexy. Dipasang di tingkat 400 dan dipakai untuk bentuk tanpa teks kecil: cahaya menu aktif, garis fokus, lingkaran ikon |
+| Inti 1, tombol | `#5D4FE6` / hover `#685BED` | Ungu yang sama digelapkan sedikit karena tulisan putih di atas `#7367F0` hanya 4,26:1. Di sini 5,68:1 dan 4,88:1 |
+| Inti 2 | `#5E5873` | Abu ungu tua Vuexy untuk judul halaman, judul kartu, dan kepala tabel |
+| Netral teks | `#6E6B7B` | Warna teks dasar Vuexy, 5,18:1 di atas putih |
+| Netral latar | `#F8F8F8` / garis `#EBE9F1` | Latar halaman dan garis antar baris tabel Vuexy |
+| Status | `#28C76F` / `#EA5455` / `#FF9F43` / `#00CFE8` | Sukses, bahaya, peringatan, info Vuexy. Merah digelapkan ke `#C03234` untuk tombol bertulisan putih |
 
-Warna status (sukses, error, dan kuning peringatan bawaan Filament) diperlakukan sebagai sinyal fungsional,
-bukan bagian palet, sama seperti netral. Aturannya: warna status hanya boleh muncul pada badge status dan
-ikon status, tidak pernah sebagai warna dekoratif.
+Warna status hanya muncul pada badge, ikon status, lingkaran ikon statistik, dan grafik status.
+Tidak dipakai sebagai hiasan.
+
+**Tema gelap:** ikut dikirim, karena Filament sudah menyediakan tombol tema di menu pengguna
+dan Vuexy sendiri punya tata letak gelap. Latar `#161D31`, kartu `#283046`, garis `#3B4253`,
+persis dark layout Vuexy. Di Filament kedua warna itu adalah tingkat 950 dan 900 palet gray,
+jadi tema gelap terbentuk dari palet yang sama tanpa daftar warna kedua.
 
 ### Bagaimana nilai di atas dipasang ke Filament
 
-Nilai di tabel itu warna penuhnya, bukan satu satunya warna yang tampil. Filament butuh sebelas tingkat
-untuk tiap peran, dan tingkat itu ditulis lengkap di `AdminPanelProvider::colors()`, tidak diturunkan
-dari satu warna dasar. Alasannya ditemukan saat verifikasi 6 September 2026: `Color::hex()` hanya
-mengambil rona warna yang diberikan lalu memakai kepekatan bawaannya sendiri, sehingga `#17505E`
-yang kepekatannya 0,062 dalam OKLCH keluar di layar dengan kepekatan 0,169, yaitu sian menyala.
-Warna penuh dipasang di tingkat yang tingkat terangnya paling dekat: 700 untuk Inti 1 dan Inti 2,
-600 untuk sukses, error, dan peringatan.
+Palet ditulis lengkap sebelas tingkat per peran di `AdminPanelProvider::colors()`, tidak
+diturunkan dari satu warna dasar, karena `Color::hex()` membangun tingkatnya sendiri tanpa bisa
+diatur kontrasnya. Filament memilih warna tulisan tombol dari palet dengan syarat 4,5:1, jadi
+tombol hijau, jingga, dan biru muda otomatis bertulisan gelap.
 
-Perlu diketahui saat membaca layar: Filament 5 melukis tombol terang dengan tingkat 400 sebagai latar
-dan tingkat 950 sebagai tulisannya, bukan warna penuh dengan tulisan putih. Jadi tombol utama tampil
-sebagai petrol muda. Warna penuh `#17505E` tetap muncul di tempat yang disebut tabel di atas: teks,
-nav aktif, dan garis fokus. Kontras 8.9:1 berlaku untuk pemakaian itu.
+Bentuk (bayangan, sudut, navbar melayang, menu aktif, tabel) ada di `resources/css/gais.css`.
+Aturan Filament berada di dalam `@layer components` sedangkan gais.css tidak berlapis, jadi
+pemilih sederhana di gais.css menang tanpa trik kekhususan. Setiap perubahan gais.css disalin
+juga ke `public/css/app/gais.css` (atau jalankan `php artisan filament:assets`).
 
-R-01: tidak ada gradien di aplikasi ini. Permukaan diberi bidang warna rata karena tabel padat lebih terbaca
-di atas bidang rata.
-
-**Tema:** terang saja untuk Tahap 1.
-
-Alasan (R-21): pengguna memakai aplikasi ini di ruang kantor ber-lampu terang sepanjang hari, dan hampir
-semua dokumen pendamping mereka (formulir, faktur, laporan cetak) berlatar putih. Tema gelap bukan
-kebutuhan mereka, jadi lebih jujur mengirim satu tema yang benar-benar rapi daripada dua tema setengah jadi.
-Ini keputusan, bukan penundaan. Kalau nanti tema gelap dibutuhkan, itu jadi pekerjaan tersendiri dengan
-verifikasi kontras ulang di kedua mode sesuai R-34.
+**Gradien:** dua, dua duanya berfungsi. Pil menu aktif (`#5D4FE6` ke `#685BED`, tulisan putih
+lolos di seluruh panjangnya) dan pudar latar di belakang navbar melayang supaya isi yang
+tergulung tidak menabrak kartunya. Tidak ada gradien dekoratif lain.
 
 ---
 
@@ -123,14 +132,18 @@ verifikasi kontras ulang di kedua mode sesuai R-34.
 
 | Peran | Typeface | Alasan (R-06) |
 |---|---|---|
-| Heading | Source Serif 4 | Serif hangat untuk judul halaman dan judul seksi, memberi karakter "dokumen kantor yang dicetak rapi" dan langsung membedakan GAIS dari dasbor sans generik |
-| Body | IBM Plex Sans | Dirancang untuk antarmuka padat data, bentuk huruf jelas di ukuran kecil, dan punya tabular numerals yang dibutuhkan motif identitas |
-| Mono | IBM Plex Mono | Hanya untuk kode aset, nomor dokumen, dan nilai barcode. Tidak pernah untuk heading atau body |
+| Heading dan body | Montserrat 400/500/600/700 | Huruf Vuexy. Geometris dan lebar, memberi rasa ringan dan ramah yang menjadi ciri templat itu. Diinangkan sendiri di `public/fonts/montserrat` supaya jaringan kantor tanpa internet tetap mendapat huruf yang sama |
+| Mono | monospace sistem | Hanya untuk kode aset, nomor dokumen, dan nilai barcode, bawaan kolom Filament |
 
-**Skala ukuran:** 12 / 13 / 14 / 16 / 20 / 26 / 34 (px)
+**Skala ukuran:** 12 / 13 / 14 / 16 / 18 / 24 (px). Judul halaman 24 piksel ketebalan 500,
+judul kartu 17,6 piksel ketebalan 500, angka statistik 24 piksel ketebalan 600.
 
-**Aturan letter-spacing:** heading -0.01em, body 0. Tidak ada label uppercase dengan tracking lebar.
-Label kolom tabel memakai huruf kapital di awal kata saja, ukuran 12px, warna Inti 2.
+**Huruf kapital:** hanya di dua tempat, judul kelompok menu sidebar dan kepala tabel, keduanya
+12 piksel dengan jarak huruf 0,04em. Mengikuti Vuexy, dan di tabel ia memisahkan baris label
+dari baris data tanpa warna tambahan. Tidak ada kapital dengan jarak huruf lebar di tempat lain.
+
+**Lebar sidebar:** 20rem. Montserrat lebih lebar dari huruf sebelumnya, dan nama menu terpanjang
+(Corrective Maintenance beserta badge jumlahnya) baru menyisakan 21 piksel pada lebar ini.
 
 ---
 
@@ -138,15 +151,14 @@ Label kolom tabel memakai huruf kapital di awal kata saja, ukuran 12px, warna In
 
 | Dial | Level | Artinya di proyek ini |
 |---|---|---|
-| ENERGY | 1 | Kalem. Tidak ada hero besar, tidak ada ilustrasi dekoratif, satu focal point per layar |
+| ENERGY | 2 | Seimbang. Ungu dan bayangan membuat layar lebih hidup dari sebelumnya, tetapi tetap satu titik fokus per layar dan tanpa ilustrasi dekoratif |
 | RHYTHM | 1 | Grid seragam yang disengaja. Semua halaman modul memakai pola sama: judul, filter, tabel, aksi |
-| MOTION | 1 | Hover dan focus saja, plus indikator memuat bawaan Filament. Tidak ada scroll reveal, tidak ada parallax |
+| MOTION | 1 | Hover dan focus saja: butir menu bergeser 5 piksel saat disorot, tombol berwarna mendapat bayangan sewarna saat disorot. Keduanya dimatikan untuk `prefers-reduced-motion`. Tidak ada animasi muncul atau parallax |
 
-**Alasan setting ini:** aplikasi dipakai 8 jam sehari untuk memasukkan dan memeriksa data. Layar yang ramai
-dan gerak yang tidak perlu memperlambat kerja dan melelahkan mata. Keseragaman antar halaman di sini adalah
-fitur, bukan kemalasan: staf GA berpindah antar modul puluhan kali sehari dan harus menemukan tombol yang
-sama di tempat yang sama. Karakter dimasukkan lewat palet, serif pada judul, dan motif garis aksen,
-bukan lewat gerak.
+**Alasan setting ini:** ENERGY naik satu tingkat karena itulah yang diminta dari Vuexy, rasa
+dasbor yang lebih hidup. RHYTHM dan MOTION tetap 1 karena alasannya tidak berubah: aplikasi
+dipakai 8 jam sehari, staf GA berpindah antar modul puluhan kali sehari, dan tombol yang sama
+harus ada di tempat yang sama.
 
 ---
 
@@ -172,9 +184,13 @@ barcode, maintenance). Konsisten, jangan campur "peran" dan "role" di layar yang
 ## 8. Aset dan Data Nyata
 
 **Logo:** belum ada. Sampai file logo diberikan, aplikasi memakai nama produk sebagai teks
-(brand name "GAIS") dan penanda `[LOGO]` di tempat logo akan diletakkan. Tidak ada logo yang dibuat sendiri.
+(brand name "GAIS", ungu Vuexy ketebalan 600) di tempat logo akan diletakkan. Logo Vuexy tidak
+dipakai, dan tidak ada logo yang dibuat sendiri.
 
-**Foto atau avatar:** tidak dipakai. Avatar memakai inisial nama pengguna.
+**Foto atau avatar:** tidak dipakai. Avatar memakai inisial nama pengguna bergaya avatar Vuexy:
+latar warna tipis, inisial berwarna.
+
+**Ilustrasi:** tidak dipakai. Ilustrasi karakter di demo Vuexy tidak disalin (R-22).
 
 **Angka dan statistik yang boleh ditampilkan:** hanya angka yang dihitung langsung dari basis data aplikasi
 ini (misalnya jumlah karyawan aktif, jumlah role, jumlah perubahan hari ini). Tidak ada angka yang di-hardcode

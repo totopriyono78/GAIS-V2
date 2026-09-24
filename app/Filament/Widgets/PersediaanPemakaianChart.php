@@ -64,8 +64,11 @@ class PersediaanPemakaianChart extends ChartWidget
             'datasets' => [[
                 'label' => 'Satuan barang keluar',
                 'data' => $hitung->values()->map(fn ($n) => (int) $n)->all(),
-                'backgroundColor' => '#38707F',
-                'borderColor' => '#17505E',
+                // Ungu Vuexy, batang dengan sudut membulat seperti grafik batang Vuexy.
+                'backgroundColor' => '#7367F0',
+                'borderColor' => '#7367F0',
+                'borderRadius' => 4,
+                'maxBarThickness' => 28,
                 'borderWidth' => 1,
             ]],
             'labels' => $hitung->keys()->map(fn ($id) => $departemen[$id] ?? 'Tidak dicatat')->all(),

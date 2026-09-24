@@ -43,7 +43,7 @@ class PeluncurMenu
      * gais.css. Warnanya sendiri hidup di berkas gaya, supaya menyetelnya tidak perlu
      * menyentuh berkas PHP.
      *
-     * Kelompok yang belum punya warna sendiri jatuh ke petrol, warna dasar aplikasi.
+     * Kelompok yang belum punya warna sendiri jatuh ke ungu, warna dasar aplikasi.
      * Itu membuat kelompok baru tetap tergambar wajar tanpa berkas ini disentuh, hanya
      * saja warnanya belum khas.
      *
@@ -51,20 +51,20 @@ class PeluncurMenu
      */
     public const WARNA_KELOMPOK = [
         // Dasbor dan menu lain yang tidak berkelompok.
-        '' => 'petrol',
-        'Assets' => 'slate',
-        'Maintenance' => 'terracotta',
-        'Vehicles' => 'teal',
-        'Facility Services' => 'olive',
-        'Correspondence' => 'plum',
-        'Office Supplies' => 'ochre',
-        'Budget & Expenses' => 'forest',
-        'Master Data' => 'stone',
-        'Access Control' => 'brick',
-        'System' => 'graphite',
+        '' => 'ungu',
+        'Assets' => 'nila',
+        'Maintenance' => 'jingga',
+        'Vehicles' => 'toska',
+        'Facility Services' => 'zaitun',
+        'Correspondence' => 'magenta',
+        'Office Supplies' => 'kuning',
+        'Budget & Expenses' => 'hijau',
+        'Master Data' => 'cokelat',
+        'Access Control' => 'merah',
+        'System' => 'abu',
     ];
 
-    public const WARNA_BAWAAN = 'petrol';
+    public const WARNA_BAWAAN = 'ungu';
 
     /**
      * Hasilnya diingat selama satu permintaan.

@@ -43,24 +43,28 @@ class RingkasanTahapSatu extends StatsOverviewWidget
 
         if ($user?->hasPermission('employees.read')) {
             $stats[] = Stat::make('Karyawan aktif', (string) Employee::query()->where('is_active', true)->count())
+                ->icon('heroicon-o-users')
                 ->description('Tercatat di data induk')
                 ->color('primary');
         }
 
         if ($user?->hasPermission('users.read')) {
             $stats[] = Stat::make('Akun aktif', (string) User::query()->where('is_active', true)->count())
+                ->icon('heroicon-o-key')
                 ->description('Bisa masuk ke aplikasi')
                 ->color('primary');
         }
 
         if ($user?->hasPermission('roles.read')) {
             $stats[] = Stat::make('Role aktif', (string) Role::query()->where('is_active', true)->count())
+                ->icon('heroicon-o-shield-check')
                 ->description('Menentukan menu dan aksi')
                 ->color('primary');
         }
 
         if ($user?->hasPermission('audit_logs.read')) {
             $stats[] = Stat::make('Perubahan hari ini', (string) AuditLog::query()->whereDate('created_at', today())->count())
+                ->icon('heroicon-o-clock')
                 ->description('Tercatat di jejak audit')
                 ->color('gray');
         }

@@ -43,18 +43,22 @@ class AsetRingkasan extends StatsOverviewWidget
 
         return [
             Stat::make('Aset aktif', number_format($jumlah, 0, ',', '.'))
+                ->icon('heroicon-o-cube')
                 ->description('Belum dilepas')
                 ->color('primary'),
 
             Stat::make('Nilai perolehan', Rupiah::ringkas($nilai))
+                ->icon('heroicon-o-currency-dollar')
                 ->description(Rupiah::penuh($nilai).' sebelum penyusutan')
                 ->color('gray'),
 
             Stat::make('Aset sewaan', number_format($sewaan, 0, ',', '.'))
+                ->icon('heroicon-o-building-storefront')
                 ->description($sewaan > 0 ? 'Bukan milik perusahaan, tidak disusutkan' : 'Belum ada yang ditandai sewa')
                 ->color($sewaan > 0 ? 'warning' : 'gray'),
 
             Stat::make('Tanpa penanggung jawab', number_format($tanpaPenanggungJawab, 0, ',', '.'))
+                ->icon('heroicon-o-user-minus')
                 ->description($tanpaPenanggungJawab > 0 ? 'Perlu ditunjuk pemegangnya' : 'Semua sudah ada pemegangnya')
                 ->color($tanpaPenanggungJawab > 0 ? 'danger' : 'success'),
         ];

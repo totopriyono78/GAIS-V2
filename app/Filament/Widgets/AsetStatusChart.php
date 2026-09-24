@@ -53,10 +53,10 @@ class AsetStatusChart extends ChartWidget
         // Warna mengikuti arti statusnya, bukan urutan acak, supaya sama dengan
         // warna badge status di daftar aset.
         $petaWarna = [
-            'aktif' => '#17505E',
-            'dipinjam' => '#588D9C',
-            'perbaikan' => '#A2542F',
-            'tidak_dipakai' => '#76878E',
+            'aktif' => '#28C76F',
+            'dipinjam' => '#6E6B7B',
+            'perbaikan' => '#FF9F43',
+            'tidak_dipakai' => '#B9B9C3',
         ];
 
         foreach (Asset::STATUSES as $kunci => $teks) {
@@ -66,7 +66,7 @@ class AsetStatusChart extends ChartWidget
 
             $label[] = $teks;
             $nilai[] = (int) $hitung[$kunci];
-            $warna[] = $petaWarna[$kunci] ?? '#B6C2C7';
+            $warna[] = $petaWarna[$kunci] ?? '#D8D6DE';
         }
 
         return [
@@ -74,8 +74,10 @@ class AsetStatusChart extends ChartWidget
                 'label' => 'Jumlah aset',
                 'data' => $nilai,
                 'backgroundColor' => $warna,
-                'borderColor' => '#FAF7F2',
-                'borderWidth' => 2,
+                // Tanpa garis tepi, potongan dipisah jarak. Garis tepi berwarna tetap
+                // akan tampak sebagai cincin putih di tema gelap.
+                'borderWidth' => 0,
+                'spacing' => 2,
             ]],
             'labels' => $label,
         ];

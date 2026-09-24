@@ -45,6 +45,7 @@ class AsetJatuhTempo extends StatsOverviewWidget
             $jumlah = $this->hitungGaransi($bulan);
 
             $stats[] = Stat::make("Garansi habis dalam {$bulan} bulan", number_format($jumlah, 0, ',', '.'))
+                ->icon('heroicon-o-shield-exclamation')
                 ->description($jumlah > 0 ? 'Klaim atau perpanjang sebelum lewat' : 'Tidak ada yang jatuh tempo')
                 ->color(match (true) {
                     $jumlah === 0 => 'gray',
@@ -62,6 +63,7 @@ class AsetJatuhTempo extends StatsOverviewWidget
             ->count();
 
         $stats[] = Stat::make('Garansi sudah lewat', number_format($sudahLewat, 0, ',', '.'))
+            ->icon('heroicon-o-shield-exclamation')
             ->description('Perbaikan sudah menjadi biaya sendiri')
             ->color($sudahLewat > 0 ? 'gray' : 'success');
 
@@ -73,6 +75,7 @@ class AsetJatuhTempo extends StatsOverviewWidget
             ->count();
 
         $stats[] = Stat::make('Sewa habis dalam 3 bulan', number_format($sewaHabis, 0, ',', '.'))
+            ->icon('heroicon-o-key')
             ->description($sewaHabis > 0 ? 'Perlu diperpanjang atau dikembalikan' : 'Tidak ada sewa yang jatuh tempo')
             ->color($sewaHabis > 0 ? 'warning' : 'gray');
 

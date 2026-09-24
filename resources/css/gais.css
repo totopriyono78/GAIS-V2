@@ -1,84 +1,692 @@
 /*
- * GAIS: lapisan identitas di atas panel Filament.
- * Alasan tiap aturan ada di DESIGN.md. Warna inti dan aksen diatur lewat
- * AdminPanelProvider, berkas ini hanya memasang motif identitas dan
- * penyesuaian keterbacaan yang tidak bisa dinyatakan lewat konfigurasi warna.
+ * GAIS: lapisan gaya Vuexy di atas panel Filament.
+ *
+ * Arah gaya diganti ke Vuexy atas permintaan pemilik proyek pada 24 September 2026.
+ * Alasan tiap keputusan ada di DESIGN.md. Warna inti diatur lewat
+ * AdminPanelProvider::colors(), berkas ini hanya memasang bentuk: bayangan kartu,
+ * sudut, navbar yang melayang, menu aktif, tabel, dan formulir.
+ *
+ * Seluruh aturan Filament ada di dalam @layer components, sedangkan berkas ini tidak
+ * berlapis. Karena itu pemilih sederhana di sini sudah menang tanpa perlu dinaikkan
+ * kekhususannya, berapa pun urutan pemuatan kedua berkas.
+ *
+ * Warna ditulis lewat variabel Filament (--gray-*, --primary-*, dan seterusnya), bukan
+ * kode warna, supaya tema terang dan gelap sama sama benar tanpa aturan ganda.
  */
 
 :root {
-    /* Terracotta, satu satunya warna aksen. Dipakai hanya untuk garis motif. */
-    --gais-accent: #a2542f;
-    --gais-paper: #faf7f2;
-    --gais-ink: #1c1a17;
+    /* Sudut Vuexy: 6 piksel untuk kartu, 5 piksel untuk tombol dan kotak isian. */
+    --gais-sudut-kartu: 0.428rem;
+    --gais-sudut-kontrol: 0.357rem;
+
+    /* Bayangan kartu Vuexy. Satu ukuran untuk semua kartu, lihat DESIGN.md bagian 4. */
+    --gais-bayangan-kartu: 0 4px 24px 0 rgb(34 41 47 / 0.1);
+    --gais-bayangan-menu: 0 0 15px 0 rgb(34 41 47 / 0.05);
+
+    /*
+     * Ungu Vuexy asli, tingkat 400 palet primary. Dipakai hanya untuk bentuk tanpa teks
+     * kecil (cahaya menu aktif, garis fokus, lingkaran ikon) karena tulisan putih di
+     * atasnya hanya 4,26:1.
+     */
+    --gais-ungu: var(--primary-400);
 }
 
-/* Latar kertas hangat, mengurangi silau dibanding putih murni pada pemakaian harian. */
-.fi-body {
-    background-color: var(--gais-paper);
-    color: var(--gais-ink);
-}
+/* ------------------------------------------------------------------ fondasi */
 
 /*
- * Motif identitas 1: garis aksen 3px di sisi kiri setiap judul seksi.
- * Ini yang membuat halaman GAIS tetap dikenali walau logonya dilepas.
+ * Latar #F8F8F8 datang dari gray-50 dan warna teks dasar Vuexy #6E6B7B dari gray-500,
+ * keduanya diatur di palet. Tulisan dasar dibuat abu keunguan, bukan hitam, persis
+ * seperti Vuexy; kontrasnya 4,88:1 di atas latar.
  */
-.fi-section-header-heading,
-.fi-header-heading {
-    border-inline-start: 3px solid var(--gais-accent);
-    padding-inline-start: 0.625rem;
-    font-family: "Source Serif 4", Georgia, "Times New Roman", serif;
-    letter-spacing: -0.01em;
+.fi-body {
+    color: var(--gray-500);
+    letter-spacing: 0.01em;
+}
+
+.fi-body.dark,
+.dark .fi-body {
+    color: var(--gray-400);
 }
 
 /*
- * Motif identitas 2: semua angka berbaris lurus. Kolom nilai aset dan biaya
- * di tahap berikutnya hanya terbaca cepat kalau digitnya selebar sama.
+ * Judul memakai abu ungu tua Vuexy #5E5873 (gray-700), ketebalan 500. Hierarki dibawa
+ * ukuran dan ketebalan, bukan warna tambahan.
+ */
+.fi-header-heading {
+    font-size: 1.5rem;
+    line-height: 1.3;
+    font-weight: 500;
+    letter-spacing: 0;
+    color: var(--gray-700);
+}
+
+.fi-section-header-heading,
+.fi-modal-heading,
+.fi-wi-chart .fi-section-header-heading {
+    font-size: 1.1rem;
+    font-weight: 500;
+    letter-spacing: 0;
+    color: var(--gray-700);
+}
+
+.dark .fi-header-heading,
+.dark .fi-section-header-heading,
+.dark .fi-modal-heading {
+    color: var(--gray-200);
+}
+
+.fi-header-subheading,
+.fi-section-header-description {
+    color: var(--gray-500);
+}
+
+.dark .fi-header-subheading,
+.dark .fi-section-header-description {
+    color: var(--gray-400);
+}
+
+/*
+ * Angka, kode aset, dan nomor dokumen berbaris lurus. Kolom nilai aset dan biaya hanya
+ * terbaca cepat kalau digitnya selebar sama. Kebiasaan ini dipertahankan dari arah
+ * gaya sebelumnya karena alasannya fungsi, bukan gaya.
  */
 .fi-ta-text,
 .fi-ta-record,
 .fi-in-text,
+.fi-wi-stats-overview-stat-value,
 input[type="number"] {
     font-variant-numeric: tabular-nums;
 }
 
 /*
- * Indikator fokus yang tegas, syarat R-32. Tidak ada outline yang dihapus tanpa pengganti.
- * Berkas ini dimuat sebelum app.css milik Filament, jadi pemilih dengan kekhususan
- * yang sama akan kalah. Awalan html.fi menaikkan kekhususannya satu tingkat supaya
- * garis fokus benar benar terracotta, bukan warna teks bawaan.
+ * Indikator fokus yang tegas, syarat R-32. Garis ungu Vuexy 2 piksel, kontras 3:1 ke
+ * atas terhadap latar terang maupun gelap. Tidak ada outline yang dihapus tanpa pengganti.
  */
-html.fi .fi-btn:focus-visible,
-html.fi .fi-input:focus-visible,
-html.fi .fi-link:focus-visible,
-html.fi .fi-sidebar-item-btn:focus-visible,
-html.fi a:focus-visible,
-html.fi button:focus-visible,
-html.fi [role='switch']:focus-visible {
-    outline: 2px solid var(--gais-accent);
+.fi-btn:focus-visible,
+.fi-icon-btn:focus-visible,
+.fi-link:focus-visible,
+.fi-sidebar-item-btn:focus-visible,
+.fi-sidebar-group-btn:focus-visible,
+.fi-tabs-item:focus-visible,
+.fi-wi-stats-overview-stat:focus-visible,
+.fi-body a:focus-visible,
+.fi-body button:focus-visible,
+.fi-body [role='switch']:focus-visible {
+    outline: 2px solid var(--gais-ungu);
     outline-offset: 2px;
 }
 
-/* Header tabel dibedakan dengan berat huruf, bukan dengan warna latar tambahan. */
-.fi-ta-header-cell {
+/* Teks petunjuk di kotak isian tetap lolos 4,5:1. Bawaan Filament memakai gray-400. */
+.fi-input::placeholder,
+.fi-select-input::placeholder,
+.fi-select-input-placeholder,
+.fi-fo-rich-editor [data-placeholder]::before {
+    color: var(--gray-500);
+    opacity: 1;
+}
+
+.dark .fi-input::placeholder,
+.dark .fi-select-input::placeholder,
+.dark .fi-select-input-placeholder {
+    color: var(--gray-400);
+}
+
+/* Teks pengganti sel tabel yang kosong ("Belum ditentukan") juga teks yang dibaca. */
+.fi-ta-placeholder {
+    color: var(--gray-500);
+}
+
+.dark .fi-ta-placeholder {
+    color: var(--gray-400);
+}
+
+/* ------------------------------------------------------------------ navbar melayang */
+
+/*
+ * Navbar Vuexy: kartu putih yang melayang di atas latar, bukan pita yang menempel di
+ * tepi layar. Ruang di sekelilingnya adalah yang membuat halaman terasa ringan.
+ *
+ * Tinggi wadah dinaikkan dari 4rem menjadi 5rem supaya kartunya punya jarak 1rem dari
+ * tepi atas. Variabel --topbar-height dipakai Filament untuk menempatkan sidebar dan
+ * menghitung tinggi halaman, jadi mengubahnya di satu tempat menjaga keduanya ikut.
+ */
+.fi-body-has-topbar {
+    --topbar-height: 5rem;
+}
+
+.fi-topbar-ctn {
+    padding: 0.875rem 1rem 0.125rem;
+    /*
+     * Gradien ini satu satunya gradien latar di aplikasi, dan tugasnya fungsional:
+     * isi halaman yang tergulung di bawah navbar memudar sebelum menyentuh kartunya,
+     * jadi navbar tetap terbaca tanpa pita latar pekat. Warnanya latar halaman sendiri.
+     */
+    background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--gray-50) 95%, transparent) 44%,
+        color-mix(in srgb, var(--gray-50) 46%, transparent) 73%,
+        transparent
+    );
+}
+
+.dark .fi-topbar-ctn {
+    background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--gray-950) 95%, transparent) 44%,
+        color-mix(in srgb, var(--gray-950) 46%, transparent) 73%,
+        transparent
+    );
+}
+
+@media (min-width: 64rem) {
+    .fi-topbar-ctn {
+        padding-inline: 1.75rem;
+    }
+}
+
+.fi-topbar {
+    min-height: 4rem;
+    border-radius: var(--gais-sudut-kartu);
+    box-shadow: var(--gais-bayangan-kartu);
+}
+
+.dark .fi-topbar {
+    background-color: var(--gray-900);
+    box-shadow: 0 4px 24px 0 rgb(0 0 0 / 0.24);
+}
+
+/* Nama merek memakai ungu Vuexy dan ketebalan 600, seperti tulisan merek di sidebar Vuexy. */
+.fi-logo {
+    font-size: 1.45rem;
     font-weight: 600;
+    letter-spacing: 0.01em;
+    color: var(--primary-600);
+}
+
+.dark .fi-logo {
+    color: var(--primary-300);
+}
+
+/* ------------------------------------------------------------------ sidebar */
+
+/*
+ * Butir menu diberi jarak sekitar 15 piksel dari tepi sidebar, seperti menu Vuexy,
+ * supaya pil menu aktif dan bayangannya tidak menempel ke tepi layar.
+ */
+.fi-sidebar-nav {
+    padding-inline: 1.3rem;
+    row-gap: 1.25rem;
 }
 
 /*
- * Sidebar dipersempit dari 20rem bawaan Filament menjadi 16rem lewat
- * AdminPanelProvider, dan bantalan kiri kanan daftar menu ikut dikecilkan dari 24px
- * menjadi 16px di sini.
- *
- * Keduanya dilakukan bersamaan bukan tanpa sebab. Mempersempit lebarnya saja
- * menyisakan hanya 4 piksel untuk nama menu terpanjang, dan 4 piksel adalah selisih
- * yang bisa hilang begitu saja karena pembulatan lebar huruf antar komputer, lalu
- * namanya terpotong menjadi elipsis. Dengan bantalan yang dikecilkan, nama terpanjang
- * yang sekarang ada, Maintenance Schedules, masih menyisakan 20 piksel.
- *
- * Kalau kelak ada nama menu yang lebih panjang dari itu, lebarnya perlu ditinjau ulang,
- * bukan namanya yang dipendekkan sampai kehilangan arti.
+ * Judul kelompok menu: huruf kapital kecil, seperti navigation-header Vuexy. Warnanya
+ * gray-500, bukan #A6A4B0 milik Vuexy, karena yang terakhir hanya 2,4:1 dan teks 12
+ * piksel wajib 4,5:1.
  */
-.fi-sidebar-nav {
-    padding-inline: 1rem;
+.fi-sidebar-group-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--gray-500);
+}
+
+.dark .fi-sidebar-group-label {
+    color: var(--gray-400);
+}
+
+.fi-sidebar-item-btn {
+    border-radius: var(--gais-sudut-kontrol);
+    padding: 0.625rem 0.75rem;
+    column-gap: 0.625rem;
+    transition: transform 0.25s ease, background-color 0.15s ease;
+}
+
+.fi-sidebar-item-label {
+    font-size: 0.875rem;
+    letter-spacing: 0;
+    font-weight: 400;
+    color: var(--gray-600);
+}
+
+.dark .fi-sidebar-item-label {
+    color: var(--gray-300);
+}
+
+.fi-sidebar-item-btn > .fi-icon {
+    color: var(--gray-600);
+}
+
+.dark .fi-sidebar-item-btn > .fi-icon {
+    color: var(--gray-300);
+}
+
+/*
+ * Hover menggeser butir 5 piksel ke kanan, gerak khas menu Vuexy. Satu satunya gerak
+ * selain transisi warna, dan ia menjawab "butir mana yang akan terbuka" sebelum diklik.
+ */
+.fi-sidebar-item:not(.fi-active) > .fi-sidebar-item-btn:hover {
+    background-color: var(--gray-100);
+    transform: translateX(5px);
+}
+
+.dark .fi-sidebar-item:not(.fi-active) > .fi-sidebar-item-btn:hover {
+    background-color: var(--gray-900);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .fi-sidebar-item-btn {
+        transition: background-color 0.15s ease;
+    }
+
+    .fi-sidebar-item:not(.fi-active) > .fi-sidebar-item-btn:hover {
+        transform: none;
+    }
+}
+
+/*
+ * Menu aktif: pil bergradien ungu dengan cahaya lembut. Ini titik fokus navigasi, satu
+ * satunya elemen bercahaya di aplikasi, dan menjawab "saya di mana" dari jauh.
+ *
+ * Gradien Vuexy asli memudar sampai ungu 70 persen, dan tulisan putih di ujungnya jatuh
+ * di bawah 3:1. Di sini gradien berjalan dari primary-600 ke primary-500, keduanya
+ * lolos 4,5:1 dengan tulisan putih, sehingga seluruh area yang dilewati teks aman.
+ */
+.fi-sidebar-item.fi-active > .fi-sidebar-item-btn {
+    background-color: var(--primary-600);
+    background-image: linear-gradient(118deg, var(--primary-600), var(--primary-500));
+    box-shadow: 0 0 10px 1px color-mix(in srgb, var(--gais-ungu) 70%, transparent);
+}
+
+.fi-sidebar-item.fi-active > .fi-sidebar-item-btn > .fi-sidebar-item-label,
+.fi-sidebar-item.fi-active > .fi-sidebar-item-btn > .fi-icon {
+    color: #ffffff;
+}
+
+.fi-sidebar-item.fi-active > .fi-sidebar-item-btn .fi-badge {
+    background-color: rgb(255 255 255 / 0.2);
+    color: #ffffff;
+}
+
+.fi-sidebar-item.fi-active > .fi-sidebar-item-btn .fi-sidebar-item-grouped-border-part {
+    background-color: #ffffff;
+}
+
+/* Tombol buka tutup kelompok dan jumlah di menu memakai bentuk yang sama dengan badge lain. */
+.fi-sidebar-group-btn .fi-icon {
+    color: var(--gray-500);
+}
+
+/* ------------------------------------------------------------------ kartu */
+
+/*
+ * Semua permukaan berisi (kartu formulir, tabel, statistik, grafik, jendela dialog)
+ * memakai satu bentuk kartu Vuexy: putih, sudut 6 piksel, tanpa garis tepi, bayangan
+ * lembut 24 piksel. Garis tepi bawaan Filament dilepas karena bayangan sudah memisahkan
+ * kartu dari latar, dan dua pemisah sekaligus membuat halaman terasa berkotak kotak.
+ */
+.fi-section:not(.fi-section-not-contained):not(.fi-aside),
+.fi-ta-ctn,
+.fi-wi-stats-overview-stat,
+.fi-fo-tabs:not(.fi-contained-false),
+.fi-in-tabs,
+.fi-fo-wizard,
+.fi-simple-main {
+    border-radius: var(--gais-sudut-kartu);
+    --tw-ring-color: transparent;
+    box-shadow: var(--gais-bayangan-kartu);
+}
+
+.dark .fi-section:not(.fi-section-not-contained):not(.fi-aside),
+.dark .fi-ta-ctn,
+.dark .fi-wi-stats-overview-stat,
+.dark .fi-fo-tabs,
+.dark .fi-in-tabs,
+.dark .fi-fo-wizard,
+.dark .fi-simple-main {
+    background-color: var(--gray-900);
+    box-shadow: 0 4px 24px 0 rgb(0 0 0 / 0.24);
+}
+
+/* Kepala kartu Vuexy lebih lega dari bawaan Filament, dan tanpa garis di bawahnya. */
+.fi-section:not(.fi-section-not-contained) > .fi-section-header {
+    padding: 1.25rem 1.5rem 0.5rem;
+}
+
+.fi-section.fi-collapsed > .fi-section-header,
+.fi-section:not(.fi-section-has-content-before) > .fi-section-header:only-child {
+    padding-bottom: 1.25rem;
+}
+
+.fi-section:not(.fi-section-not-contained) > .fi-section-content-ctn {
+    border-top-color: transparent;
+}
+
+.fi-section:not(.fi-section-not-contained):not(.fi-divided) > .fi-section-content-ctn > .fi-section-content {
+    padding: 1rem 1.5rem 1.5rem;
+}
+
+.fi-modal-window {
+    border-radius: var(--gais-sudut-kartu);
+    box-shadow: 0 5px 25px 0 rgb(34 41 47 / 0.25);
+}
+
+.fi-dropdown-panel {
+    border-radius: var(--gais-sudut-kartu);
+    --tw-ring-color: transparent;
+    box-shadow: 0 5px 25px 0 rgb(34 41 47 / 0.1);
+}
+
+.dark .fi-dropdown-panel,
+.dark .fi-modal-window {
+    background-color: var(--gray-900);
+    box-shadow: 0 5px 25px 0 rgb(0 0 0 / 0.3);
+}
+
+/* ------------------------------------------------------------------ tabel */
+
+/*
+ * Kepala tabel Vuexy: pita abu ungu tipis, huruf kapital 12 piksel tebal. Kepala
+ * dibedakan dari isi lewat latar dan bentuk huruf, supaya mata langsung tahu baris
+ * mana yang label dan mana yang data walau tabelnya panjang.
+ */
+.fi-ta-header-cell,
+.fi-ta-table > thead > tr > th {
+    background-color: var(--gray-100);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--gray-700);
+}
+
+.dark .fi-ta-header-cell,
+.dark .fi-ta-table > thead > tr > th {
+    background-color: var(--gray-950);
+    color: var(--gray-300);
+}
+
+.fi-ta-table > thead {
+    background-color: var(--gray-100);
+}
+
+.dark .fi-ta-table > thead {
+    background-color: var(--gray-950);
+}
+
+/* Garis antar baris memakai #EBE9F1 milik Vuexy, lebih tipis rasanya dari abu bawaan. */
+.fi-ta-table > tbody,
+.fi-ta-table > thead,
+.fi-ta-table {
+    border-color: var(--gray-200);
+}
+
+.fi-ta-table > tbody > tr {
+    border-color: var(--gray-200);
+}
+
+.dark .fi-ta-table > tbody > tr {
+    border-color: var(--gray-800);
+}
+
+.fi-ta-text-item-label,
+.fi-ta-text .fi-ta-text-item {
+    color: var(--gray-600);
+}
+
+.dark .fi-ta-text-item-label,
+.dark .fi-ta-text .fi-ta-text-item {
+    color: var(--gray-300);
+}
+
+.fi-ta-header-toolbar,
+.fi-ta-header {
+    border-color: var(--gray-200);
+}
+
+.fi-ta-row:hover {
+    background-color: color-mix(in srgb, var(--gray-100) 60%, transparent);
+}
+
+.dark .fi-ta-row:hover {
+    background-color: rgb(255 255 255 / 0.03);
+}
+
+/* ------------------------------------------------------------------ formulir */
+
+/*
+ * Kotak isian Vuexy: garis #D8D6DE, sudut 5 piksel. Saat fokus garisnya menjadi ungu
+ * dan muncul bayangan tipis di bawahnya, jadi kotak yang sedang diisi terlihat
+ * terangkat dari yang lain.
+ */
+.fi-input-wrp {
+    border-radius: var(--gais-sudut-kontrol);
+    --tw-ring-color: var(--gray-300);
+    transition: box-shadow 0.15s ease;
+}
+
+.dark .fi-input-wrp {
+    background-color: var(--gray-900);
+    --tw-ring-color: var(--gray-800);
+}
+
+.fi-input-wrp:not(.fi-disabled):not(.fi-invalid):focus-within {
+    --tw-ring-color: var(--primary-400);
+    box-shadow:
+        var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow),
+        var(--tw-ring-shadow), 0 3px 10px 0 rgb(34 41 47 / 0.1);
+}
+
+.fi-fo-field-label-content {
+    font-size: 0.857rem;
+    font-weight: 500;
+    color: var(--gray-700);
+}
+
+.dark .fi-fo-field-label-content {
+    color: var(--gray-300);
+}
+
+.fi-checkbox-input,
+.fi-radio-input {
+    border-radius: 3px;
+}
+
+/* ------------------------------------------------------------------ tombol */
+
+.fi-btn {
+    border-radius: var(--gais-sudut-kontrol);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    transition: box-shadow 0.2s ease, background-color 0.15s ease;
+}
+
+/*
+ * Tombol berwarna padat mendapat bayangan sewarna saat disorot, penanda hover Vuexy.
+ * Bayangan ini hanya muncul selama kursor di atasnya, jadi tidak ada tombol yang terus
+ * menerus bercahaya.
+ */
+.fi-btn.fi-color:not(.fi-outlined):not(.fi-disabled):hover {
+    box-shadow: 0 8px 25px -8px var(--color-500);
+}
+
+/* Tombol abu (Impor, Unduh templat) mengikuti tombol outline Vuexy: tanpa isi, garis tipis. */
+.fi-btn.fi-color-gray:not(.fi-outlined) {
+    --tw-ring-color: var(--gray-300);
+}
+
+.fi-icon-btn {
+    border-radius: var(--gais-sudut-kontrol);
+}
+
+/* ------------------------------------------------------------------ badge */
+
+/*
+ * Badge Vuexy versi terang: latar warna 12 persen, tanpa garis tepi, huruf 600.
+ * Garis tepi bawaan Filament dilepas karena latar tipis sudah cukup menandai batasnya.
+ * Warna teksnya tetap dipilih Filament dari palet dengan syarat kontras 4,5:1.
+ */
+.fi-badge {
+    border-radius: var(--gais-sudut-kontrol);
+    --tw-ring-color: transparent;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+}
+
+.fi-badge.fi-color {
+    background-color: color-mix(in srgb, var(--color-500) 12%, transparent);
+}
+
+.dark .fi-badge.fi-color {
+    background-color: color-mix(in srgb, var(--color-400) 16%, transparent);
+}
+
+/* ------------------------------------------------------------------ statistik */
+
+/*
+ * Kartu statistik ala Vuexy: ikon dalam lingkaran berwarna tipis di kiri, angka tebal
+ * di kanannya, label kecil di bawah angka, lalu keterangan.
+ *
+ * Wadah label dibuat display: contents supaya ikon dan label menjadi sel kisi sendiri
+ * sendiri, tanpa mengganti tampilan bawaan Filament.
+ */
+.fi-wi-stats-overview-stat .fi-wi-stats-overview-stat-content {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+        "ikon angka"
+        "ikon label"
+        "ket ket";
+    column-gap: 1rem;
+    row-gap: 0.125rem;
+    align-items: center;
+}
+
+.fi-wi-stats-overview-stat .fi-wi-stats-overview-stat-label-ctn {
+    display: contents;
+}
+
+.fi-wi-stats-overview-stat .fi-wi-stats-overview-stat-label-ctn > .fi-icon {
+    grid-area: ikon;
+    box-sizing: content-box;
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0.75rem;
+    border-radius: 50%;
+    color: var(--gais-stat-tinta, var(--primary-600));
+    background-color: var(--gais-stat-latar, color-mix(in srgb, var(--gais-ungu) 12%, transparent));
+}
+
+.fi-wi-stats-overview-stat .fi-wi-stats-overview-stat-value {
+    grid-area: angka;
+    font-size: 1.5rem;
+    line-height: 1.25;
+    font-weight: 600;
+    letter-spacing: 0;
+    color: var(--gray-700);
+    overflow-wrap: anywhere;
+}
+
+.dark .fi-wi-stats-overview-stat .fi-wi-stats-overview-stat-value {
+    color: var(--gray-200);
+}
+
+.fi-wi-stats-overview-stat .fi-wi-stats-overview-stat-label {
+    grid-area: label;
+    font-size: 0.857rem;
+    font-weight: 400;
+    color: var(--gray-500);
+}
+
+.dark .fi-wi-stats-overview-stat .fi-wi-stats-overview-stat-label {
+    color: var(--gray-400);
+}
+
+.fi-wi-stats-overview-stat .fi-wi-stats-overview-stat-description {
+    grid-area: ket;
+    margin-top: 0.75rem;
+    font-size: 0.8rem;
+}
+
+/*
+ * Warna lingkaran ikon mengikuti warna keterangan statistiknya, yang sudah dipilih
+ * widget dari kondisi data (merah kalau ada yang terlambat, hijau kalau aman). Jadi
+ * warnanya membawa arti, bukan hiasan, dan tidak ada warna kedua yang ditulis di PHP.
+ */
+.fi-wi-stats-overview-stat:has(.fi-wi-stats-overview-stat-description.fi-color-success) {
+    --gais-stat-tinta: var(--success-800);
+    --gais-stat-latar: color-mix(in srgb, var(--success-500) 12%, transparent);
+}
+
+.fi-wi-stats-overview-stat:has(.fi-wi-stats-overview-stat-description.fi-color-danger) {
+    --gais-stat-tinta: var(--danger-600);
+    --gais-stat-latar: color-mix(in srgb, var(--danger-400) 12%, transparent);
+}
+
+.fi-wi-stats-overview-stat:has(.fi-wi-stats-overview-stat-description.fi-color-warning) {
+    --gais-stat-tinta: var(--warning-800);
+    --gais-stat-latar: color-mix(in srgb, var(--warning-500) 12%, transparent);
+}
+
+.fi-wi-stats-overview-stat:has(.fi-wi-stats-overview-stat-description.fi-color-info) {
+    --gais-stat-tinta: var(--info-800);
+    --gais-stat-latar: color-mix(in srgb, var(--info-500) 12%, transparent);
+}
+
+.fi-wi-stats-overview-stat:has(.fi-wi-stats-overview-stat-description.fi-color-gray) {
+    --gais-stat-tinta: var(--gray-600);
+    --gais-stat-latar: var(--gray-100);
+}
+
+.dark .fi-wi-stats-overview-stat {
+    --gais-stat-tinta: var(--primary-300);
+}
+
+.dark .fi-wi-stats-overview-stat:has(.fi-color-success) { --gais-stat-tinta: var(--success-400); }
+.dark .fi-wi-stats-overview-stat:has(.fi-color-danger) { --gais-stat-tinta: var(--danger-300); }
+.dark .fi-wi-stats-overview-stat:has(.fi-color-warning) { --gais-stat-tinta: var(--warning-400); }
+.dark .fi-wi-stats-overview-stat:has(.fi-color-info) { --gais-stat-tinta: var(--info-400); }
+.dark .fi-wi-stats-overview-stat:has(.fi-color-gray) {
+    --gais-stat-tinta: var(--gray-300);
+    --gais-stat-latar: var(--gray-800);
+}
+
+/* ------------------------------------------------------------------ tab bawaan Filament */
+
+.fi-tabs-item.fi-active {
+    background-color: color-mix(in srgb, var(--gais-ungu) 12%, transparent);
+}
+
+.fi-tabs-item.fi-active .fi-tabs-item-label,
+.fi-tabs-item.fi-active .fi-icon {
+    color: var(--primary-600);
+}
+
+.dark .fi-tabs-item.fi-active .fi-tabs-item-label,
+.dark .fi-tabs-item.fi-active .fi-icon {
+    color: var(--primary-300);
+}
+
+/* ------------------------------------------------------------------ halaman masuk */
+
+/*
+ * Halaman masuk tetap satu kartu di tengah, tetapi memakai bentuk kartu Vuexy dan latar
+ * yang sama dengan panel, supaya pintu masuk dan isi aplikasinya terasa satu bahasa.
+ */
+.fi-simple-layout {
+    background-color: var(--gray-50);
+}
+
+.dark .fi-simple-layout {
+    background-color: var(--gray-950);
+}
+
+.fi-simple-header-heading {
+    font-weight: 500;
+    color: var(--gray-700);
+}
+
+.dark .fi-simple-header-heading {
+    color: var(--gray-200);
 }
 
 /* ------------------------------------------------------------------ peluncur menu */
@@ -90,13 +698,11 @@ html.fi [role='switch']:focus-visible {
  * lewat FilamentAsset, jadi seluruh aturannya ditulis tangan dan warnanya dituliskan
  * apa adanya.
  */
-:root {
-    --gais-petrol: #17505e;
-    --gais-petrol-muda: #e0eef2;
-    --gais-petrol-tipis: #f0f7fa;
-    --gais-garis: #d2dade;
-    --gais-redup: #596a70;
-}
+/*
+ * Warna peluncur diambil dari variabel Filament, jadi ikut berganti di tema gelap.
+ * Dulu berkas ini menulis kode warnanya apa adanya dan peluncur tetap terang saat
+ * tema gelap dinyalakan.
+ */
 
 .gais-peluncur-sr {
     position: absolute;
@@ -117,8 +723,8 @@ html.fi [role='switch']:focus-visible {
     justify-content: center;
     width: 2.75rem;
     height: 2.75rem;
-    border-radius: 0.5rem;
-    color: var(--gais-petrol);
+    border-radius: var(--gais-sudut-kontrol);
+    color: var(--primary-600);
     background-color: transparent;
     border: 0;
     cursor: pointer;
@@ -126,7 +732,7 @@ html.fi [role='switch']:focus-visible {
 }
 
 .gais-peluncur-tombol:hover {
-    background-color: var(--gais-petrol-muda);
+    background-color: color-mix(in srgb, var(--gais-ungu) 12%, transparent);
 }
 
 .gais-peluncur-tombol-ikon {
@@ -147,7 +753,7 @@ html.fi [role='switch']:focus-visible {
 .gais-peluncur-tirai {
     position: absolute;
     inset: 0;
-    background-color: rgb(28 26 23 / 0.55);
+    background-color: rgb(34 41 47 / 0.5);
 }
 
 /*
@@ -159,8 +765,8 @@ html.fi [role='switch']:focus-visible {
  * dipindai mata, bukan dibaca berurutan. Angka 82rem dipilih supaya di layar kantor
  * 1366 piksel jendelanya masih menyisakan bingkai di kiri kanan.
  *
- * Latarnya kertas hangat yang sama dengan badan halaman, bukan putih murni, supaya
- * jendela ini terbaca sebagai lapisan aplikasi yang sama dan bukan tempelan.
+ * Bentuknya kartu Vuexy yang sama dengan kartu lain, hanya bayangannya lebih dalam
+ * karena jendela ini melayang di atas tirai, bukan di atas latar halaman.
  */
 .gais-peluncur-jendela {
     position: relative;
@@ -169,10 +775,9 @@ html.fi [role='switch']:focus-visible {
     width: min(82rem, 100%);
     max-height: 100%;
     overflow: hidden;
-    background-color: var(--gais-paper);
-    border: 1px solid var(--gais-garis);
-    border-radius: 0.875rem;
-    box-shadow: 0 24px 48px -12px rgb(28 26 23 / 0.35);
+    background-color: #ffffff;
+    border-radius: var(--gais-sudut-kartu);
+    box-shadow: 0 5px 25px 0 rgb(34 41 47 / 0.25);
 }
 
 .gais-peluncur-kepala {
@@ -181,18 +786,14 @@ html.fi [role='switch']:focus-visible {
     align-items: center;
     gap: 0.5rem 0.75rem;
     padding: 0.75rem 1rem;
-    border-bottom: 1px solid var(--gais-garis);
+    border-bottom: 1px solid var(--gray-200);
 }
 
-/* Motif identitas 1 dipakai ulang di sini, sama seperti judul seksi di halaman biasa. */
+/* Judul jendela memakai gaya judul kartu Vuexy, sama seperti judul kartu di halaman biasa. */
 .gais-peluncur-judul {
-    border-inline-start: 3px solid var(--gais-accent);
-    padding-inline-start: 0.625rem;
-    font-family: "Source Serif 4", Georgia, "Times New Roman", serif;
     font-size: 1.125rem;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-    color: var(--gais-ink);
+    font-weight: 500;
+    color: var(--gray-700);
 }
 
 .gais-peluncur-mundur {
@@ -202,9 +803,9 @@ html.fi [role='switch']:focus-visible {
     min-height: 2.75rem;
     padding-inline: 0.625rem;
     border: 0;
-    border-radius: 0.5rem;
+    border-radius: var(--gais-sudut-kontrol);
     background-color: transparent;
-    color: var(--gais-petrol);
+    color: var(--primary-600);
     font: inherit;
     font-size: 0.875rem;
     font-weight: 500;
@@ -212,7 +813,7 @@ html.fi [role='switch']:focus-visible {
 }
 
 .gais-peluncur-mundur:hover {
-    background-color: var(--gais-petrol-muda);
+    background-color: color-mix(in srgb, var(--gais-ungu) 12%, transparent);
 }
 
 .gais-peluncur-mundur-ikon {
@@ -236,7 +837,7 @@ html.fi [role='switch']:focus-visible {
     inset-inline-start: 0.75rem;
     width: 1.125rem;
     height: 1.125rem;
-    color: var(--gais-redup);
+    color: var(--gray-500);
     pointer-events: none;
 }
 
@@ -245,16 +846,23 @@ html.fi [role='switch']:focus-visible {
     min-height: 2.75rem;
     padding-block: 0.5rem;
     padding-inline: 2.5rem 2.5rem;
-    border: 1px solid var(--gais-garis);
-    border-radius: 0.5rem;
+    border: 1px solid var(--gray-300);
+    border-radius: var(--gais-sudut-kontrol);
     background-color: #ffffff;
-    color: var(--gais-ink);
+    color: var(--gray-700);
     font: inherit;
     font-size: 0.875rem;
 }
 
+.gais-peluncur-cari-kotak:focus {
+    border-color: var(--gais-ungu);
+    box-shadow: 0 0 0 1px var(--gais-ungu), 0 3px 10px 0 rgb(34 41 47 / 0.1);
+    /* Garis bawaan peramban diganti garis ungu dua lapis di atas, bukan dihapus. */
+    outline: none;
+}
+
 .gais-peluncur-cari-kotak::placeholder {
-    color: var(--gais-redup);
+    color: var(--gray-500);
 }
 
 /* Tombol silang bawaan peramban dimatikan, karena tombol hapus di sini sudah ada
@@ -274,13 +882,13 @@ html.fi [role='switch']:focus-visible {
     border: 0;
     border-radius: 0.375rem;
     background-color: transparent;
-    color: var(--gais-redup);
+    color: var(--gray-500);
     cursor: pointer;
 }
 
 .gais-peluncur-cari-hapus:hover {
-    background-color: var(--gais-petrol-muda);
-    color: var(--gais-petrol);
+    background-color: color-mix(in srgb, var(--gais-ungu) 12%, transparent);
+    color: var(--primary-600);
 }
 
 .gais-peluncur-cari-hapus-ikon {
@@ -295,15 +903,15 @@ html.fi [role='switch']:focus-visible {
     width: 2.75rem;
     height: 2.75rem;
     border: 0;
-    border-radius: 0.5rem;
+    border-radius: var(--gais-sudut-kontrol);
     background-color: transparent;
-    color: var(--gais-redup);
+    color: var(--gray-500);
     cursor: pointer;
 }
 
 .gais-peluncur-tutup:hover {
-    background-color: var(--gais-petrol-muda);
-    color: var(--gais-petrol);
+    background-color: color-mix(in srgb, var(--gais-ungu) 12%, transparent);
+    color: var(--primary-600);
 }
 
 .gais-peluncur-tutup-ikon {
@@ -325,14 +933,14 @@ html.fi [role='switch']:focus-visible {
 .gais-peluncur-kosong {
     max-width: 34rem;
     margin: 2rem auto;
-    color: var(--gais-redup);
+    color: var(--gray-500);
     font-size: 0.875rem;
     line-height: 1.5;
     text-align: center;
 }
 
 .gais-peluncur-kosong strong {
-    color: var(--gais-ink);
+    color: var(--gray-700);
 }
 
 .gais-ubin {
@@ -343,9 +951,9 @@ html.fi [role='switch']:focus-visible {
     min-height: 6.75rem;
     padding: 0.75rem 0.375rem;
     border: 1px solid transparent;
-    border-radius: 0.75rem;
+    border-radius: var(--gais-sudut-kartu);
     background-color: transparent;
-    color: var(--gais-ink);
+    color: var(--gray-700);
     font: inherit;
     text-align: center;
     text-decoration: none;
@@ -354,8 +962,8 @@ html.fi [role='switch']:focus-visible {
 }
 
 .gais-ubin:hover {
-    background-color: #ffffff;
-    border-color: var(--gais-garis);
+    background-color: var(--gray-50);
+    border-color: var(--gray-200);
 }
 
 .gais-ubin-ikon {
@@ -364,9 +972,9 @@ html.fi [role='switch']:focus-visible {
     width: 2.875rem;
     height: 2.875rem;
     flex-shrink: 0;
-    border-radius: 0.75rem;
-    background-color: var(--gais-ubin-latar, var(--gais-petrol-muda));
-    color: var(--gais-ubin-tinta, var(--gais-petrol));
+    border-radius: 50%;
+    background-color: var(--gais-ubin-latar, color-mix(in srgb, var(--gais-ungu) 12%, transparent));
+    color: var(--gais-ubin-tinta, var(--primary-600));
 }
 
 .gais-ubin-ikon-svg {
@@ -384,40 +992,84 @@ html.fi [role='switch']:focus-visible {
 .gais-ubin-catatan {
     font-size: 0.6875rem;
     line-height: 1.2;
-    color: var(--gais-redup);
+    color: var(--gray-500);
 }
 
 /* Halaman yang sedang dibuka ditandai, supaya peluncur juga menjawab "saya di mana". */
 .gais-ubin-aktif {
-    border-color: var(--gais-ubin-tinta, var(--gais-petrol));
-    background-color: #ffffff;
+    border-color: var(--gais-ubin-tinta, var(--primary-600));
+    background-color: var(--gray-50);
 }
 
 .gais-ubin-aktif .gais-ubin-ikon {
-    background-color: var(--gais-ubin-tinta, var(--gais-petrol));
+    background-color: var(--gais-ubin-tinta, var(--primary-600));
     color: #ffffff;
 }
 
 /*
  * Warna ubin per kelompok.
  *
- * Sebelas rona yang berbeda, tetapi kepekatannya sengaja rendah dan tingkat terangnya
- * hampir sama untuk semuanya. Yang dicari bukan meriah, melainkan bisa dibedakan sekilas:
- * mata mengenali kelompok dari ronanya, sementara halaman tetap terbaca sebagai satu
- * permukaan kertas hangat. Petrol, terracotta, hijau, dan merah bata mengikuti warna yang
- * sudah dipakai aplikasi; sisanya rona tetangganya pada kepekatan yang sama.
+ * Bentuk avatar Vuexy: lingkaran berlatar warna 12 persen dengan ikon berwarna penuh.
+ * Sebelas rona supaya tiap kelompok bisa dikenali sekilas dari warnanya. Enam yang
+ * pertama adalah warna Vuexy sendiri (ungu, hijau, merah, jingga, biru muda, abu),
+ * sisanya rona tetangganya. Warna ikon digelapkan sampai kontrasnya minimal 4,5:1
+ * di atas latarnya, walau ikon cukup 3:1, supaya aman juga untuk pembaca berpenglihatan lemah.
  */
-.gais-ubin-petrol { --gais-ubin-latar: #e0eef2; --gais-ubin-tinta: #17505e; }
-.gais-ubin-slate { --gais-ubin-latar: #e3e8f0; --gais-ubin-tinta: #3c4f6b; }
-.gais-ubin-terracotta { --gais-ubin-latar: #f6e5db; --gais-ubin-tinta: #8a4526; }
-.gais-ubin-teal { --gais-ubin-latar: #dcebe7; --gais-ubin-tinta: #2c5d51; }
-.gais-ubin-olive { --gais-ubin-latar: #e9ebda; --gais-ubin-tinta: #555a2c; }
-.gais-ubin-plum { --gais-ubin-latar: #eae3ef; --gais-ubin-tinta: #55416b; }
-.gais-ubin-ochre { --gais-ubin-latar: #f3ead7; --gais-ubin-tinta: #74561d; }
-.gais-ubin-forest { --gais-ubin-latar: #dfebe2; --gais-ubin-tinta: #1f5a38; }
-.gais-ubin-stone { --gais-ubin-latar: #ece5dd; --gais-ubin-tinta: #5e4b3c; }
-.gais-ubin-brick { --gais-ubin-latar: #f4e1de; --gais-ubin-tinta: #8a3a34; }
-.gais-ubin-graphite { --gais-ubin-latar: #e5e9ea; --gais-ubin-tinta: #3a4a50; }
+.gais-ubin-ungu { --gais-ubin-latar: #eeedfd; --gais-ubin-tinta: #5d4fe6; }
+.gais-ubin-nila { --gais-ubin-latar: #e6ecfd; --gais-ubin-tinta: #3552c8; }
+.gais-ubin-jingga { --gais-ubin-latar: #fff3e8; --gais-ubin-tinta: #9a5410; }
+.gais-ubin-toska { --gais-ubin-latar: #e0f9fc; --gais-ubin-tinta: #0a6e7e; }
+.gais-ubin-zaitun { --gais-ubin-latar: #f0f4e0; --gais-ubin-tinta: #566317; }
+.gais-ubin-magenta { --gais-ubin-latar: #fbe9f6; --gais-ubin-tinta: #a0317f; }
+.gais-ubin-kuning { --gais-ubin-latar: #fdf6dc; --gais-ubin-tinta: #7a5f00; }
+.gais-ubin-hijau { --gais-ubin-latar: #e5f8ee; --gais-ubin-tinta: #1b7a45; }
+.gais-ubin-cokelat { --gais-ubin-latar: #f5ede6; --gais-ubin-tinta: #7a4b2a; }
+.gais-ubin-merah { --gais-ubin-latar: #fceaeb; --gais-ubin-tinta: #b8363a; }
+.gais-ubin-abu { --gais-ubin-latar: #f0f0f1; --gais-ubin-tinta: #55585e; }
+
+/*
+ * Tema gelap: latar lingkaran menjadi 16 persen warna di atas kartu gelap, dan ikonnya
+ * warna terang. Tinta gelap dari tema terang tidak terbaca di atas #283046.
+ */
+.dark .gais-ubin-ikon {
+    background-color: color-mix(in srgb, var(--gais-ubin-tinta, var(--gais-ungu)) 22%, transparent);
+    color: color-mix(in srgb, var(--gais-ubin-tinta, var(--gais-ungu)) 45%, #ffffff);
+}
+
+.dark .gais-peluncur-jendela {
+    background-color: var(--gray-900);
+}
+
+.dark .gais-ubin-catatan,
+.dark .gais-peluncur-kosong {
+    color: var(--gray-400);
+}
+
+.dark .gais-ubin,
+.dark .gais-peluncur-judul,
+.dark .gais-peluncur-kosong strong {
+    color: var(--gray-200);
+}
+
+.dark .gais-ubin:hover,
+.dark .gais-ubin-aktif {
+    background-color: var(--gray-800);
+}
+
+.dark .gais-peluncur-cari-kotak {
+    background-color: var(--gray-950);
+    color: var(--gray-200);
+    border-color: var(--gray-800);
+}
+
+.dark .gais-peluncur-kepala {
+    border-bottom-color: var(--gray-800);
+}
+
+.dark .gais-peluncur-tombol,
+.dark .gais-peluncur-mundur {
+    color: var(--primary-300);
+}
 
 /*
  * Layar sempit. Ubinnya dikecilkan supaya tetap tiga kolom di lebar 360 piksel, dan
@@ -460,28 +1112,25 @@ html.fi [role='switch']:focus-visible {
 .gais-demo {
     margin-top: 1.5rem;
     padding-top: 1.25rem;
-    border-top: 1px solid var(--gais-garis);
+    border-top: 1px solid var(--gray-200);
 }
 
 .gais-demo-kepala {
     margin-bottom: 0.75rem;
 }
 
-/* Motif identitas 1 dipakai ulang, sama seperti judul seksi di halaman lain. */
+/* Judul memakai gaya judul kartu Vuexy, sama seperti judul kartu di halaman lain. */
 .gais-demo-judul {
-    border-inline-start: 3px solid var(--gais-accent);
-    padding-inline-start: 0.5rem;
-    font-family: "Source Serif 4", Georgia, "Times New Roman", serif;
     font-size: 0.9375rem;
-    font-weight: 600;
-    color: var(--gais-ink);
+    font-weight: 500;
+    color: var(--gray-700);
 }
 
 .gais-demo-catatan {
     margin-top: 0.375rem;
     font-size: 0.75rem;
     line-height: 1.45;
-    color: var(--gais-redup);
+    color: var(--gray-500);
 }
 
 .gais-demo-daftar {
@@ -505,10 +1154,10 @@ html.fi [role='switch']:focus-visible {
     width: 100%;
     min-height: 2.75rem;
     padding: 0.625rem 0.75rem;
-    border: 1px solid var(--gais-garis);
-    border-radius: 0.5rem;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--gais-sudut-kontrol);
     background-color: #ffffff;
-    color: var(--gais-ink);
+    color: var(--gray-700);
     font: inherit;
     text-align: start;
     cursor: pointer;
@@ -516,33 +1165,57 @@ html.fi [role='switch']:focus-visible {
 }
 
 .gais-demo-akun:hover {
-    border-color: var(--gais-petrol);
-    background-color: var(--gais-petrol-tipis);
+    border-color: var(--primary-600);
+    background-color: var(--primary-50);
 }
 
 .gais-demo-peran {
     font-size: 0.8125rem;
     font-weight: 600;
-    color: var(--gais-petrol);
+    color: var(--primary-600);
 }
 
 .gais-demo-ringkas {
     font-size: 0.75rem;
     line-height: 1.4;
-    color: var(--gais-ink);
+    color: var(--gray-700);
 }
 
 .gais-demo-surel {
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 0.6875rem;
-    color: var(--gais-redup);
+    color: var(--gray-500);
 }
 
 .gais-demo-sandi {
     margin-top: 0.75rem;
     font-size: 0.75rem;
     text-align: center;
-    color: var(--gais-redup);
+    color: var(--gray-500);
+}
+
+.dark .gais-demo {
+    border-top-color: var(--gray-800);
+}
+
+.dark .gais-demo-akun {
+    background-color: var(--gray-950);
+    border-color: var(--gray-800);
+    color: var(--gray-200);
+}
+
+.dark .gais-demo-akun:hover {
+    border-color: var(--primary-400);
+    background-color: var(--gray-800);
+}
+
+.dark .gais-demo-judul,
+.dark .gais-demo-ringkas {
+    color: var(--gray-200);
+}
+
+.dark .gais-demo-peran {
+    color: var(--primary-300);
 }
 
 .gais-demo-sandi code {
@@ -550,8 +1223,8 @@ html.fi [role='switch']:focus-visible {
     font-size: 0.75rem;
     padding: 0.0625rem 0.3125rem;
     border-radius: 0.25rem;
-    background-color: var(--gais-petrol-muda);
-    color: var(--gais-petrol);
+    background-color: color-mix(in srgb, var(--gais-ungu) 12%, transparent);
+    color: var(--primary-600);
 }
 
 /*
@@ -563,7 +1236,7 @@ html.fi [role='switch']:focus-visible {
  */
 .gais-pratinjau {
     border: 1px solid var(--gray-200);
-    border-radius: 0.75rem;
+    border-radius: var(--gais-sudut-kartu);
     overflow: hidden;
     background: var(--gray-50);
 }

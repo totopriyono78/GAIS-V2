@@ -61,8 +61,11 @@ class PemeliharaanBiayaChart extends ChartWidget
             'datasets' => [[
                 'label' => 'Biaya pemeliharaan',
                 'data' => $nilai,
-                'backgroundColor' => '#38707F',
-                'borderColor' => '#17505E',
+                // Ungu Vuexy, batang dengan sudut membulat seperti grafik batang Vuexy.
+                'backgroundColor' => '#7367F0',
+                'borderColor' => '#7367F0',
+                'borderRadius' => 4,
+                'maxBarThickness' => 28,
             ]],
             'labels' => $label,
         ];

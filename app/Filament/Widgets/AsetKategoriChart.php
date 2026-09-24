@@ -49,9 +49,10 @@ class AsetKategoriChart extends ChartWidget
 
         $kategori = AssetCategory::query()->whereIn('id', $hitung->keys())->get()->keyBy('id');
 
-        // Satu keluarga warna petrol yang menua, bukan warna pelangi, supaya tetap
-        // satu bahasa dengan palet aplikasi.
-        $tangga = ['#17505E', '#38707F', '#588D9C', '#7DABB8', '#A2C7D1', '#C5DEE5', '#3A4A50', '#596A70', '#76878E', '#96A5AB'];
+        // Satu keluarga ungu Vuexy yang memudar lalu abu keunguannya, bukan warna
+        // pelangi, supaya tetap satu bahasa dengan palet aplikasi dan tidak ada kategori
+        // yang tampak seperti status (hijau, merah, jingga).
+        $tangga = ['#4E41CC', '#5D4FE6', '#7367F0', '#8F85F3', '#ADA5F6', '#CCC7FA', '#5E5873', '#6E6B7B', '#B9B9C3', '#D8D6DE'];
 
         $label = [];
         $nilai = [];
@@ -70,8 +71,10 @@ class AsetKategoriChart extends ChartWidget
                 'label' => 'Jumlah aset',
                 'data' => $nilai,
                 'backgroundColor' => $warna,
-                'borderColor' => '#FAF7F2',
-                'borderWidth' => 2,
+                // Tanpa garis tepi, potongan dipisah jarak. Garis tepi berwarna tetap
+                // akan tampak sebagai cincin putih di tema gelap.
+                'borderWidth' => 0,
+                'spacing' => 2,
             ]],
             'labels' => $label,
         ];

@@ -40,6 +40,7 @@ class AnggaranRingkasan extends StatsOverviewWidget
         if ($anggaran->isEmpty()) {
             return [
                 Stat::make('Pagu tahun '.$tahun, 'Belum ditetapkan')
+                    ->icon('heroicon-o-banknotes')
                     ->description('Realisasi tetap dijumlahkan dari catatan yang ada, tetapi belum punya pembanding')
                     ->color('gray'),
             ];
@@ -61,22 +62,26 @@ class AnggaranRingkasan extends StatsOverviewWidget
 
         return [
             Stat::make('Pagu tahun '.$tahun, Rupiah::ringkas($pagu))
+                ->icon('heroicon-o-banknotes')
                 ->description(Rupiah::penuh($pagu).' dari '.$anggaran->count().' baris pagu')
                 ->color('gray'),
 
             Stat::make('Realisasi', Rupiah::ringkas($realisasi))
+                ->icon('heroicon-o-chart-bar')
                 ->description($persen === null
                     ? 'Pagunya nol, jadi persentasenya tidak bisa dihitung'
                     : number_format($persen, 1, ',', '.').' persen dari pagu, dijumlahkan sendiri dari catatan yang ada')
                 ->color($persen !== null && $persen > 100 ? 'danger' : 'primary'),
 
             Stat::make('Pagu terlewati', number_format($lewat, 0, ',', '.'))
+                ->icon('heroicon-o-exclamation-triangle')
                 ->description($lewat > 0
                     ? ($mendekati > 0 ? $mendekati.' lagi mendekati batas' : 'Perlu ditinjau sekarang')
                     : ($mendekati > 0 ? $mendekati.' mendekati batas' : 'Seluruh pagu masih aman'))
                 ->color($lewat > 0 ? 'danger' : ($mendekati > 0 ? 'warning' : 'success')),
 
             Stat::make('Belum disetujui', $tertunda > 0 ? Rupiah::ringkas($tertunda) : 'Tidak ada')
+                ->icon('heroicon-o-document-check')
                 ->description($tertunda > 0
                     ? Rupiah::penuh($tertunda).' dari tagihan rekanan dan struk karyawan, belum masuk realisasi'
                     : 'Tidak ada faktur atau struk yang menunggu persetujuan')

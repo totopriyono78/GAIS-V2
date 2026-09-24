@@ -27,15 +27,20 @@ class InisialAvatar implements AvatarProvider
      *
      * Semuanya cukup gelap untuk menampung teks putih dengan rasio kontras di atas 4,5.
      */
+    /**
+     * Pasangan latar dan tulisan gaya avatar Vuexy: latar warna tipis, inisial berwarna.
+     * Tulisan tiap pasangan digelapkan dari warna Vuexy aslinya sampai lolos 4,5:1 di
+     * atas latarnya sendiri (terendah 4,85), karena inisial adalah teks 14 piksel.
+     *
+     * @var list<array{0: string, 1: string}>
+     */
     private const COLORS = [
-        '#17505E', // hijau kebiruan, warna utama aplikasi
-        '#7A3B2E', // bata
-        '#3F4A7A', // nila
-        '#5B4636', // cokelat
-        '#2F5D3A', // hijau hutan
-        '#6B3560', // ungu anggur
-        '#1F4F70', // biru laut
-        '#6A4E12', // kuning tua
+        ['#EEEDFD', '#5D4FE6'], // ungu, warna utama aplikasi
+        ['#E5F8EE', '#1B7A45'], // hijau
+        ['#FCEAEB', '#B8363A'], // merah
+        ['#FFF3E8', '#9A5410'], // jingga
+        ['#E0F9FC', '#0A6E7E'], // biru muda
+        ['#F0F0F1', '#55585E'], // abu
     ];
 
     public function get(Model|Authenticatable $record): string
@@ -43,11 +48,11 @@ class InisialAvatar implements AvatarProvider
         $nama = trim((string) Filament::getNameForDefaultAvatar($record));
 
         $inisial = $this->inisial($nama);
-        $latar = self::COLORS[$this->indeksWarna($nama)];
+        [$latar, $tinta] = self::COLORS[$this->indeksWarna($nama)];
 
         $svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">'
             .'<rect width="100" height="100" fill="'.$latar.'"/>'
-            .'<text x="50" y="50" fill="#FFFFFF" font-family="IBM Plex Sans, Segoe UI, sans-serif"'
+            .'<text x="50" y="50" fill="'.$tinta.'" font-family="Montserrat, Segoe UI, sans-serif"'
             .' font-size="42" font-weight="600" text-anchor="middle" dominant-baseline="central">'
             .htmlspecialchars($inisial, ENT_QUOTES | ENT_XML1, 'UTF-8')
             .'</text></svg>';

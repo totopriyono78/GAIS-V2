@@ -21,17 +21,22 @@
     </footer>
 
     <style>
+        .dark .gais-footer {
+            color: var(--gray-400);
+            border-top-color: var(--gray-800);
+        }
+
         .gais-footer {
             padding: 12px 0 20px;
             text-align: center;
             font-size: 12px;
             line-height: 18px;
-            color: var(--gray-500, #76878E);
+            color: var(--gray-500);
             /*
              * Garis tipis di atasnya memisahkan footer dari isi halaman tanpa menarik
              * perhatian. Warnanya mengikuti garis pemisah lain di aplikasi ini.
              */
-            border-top: 1px solid var(--gray-200, #D2DADE);
+            border-top: 1px solid var(--gray-200);
             margin-top: 24px;
         }
     </style>

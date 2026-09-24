@@ -43,19 +43,19 @@ class AdminPanelProvider extends PanelProvider
              * setiap karyawan ke layanan pihak ketiga tanpa alasan yang sepadan.
              */
             ->font(
-                'IBM Plex Sans',
-                url: asset('fonts/ibm-plex-sans/index.css'),
+                'Montserrat',
+                url: asset('fonts/montserrat/index.css'),
                 provider: LocalFontProvider::class,
                 // Dua ketebalan yang menutup hampir seluruh layar dimuat lebih awal,
                 // supaya teks tidak sempat tergambar dengan huruf bawaan lalu berganti.
                 preload: [
-                    asset('fonts/ibm-plex-sans/files/ibm-plex-sans-latin-400-normal.woff2'),
-                    asset('fonts/ibm-plex-sans/files/ibm-plex-sans-latin-500-normal.woff2'),
+                    asset('fonts/montserrat/files/montserrat-latin-400-normal.woff2'),
+                    asset('fonts/montserrat/files/montserrat-latin-500-normal.woff2'),
                 ],
             )
             ->defaultAvatarProvider(InisialAvatar::class)
             // Layar kantor paling umum masih 1366 piksel. Sidebar yang selalu terbuka
-            // memakan 16rem dari lebar itu, jadi tabel padat jadi terpotong. Dua baris
+            // memakan 20rem dari lebar itu, jadi tabel padat jadi terpotong. Dua baris
             // di bawah mengembalikan ruang itu ke isi halaman.
             /*
              * Halaman detail di aplikasi ini adalah meja kerja, bukan arsip.
@@ -70,16 +70,20 @@ class AdminPanelProvider extends PanelProvider
              */
             ->readOnlyRelationManagersOnResourceViewPagesByDefault(false)
             /*
-             * 16rem, bukan 20rem bawaan Filament.
+             * 20rem, sama dengan bawaan Filament. Sebelumnya 16rem.
              *
-             * Layar kantor paling umum masih 1366 piksel, dan sidebar 20rem memakan 320
-             * piksel darinya sebelum satu kolom tabel pun tergambar. Angka 16rem dipilih
-             * dari pengukuran, bukan dari selera: nama menu terpanjang yang ada sekarang
-             * membutuhkan 204 piksel setelah ikon dan bantalannya, dan 16rem menyisakan
-             * 20 piksel di atas kebutuhan itu. Bantalan daftar menunya dikecilkan di
-             * gais.css supaya sisa itu benar benar ada.
+             * Montserrat, huruf gaya Vuexy yang dipakai sejak 24 September 2026, jauh lebih
+             * lebar dari IBM Plex Sans. Pada 16rem, Preventive Maintenance dan Corrective
+             * Maintenance terpotong menjadi elipsis. Diukur ulang di layar 1440 piksel:
+             * pada 19,5rem nama terpanjang, Corrective Maintenance beserta badge jumlahnya,
+             * hanya menyisakan 13 piksel, di bawah batas 20 piksel yang dipakai sejak awal
+             * supaya pembulatan lebar huruf antar komputer tidak memotongnya. Pada 20rem
+             * sisanya 21 piksel.
+             *
+             * Harganya 64 piksel lebar tabel di layar kantor 1366 piksel. Sidebar tetap
+             * bisa diciutkan dari tombol di navbar untuk halaman yang butuh lebar penuh.
              */
-            ->sidebarWidth('16rem')
+            ->sidebarWidth('20rem')
             ->sidebarCollapsibleOnDesktop()
             ->maxContentWidth(Width::Full)
             ->navigationGroups([
@@ -130,15 +134,6 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ])
             /*
-             * Baris hak cipta di kaki halaman.
-             *
-             * Dipasang di dua tempat karena panel ini punya dua tata letak. FOOTER
-             * mengisi halaman panel biasa, SIMPLE_LAYOUT_END mengisi halaman masuk yang
-             * memakai tata letak sederhana dan tidak punya kaki halaman sendiri.
-             * Memasang satu saja membuat baris ini hilang persis di halaman pertama yang
-             * dilihat orang.
-             */
-            /*
              * Peluncur menu di ujung kiri topbar.
              *
              * Isinya tidak ditulis di mana pun. Ia dibaca dari navigasi panel yang sama
@@ -156,100 +151,120 @@ class AdminPanelProvider extends PanelProvider
              * dibuat berarti menyodorkan tombol yang berujung penolakan masuk.
              */
             ->renderHook(PanelsRenderHook::AUTH_LOGIN_FORM_AFTER, fn (): string => view('filament.akun-demo')->render())
-            ->renderHook(PanelsRenderHook::FOOTER, fn (): string => view('filament.footer')->render())
-            ->renderHook(PanelsRenderHook::SIMPLE_LAYOUT_END, fn (): string => view('filament.footer')->render());
+            /*
+             * Baris hak cipta di kaki halaman.
+             *
+             * Cukup satu kait. Sejak Filament 5.7 tata letak sederhana (halaman masuk)
+             * ikut menggambar kait FOOTER, jadi kait SIMPLE_LAYOUT_END yang dulu dipasang
+             * untuk halaman masuk membuat baris hak cipta tampil dua kali di sana.
+             */
+            ->renderHook(PanelsRenderHook::FOOTER, fn (): string => view('filament.footer')->render());
     }
 
     /**
-     * Palet lengkap, bukan satu warna dasar.
+     * Palet lengkap gaya Vuexy, bukan satu warna dasar.
      *
-     * Color::hex() hanya mengambil rona dari warna yang diberikan, lalu membangun
-     * sendiri tingkat terang dan kepekatannya. Untuk #17505E hasilnya rona yang benar
-     * tetapi kepekatannya naik dari 0,062 menjadi 0,169 dalam OKLCH, dan itu yang
-     * membuat tombol tampil sian menyala, bukan petrol tua seperti di DESIGN.md.
-     * Karena itu seluruh tingkat ditulis di sini. Warna asli dari DESIGN.md dipasang
-     * pada tingkat yang tingkat terangnya paling dekat: 700 untuk primary dan gray,
-     * 600 untuk success, danger, dan warning. Tingkat lain dihitung dari warna itu
-     * dengan rona tetap dan kepekatan yang mengecil ke dua arah.
+     * Arah gaya diganti ke Vuexy atas permintaan pemilik proyek pada 24 September 2026.
+     * Seluruh tingkat tetap ditulis tangan karena Color::hex() membangun tingkatnya
+     * sendiri dan hasilnya tidak bisa diatur kontrasnya.
      *
-     * Filament 5 memakai tingkat 400 sebagai latar tombol terang dan 950 sebagai
-     * warna tulisannya, jadi tingkat 400 memang tampil sebagai petrol muda. Warna
-     * penuh #17505E tetap muncul pada teks, nav aktif, dan garis fokus.
+     * Ungu Vuexy asli #7367F0 dipasang di tingkat 400. Ia tampil di tempat yang tidak
+     * membawa teks kecil: garis fokus, cahaya menu aktif, lingkaran ikon statistik.
+     * Tombol memakai tingkat 600 dan hover 500, jadi keduanya sengaja digeser sedikit
+     * lebih gelap supaya tulisan putih di atasnya lolos 4,5:1 (5,68 dan 4,88). Ungu
+     * #7367F0 sendiri hanya 4,26 dengan tulisan putih.
+     *
+     * Gray adalah abu keunguan Vuexy. Tingkat 900 dan 950 sekaligus menjadi warna kartu
+     * dan latar tema gelap (#283046 dan #161D31), sama seperti dark layout Vuexy, karena
+     * Filament melukis tema gelap dari dua tingkat itu.
+     *
+     * Merah dipasang lebih gelap dari Vuexy (#EA5455 di tingkat 400) karena tombol hapus
+     * bertulisan putih. Hijau, jingga, dan biru muda memakai warna Vuexy apa adanya di
+     * tingkat 500, dan Filament otomatis memberi tulisan gelap pada tombolnya karena
+     * tulisan putih tidak cukup kontras di atas ketiganya.
      *
      * @return array<string, array<int, string>>
      */
     protected function colors(): array
     {
-        $petrol = [
-            50 => '#F0F7FA',
-            100 => '#E0EEF2',
-            200 => '#C5DEE5',
-            300 => '#A2C7D1',
-            400 => '#7DABB8',
-            500 => '#588D9C',
-            600 => '#38707F',
-            700 => '#17505E',
-            800 => '#0B3F4B',
-            900 => '#032E38',
-            950 => '#001D24',
-        ];
-
         return [
-            'primary' => $petrol,
-            // Info tidak disebut di DESIGN.md. Dipakaikan petrol yang sama supaya
-            // tidak ada biru asing yang masuk lewat pintu belakang.
-            'info' => $petrol,
+            'primary' => [
+                50 => '#F2F1FE',
+                100 => '#E6E3FD',
+                200 => '#CCC7FA',
+                300 => '#ADA5F6',
+                400 => '#7367F0',
+                500 => '#685BED',
+                600 => '#5D4FE6',
+                700 => '#4E41CC',
+                800 => '#3F34A6',
+                900 => '#2F2780',
+                950 => '#1F1A57',
+            ],
             'gray' => [
-                50 => '#F3F6F7',
-                100 => '#E7ECEE',
-                200 => '#D2DADE',
-                300 => '#B6C2C7',
-                400 => '#96A5AB',
-                500 => '#76878E',
-                600 => '#596A70',
-                700 => '#3A4A50',
-                800 => '#2D3A40',
-                900 => '#1F2A2F',
-                950 => '#121A1D',
+                50 => '#F8F8F8',
+                100 => '#F3F2F7',
+                200 => '#EBE9F1',
+                300 => '#D8D6DE',
+                400 => '#B9B9C3',
+                500 => '#6E6B7B',
+                600 => '#625F6E',
+                700 => '#5E5873',
+                800 => '#3B4253',
+                900 => '#283046',
+                950 => '#161D31',
             ],
             'success' => [
-                50 => '#EFF9F1',
-                100 => '#DEF1E3',
-                200 => '#C2E2CB',
-                300 => '#9ECDAC',
-                400 => '#77B289',
-                500 => '#509568',
-                600 => '#1F6B3F',
-                700 => '#0C5C32',
-                800 => '#004521',
-                900 => '#003315',
-                950 => '#00200A',
+                50 => '#EEFBF3',
+                100 => '#DDF6E8',
+                200 => '#BAEDD1',
+                300 => '#94E3B7',
+                400 => '#60D694',
+                500 => '#28C76F',
+                600 => '#25AF66',
+                700 => '#23945C',
+                800 => '#1B7A45',
+                900 => '#1D614A',
+                950 => '#1B4941',
             ],
             'danger' => [
-                50 => '#FFF0ED',
-                100 => '#FFE1DC',
-                200 => '#FFC6BF',
-                300 => '#FFA49A',
-                400 => '#ED7C72',
-                500 => '#D3554D',
-                600 => '#A32020',
-                700 => '#910B12',
-                800 => '#710003',
-                900 => '#570000',
-                950 => '#3B0000',
+                50 => '#FDF1F1',
+                100 => '#FCE4E4',
+                200 => '#F8C8C9',
+                300 => '#F4AAAA',
+                400 => '#EA5455',
+                500 => '#D83A3B',
+                600 => '#C03234',
+                700 => '#A12B2E',
+                800 => '#822427',
+                900 => '#651D20',
+                950 => '#461416',
             ],
             'warning' => [
-                50 => '#FFF3ED',
-                100 => '#FDE5DB',
-                200 => '#F7CFBD',
-                300 => '#EAB198',
-                400 => '#D58F6F',
-                500 => '#BA6D49',
-                600 => '#A2542F',
-                700 => '#7C330B',
-                800 => '#602100',
-                900 => '#491500',
-                950 => '#310A00',
+                50 => '#FFF7F0',
+                100 => '#FFF0E1',
+                200 => '#FFE0C3',
+                300 => '#FFCFA1',
+                400 => '#FFB874',
+                500 => '#FF9F43',
+                600 => '#DE8D40',
+                700 => '#B9783E',
+                800 => '#875833',
+                900 => '#735138',
+                950 => '#533F36',
+            ],
+            'info' => [
+                50 => '#EBFBFD',
+                100 => '#D6F7FB',
+                200 => '#ADF0F8',
+                300 => '#80E7F4',
+                400 => '#42DBEE',
+                500 => '#00CFE8',
+                600 => '#03B6CE',
+                700 => '#079AB1',
+                800 => '#0A7D94',
+                900 => '#0D647A',
+                950 => '#104B61',
             ],
         ];
     }
